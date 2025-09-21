@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaishnav Chincholkar - Unity Developer Portfolio</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 25% 25%, #ff6b6b20 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, #4ecdc420 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, #45b7d120 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-20px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(20px) rotate(240deg);
+            }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 0 2rem;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #ff6b6b;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: slideUp 1s ease forwards 0.3s;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff, #cccccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            animation: slideUp 1s ease forwards 0.6s;
+        }
+
+        .hero-description {
+            font-size: 1.3rem;
+            color: #aaaaaa;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: slideUp 1s ease forwards 0.9s;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: slideUp 1s ease forwards 1.2s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+            transform: translateY(-3px);
+        }
+
+        /* Section Styling */
+        .section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            /*margin: 0 auto;*/
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 0;
+            margin-bottom: 30vh;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #aaaaaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #aaaaaa;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Experience Timeline */
+        .experience-timeline {
+            position: relative;
+            max-width: 95%;
+            margin: 0 auto;
+        }
+
+        .experience-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #ff6b6b, #4ecdc4, #45b7d1);
+            transform: translateX(-50%);
+        }
+
+        .experience-item {
+            position: relative;
+            margin-bottom: 4rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .experience-item:nth-child(odd) {
+            justify-content: flex-end;
+        }
+
+        .experience-item:nth-child(odd) .experience-card {
+            margin-right: 3rem;
+            text-align: right;
+        }
+
+        .experience-item:nth-child(even) .experience-card {
+            margin-left: 3rem;
+        }
+
+        .experience-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 45%;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .experience-card:hover {
+            transform: scale(1.02);
+            border-color: #ff6b6b;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .experience-dot {
+            position: absolute;
+            left: 50%;
+            top: 2rem;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 0 4px #0a0a0a, 0 0 0 8px rgba(255, 107, 107, 0.3);
+        }
+
+        .job-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .company {
+            color: #ff6b6b;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .duration {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .job-description ul {
+            list-style: none;
+        }
+
+        .job-description li {
+            margin-bottom: 0.8rem;
+            color: #cccccc;
+            position: relative;
+            /*padding-left: 1.5rem;*/
+        }
+
+        .my-contributions {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.05), rgba(78, 205, 196, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .my-contributions h4 {
+            color: #4ecdc4;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .my-contributions h4::before {
+            /*content: '▶';*/
+            position: absolute;
+            left: 0;
+            color: #4ecdc4;
+            font-size: 0.9rem;
+        }
+
+        .my-contributions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .my-contributions li {
+            color: #b0b0b0;
+            margin-bottom: 0.5rem;
+            margin-left: 2rem;
+            position: relative;
+            padding-left: 1.2rem;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .my-contributions li:hover {
+            color: #cccccc;
+        }
+
+        .my-contributions li::before {
+            content: '•';
+            color: rgba(78, 205, 196, 0.6);
+            position: absolute;
+            left: 0;
+            font-size: 1rem;
+        }
+
+        .experience-item:nth-child(odd) .my-contributions {
+            text-align: right;
+        }
+
+        .experience-item:nth-child(odd) .my-contributions h4 {
+            padding-left: 0;
+            padding-right: 1rem;
+        }
+
+        .experience-item:nth-child(odd) .my-contributions h4::before {
+            left: auto;
+            right: 0;
+        }
+
+        .experience-item:nth-child(odd) .my-contributions ul {
+            padding-right: 0;
+        }
+
+        .experience-item:nth-child(odd) .my-contributions li {
+            margin-left: 0;
+            margin-right: 2rem;
+            padding-left: 0;
+            padding-right: 1.2rem;
+        }
+
+        .experience-item:nth-child(odd) .my-contributions li::before {
+            left: auto;
+            right: 0;
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .project-card {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.06), rgba(78, 205, 196, 0.06));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight {
+            color: rgba(78, 205, 196, 0.83); /* bluish tint */
+            font-weight: 600; /* optional: makes it pop */
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.91);
+            margin-bottom: 0.5rem;
+        }
+
+        .project-type {
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .project-description {
+            color: #cccccc;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .project-link {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .project-link:hover {
+            background: #ff6b6b;
+            transform: translateY(-2px);
+        }
+
+        /* Skills Section */
+        .skill-category:nth-child(1) .skill-icon {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.15);
+        }
+
+        .skill-category:nth-child(2) .skill-icon {
+            color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.15);
+        }
+
+        .skill-category:nth-child(3) .skill-icon {
+            color: #45b7d1;
+            background: rgba(69, 183, 209, 0.15);
+        }
+
+        .skill-category:nth-child(4) .skill-icon {
+            color: #96ceb4;
+            background: rgba(150, 206, 180, 0.15);
+        }
+
+        .skill-category:nth-child(5) .skill-icon {
+            color: #feca57;
+            background: rgba(254, 202, 87, 0.15);
+        }
+
+        .skill-content {
+            grid-column: 2;
+            grid-row: 1 / -1;
+            min-width: 0;
+        }
+
+        .skill-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .skill-list {
+            color: #b8b8b8;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .skill-list li {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-list li:before {
+            content: '•';
+            color: inherit;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .skill-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            /*background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1));*/
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-direction: column; /* stack items vertically */
+            align-items: center; /* keep them centered horizontally */
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .contact-item:hover {
+            color: #ff6b6b;
+        }
+
+        .contact-item i {
+            font-size: 1.5rem;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .experience-timeline::before {
+                left: 30px;
+            }
+
+            .experience-item {
+                justify-content: flex-start !important;
+            }
+
+            .experience-card {
+                width: calc(100% - 60px);
+                margin-left: 60px !important;
+                margin-right: 0 !important;
+                text-align: left !important;
+            }
+
+            .experience-dot {
+                left: 30px;
+                transform: translateX(-50%);
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(5, auto);
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+
+            .skill-category:nth-child(1) {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .skill-category:nth-child(2) {
+                grid-column: 1;
+                grid-row: 2;
+            }
+
+            .skill-category:nth-child(3) {
+                grid-column: 1;
+                grid-row: 3;
+            }
+
+            .skill-category:nth-child(4) {
+                grid-column: 1;
+                grid-row: 4;
+            }
+
+            .skill-category:nth-child(5) {
+                grid-column: 1;
+                grid-row: 5;
+                max-width: none;
+            }
+
+            .skill-category {
+                padding: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .skill-icon {
+                font-size: 2rem;
+                width: 45px;
+                height: 45px;
+                align-self: center;
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+
+            .skill-content {
+                text-align: center;
+            }
+
+            .skill-title {
+                font-size: 1.15rem;
+            }
+
+            .skill-list {
+                font-size: 0.9rem;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .skill-category {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .skill-icon {
+                align-self: center;
+                margin-top: 0;
+            }
+        }
+
+        /* Scroll animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scroll exit animations */
+        .scroll-element {
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+        }
+
+        .scroll-element.exiting-top {
+            transform: translateY(-80px) scale(0.95);
+            opacity: 0.3;
+        }
+
+        .scroll-element.exiting-bottom {
+            transform: translateY(80px) scale(0.95);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+<div class="bg-animation"></div>
+
+<nav>
+    <div class="nav-container">
+        <div class="logo">VAISHNAV</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<section id="home" class="hero">
+    <div class="hero-content">
+        <div class="hero-subtitle">Unity 3D Developer</div>
+        <h1 class="hero-title">VAISHNAV CHINCHOLKAR</h1>
+        <p class="hero-description">Im a Unity 3D Game Developer with 4+ years of Working Experience.</p>
+        <div class="hero-cta">
+            <a href="#projects" class="btn-primary">
+                <i class="fas fa-gamepad"></i>
+                View My Work
+            </a>
+            <a href="#contact" class="btn-secondary">
+                <i class="fas fa-envelope"></i>
+                Get In Touch
+            </a>
+        </div>
+    </div>
+</section>
+
+<section id="experience" class="section reveal scroll-element">
+    <div class="section-header">
+        <h2 class="section-title"> Working Experience</h2>
+        <p class="section-subtitle">Building amazing games and XR experiences across different platforms</p>
+    </div>
+
+    <div class="experience-timeline">
+        <div class="experience-item scroll-element">
+            <div class="experience-dot"></div>
+            <div class="experience-card">
+                <h3 class="job-title">Sr. Unity Developer</h3>
+                <div class="company">ForeExcel Pvt. Ltd.</div>
+                <div class="duration">Oct 2024 - Present</div>
+                <div class="job-description">
+                    <ul>
+                        <li>Leading a team of 5 developers on to deliver 4 different XR projects from concept to delivery</li>
+                        <li>Managing client relationships and project coordination</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="experience-item scroll-element">
+            <div class="experience-dot"></div>
+            <div class="experience-card">
+                <h3 class="job-title">Unity 3D Developer</h3>
+                <div class="company">EDIIIE Pvt. Ltd.</div>
+                <div class="duration">Jul 2022 - Sep 2024</div>
+                <div class="job-description">
+                    <ul>
+                        <li>Contributed to 2 Metaverse games- Sinverse (14,000+ active players) and Huslverse.</li>
+                        <li>Created 4 plugins that are utilized across multiple projects, reducing development time and standardizing workflows</li>
+                    </ul>
+                </div>
+                <div class="my-contributions">
+                    <h4>My Contributions (See My Works Section) </h4>
+                    <ul>
+                        <li>Battle Royal & E-Sports</li>
+                        <li>Virtual Estate System Plugin</li>
+                        <li>Character Customization Plugin</li>
+                        <li>Resources Window Plugin</li>
+                        <li>Scene Window Plugin</li>
+                    </ul>
+                </div>
+                <div class="project-links" style="margin-top: 1rem;">
+                    <a href="https://drive.google.com/file/d/1-FWQZrR5t9B_OqiyhqwjYCwnrSSUuNGC/view?usp=sharing" target="_blank" class="project-link">
+                        <i class="fas fa-certificate"></i>
+                        Certificate
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="experience-item scroll-element">
+            <div class="experience-dot"></div>
+            <div class="experience-card">
+                <h3 class="job-title">Unity Developer Intern</h3>
+                <div class="company">Frolic Frog Pvt. Ltd.</div>
+                <div class="duration">Sep 2021 - Mar 2022</div>
+                <div class="job-description">
+                    <ul>
+                        <li>Developed 2 hyper-casual mobile games from scratch</li>
+                        <li>Implemented complex rope physics systems</li>
+                        <li>Optimized performance for 1500+ active physics objects</li>
+                    </ul>
+                </div>
+                <div class="my-contributions">
+                    <h4>My Contributions (See My Works Section) </h4>
+                    <ul>
+                        <li>Free The Girl (Mobile Game)</li>
+                        <li>Balls To Cup (Mobile Game)</li>
+                    </ul>
+                </div>
+                <div class="project-links" style="margin-top: 1rem;">
+                    <a href="https://drive.google.com/file/d/1kOHm7epW4I4cMxLDnZSPlpAztKtdIbNC/view?usp=sharing" target="_blank" class="project-link">
+                        <i class="fas fa-certificate"></i>
+                        Certificate
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="experience-item scroll-element">
+            <div class="experience-dot"></div>
+            <div class="experience-card">
+                <h3 class="job-title">Unity Developer Intern</h3>
+                <div class="company">Kid Aptivity Technologies Pvt. Ltd.</div>
+                <div class="duration">Sep 2020 - Dec 2020</div>
+                <div class="job-description">
+                    <ul>
+                        <li>Worked on multiple physics based simulation projects</li>
+                    </ul>
+                </div>
+                <div class="project-links" style="margin-top: 1rem;">
+                    <a href="https://drive.google.com/drive/folders/1veUr_CdyaBNLHEJckcNhFqug34ZDwb4L" target="_blank" class="project-link">
+                        <i class="fas fa-certificate"></i>
+                        Certificate
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="projects" class="section reveal">
+    <div class="section-header scroll-element">
+        <h2 class="section-title">My Work</h2>
+        <p class="section-subtitle">Listed bellow is the best of my work</p>
+    </div>
+
+    <div class="projects-grid">
+        <!-- Battle Royal & E-Sports -->
+        <div class="project-card scroll-element">
+            <h3 class="project-title">Battle Royal & E-Sports</h3>
+            <div class="project-type">Multiplayer Gaming</div>
+            <p class="project-description">
+                Developed a complete Battle Royal system for Sinverse with matchmaking, team formation,
+                and seamless multiplayer experience supporting up to <span class="highlight">20 players per lobby.</span>
+            </p>
+            <div class="project-links">
+                <a href="https://www.youtube.com/watch?v=v1rGRSIFQwE" target="_blank" class="project-link">
+                    <i class="fab fa-youtube"></i>
+                    Demo
+                </a>
+            </div>
+        </div>
+
+        <!-- Virtual Estate System Plugin -->
+        <div class="project-card scroll-element">
+            <h3 class="project-title">Virtual Estate System Plugin</h3>
+            <div class="project-type">Unity Plugin</div>
+            <p class="project-description">
+                Modular house-building system plugin that allows the players to create their own house, base, and business.
+                Handled <span class="highlight">70,000+ Physics Objects</span> in a single multiplayer scene.
+            </p>
+            <div class="project-links">
+                <a href="https://www.youtube.com/watch?v=E3lFW_aCI2U" target="_blank" class="project-link">
+                    <i class="fab fa-youtube"></i>
+                    Demo
+                </a>
+            </div>
+        </div>
+
+        <!-- Character Customization Plugin -->
+        <div class="project-card scroll-element">
+            <h3 class="project-title">Character Customization Plugin</h3>
+            <div class="project-type">Unity Plugin</div>
+            <p class="project-description">
+                Comprehensive character customization system allowing players to modify
+                clothing, accessories, and body types with real-time preview.
+            </p>
+            <div class="project-links">
+                <a href="https://www.youtube.com/watch?v=bnCh2lrQdDk" target="_blank" class="project-link">
+                    <i class="fab fa-youtube"></i>
+                    Demo
+                </a>
+            </div>
+        </div>
+
+        <!-- Free The Girl -->
+        <div class="project-card scroll-element">
+            <h3 class="project-title">Free The Girl</h3>
+            <div class="project-type">Mobile Game</div>
+            <p class="project-description">
+                Built the complete mobile game from scratch to finished. Implemented
+                <span class="highlight">Rope Physics</span> and
+                <span class="highlight">Rope Overlapping Detection</span>
+                in a Mobile Game
+            </p>
+            <div class="project-links">
+                <a href="https://apps.apple.com/us/app/free-the-girl/id1581317624" target="_blank" class="project-link">
+                    <i class="fab fa-apple"></i>
+                    IOS App
+                </a>
+            </div>
+        </div>
+
+        <!-- Balls To Cup -->
+        <div class="project-card scroll-element">
+            <h3 class="project-title">Balls To Cup</h3>
+            <div class="project-type">Mobile Game</div>
+            <p class="project-description">
+                Built the complete mobile game from scratch to finished. Handled
+                <span class="highlight">1000s of Physics Objects</span> in mobile game. Implemented
+                <span class="highlight">Object Pooling</span> for performance optimization.
+            </p>
+            <div class="project-links">
+                <a href="https://apps.apple.com/us/app/balls-to-cup/id1616477125" target="_blank" class="project-link">
+                    <i class="fab fa-apple"></i>
+                    IOS App
+                </a>
+            </div>
+        </div>
+
+        <!-- Resources Window Plugin -->
+        <div class="project-card scroll-element">
+            <h3 class="project-title">Resources Window Plugin</h3>
+            <div class="project-type">Editor Tool</div>
+            <p class="project-description">
+                Unity Editor tool for Asset Management, reducing navigation
+                friction and improving developer workflow efficiency.
+            </p>
+            <div class="project-links">
+                <a href="https://drive.google.com/file/d/1no5nwhv_ZEQt3B4kvAu7YdsgykwWJQbS" target="_blank" class="project-link">
+                    <i class="fas fa-play"></i>
+                    Demo
+                </a>
+                <a href="https://github.com/thevaishnav/editor-projects/tree/main/Editor/Resources%20Window" target="_blank" class="project-link">
+                    <i class="fab fa-github"></i>
+                    Code
+                </a>
+            </div>
+        </div>
+
+        <!-- Scenes Window Plugin -->
+        <div class="project-card scroll-element">
+            <h3 class="project-title">Scenes Window Plugin</h3>
+            <div class="project-type">Editor Tool</div>
+            <p class="project-description">
+                Unity Editor tool to find all scenes at one place, simplifying scene management
+            </p>
+            <div class="project-links">
+                <a href="https://drive.google.com/file/d/1l5SFQ8mrfxU45YcU1giA6CyKSoz-piPH" target="_blank" class="project-link">
+                    <i class="fas fa-play"></i>
+                    Demo
+                </a>
+                <a href="https://github.com/thevaishnav/editor-projects/tree/main/Editor/Scenes%20WIndow" target="_blank" class="project-link">
+                    <i class="fab fa-github"></i>
+                    Code
+                </a>
+            </div>
+        </div>
+
+        <!-- Metaverse Games -->
+        <div class="project-card scroll-element">
+            <h3 class="project-title">Metaverse Games</h3>
+            <div class="project-type">PC Gaming</div>
+            <p class="project-description">
+                Contributed to major metaverse projects including HusleVerse and Sinverse,
+                reaching over 14,000 active players worldwide.
+            </p>
+            <div class="project-links">
+                <a href="https://www.thehusl.io" target="_blank" class="project-link">
+                    <i class="fas fa-desktop"></i>
+                    HusleVerse
+                </a>
+                <a href="https://www.sinverse.com/home" target="_blank" class="project-link">
+                    <i class="fas fa-desktop"></i>
+                    Sinverse
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="contact" class="contact-section reveal">
+    <div class="section-header">
+        <h2 class="section-title">Contact Me</h2>
+        <p class="section-subtitle">Let's Make Cool Stuff Together</p>
+    </div>
+
+    <div class="contact-info">
+        <a href="mailto:thevaishnavchincholkar@gmail.com" class="contact-item">
+            <i class="fas fa-envelope"></i>
+            thevaishnavchincholkar@gmail.com
+        </a>
+        <a href="tel:+918668226982" class="contact-item">
+            <i class="fas fa-phone"></i>
+            +91 8668226982
+        </a>
+        <a href="https://www.linkedin.com/in/vaishnav-chincholkar" target="_blank" class="contact-item">
+            <i class="fab fa-linkedin"></i>
+            LinkedIn
+        </a>
+    </div>
+
+    <!-- <div style="margin-top: 2rem;">
+         <p style="color: #aaaaaa; font-size: 1rem;">
+             <strong>Education:</strong> Industrial Engineering, Vishwakarma Institute of Technology (CGPA: 7.93)
+         </p>
+     </div>-->
+</section>
+
+<script>
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Scroll reveal animation
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => {
+        observer.observe(el);
+    });
+
+    // Dynamic scroll exit animation
+    const IgnoreClasses = ["section reveal scroll-element active", "section reveal scroll-element"];
+    const scrollElements = Array.from(document.querySelectorAll('.scroll-element')).filter(element => !IgnoreClasses.includes(element.className));
+    let ticking = false;
+    let elements = new Set();
+
+    function updateScrollElements() {
+        const nav = document.querySelector("nav");
+        const navHeight = nav.offsetHeight;
+        const windowHeight = window.innerHeight;
+
+        scrollElements.forEach(element => {
+            const rect = element.getBoundingClientRect();
+            const elementTop = rect.top;
+            const elementBottom = rect.bottom;
+            const elementHeight = rect.height;
+
+            // Only apply exit animations if element is mostly out of view
+            // Check if element is exiting through top (more aggressive threshold)
+            if (elementBottom > 0 && elementTop < navHeight - (elementHeight * 0.4)) {
+                if (elements.has(element)) return;
+
+                console.log("top: " + element.className);
+                element.classList.add('exiting-top');
+                elements.add(element);
+            }
+            // Check if element is exiting through bottom (more aggressive threshold)
+            else if (elementTop < windowHeight && elementBottom > windowHeight + elementHeight * 0.6) {
+                if (elements.has(element)) return;
+
+                console.log("bottom: " + element.className);
+                element.classList.add('exiting-bottom');
+                elements.add(element);
+            } else {
+                element.classList.remove('exiting-top', 'exiting-bottom');
+                elements.delete(element);
+            }
+        });
+
+        ticking = false;
+    }
+
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateScrollElements);
+            ticking = true;
+        }
+    }
+
+    // Add a small delay before starting scroll animations
+    setTimeout(() => {
+        window.addEventListener('scroll', requestTick);
+    }, 2000);
+
+    // Add scroll effect to navigation
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 100) {
+            nav.style.background = 'rgba(10, 10, 10, 0.95)';
+        } else {
+            nav.style.background = 'rgba(10, 10, 10, 0.8)';
+        }
+    });
+</script>
+</body>
+</html>
