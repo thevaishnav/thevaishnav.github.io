@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pivot++ · Pivot editor for Unity</title>
+<meta name="description" content="Move, rotate and scale any Unity object around any point you choose, right in the Scene view. The corner of a door, the base of a lamp post, the hinge of a lid. Editor only and non-destructive.">
+<link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="pivot-showcase.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+<script src="/scripts/site-header.js"></script>
+
+<main id="top">
+<!-- ---------- interactive overlay tour ---------- -->
+  <section class="wrap wrap-wide pv-showcase">
+    <div class="pv-intro">
+      <p class="section-label">A tour of the overlay</p>
+      <h2>Every control, one scroll at a time</h2>
+      <p>This is the Pivot++ overlay exactly as it appears in your Scene view. Scroll down and each part lights up while the notes on the right explain what it does.</p>
+      <span class="pv-scrollhint"><span class="dot"></span> Scroll to begin</span>
+    </div>
+
+    <div class="pv-scrolly">
+      <!-- sticky graphic: the recreated overlay -->
+      <div class="pv-stage" aria-hidden="true">
+        <div class="pv-panel" id="pvPanel" data-mode="bounded" data-box="box-enabled" data-objseg="default">
+          <div class="pv-head">
+            <span class="pv-grip"></span>
+            <span class="pv-caret">&#9662;</span>
+            <span class="pv-title">Pivot++</span>
+          </div>
+
+          <div class="pv-box" id="box-enabled">
+            <button class="pv-enabled" id="tgt-enabled" type="button" tabindex="-1">
+              <span class="pv-led"></span> Enabled
+            </button>
+          </div>
+
+          <div class="pv-box" id="box-shared">
+            <p class="pv-slabel">SHARED PIVOT</p>
+
+            <div class="pv-seg" id="tgt-mode">
+              <span class="pv-seg-btn is-bounded">Bounded</span>
+              <span class="pv-seg-btn is-unbounded">Unbounded</span>
+            </div>
+
+            <div class="pv-vals">
+              <div class="pv-vals-bounded" id="tgt-bounded">
+                <div class="pv-row"><span class="pv-ax x">X</span><span class="pv-slider" style="--p:92%"><span class="pv-knob"></span></span><span class="pv-num">0.84</span></div>
+                <div class="pv-row"><span class="pv-ax y">Y</span><span class="pv-slider" style="--p:100%"><span class="pv-knob"></span></span><span class="pv-num">1</span></div>
+                <div class="pv-row"><span class="pv-ax z">Z</span><span class="pv-slider" style="--p:0%"><span class="pv-knob"></span></span><span class="pv-num">-1</span></div>
+              </div>
+              <div class="pv-vals-unbounded" id="tgt-unbounded">
+                <div class="pv-row"><span class="pv-ax x">X</span><span class="pv-field">0</span></div>
+                <div class="pv-row"><span class="pv-ax y">Y</span><span class="pv-field">0</span></div>
+                <div class="pv-row"><span class="pv-ax z">Z</span><span class="pv-field">0</span></div>
+              </div>
+            </div>
+
+            <div class="pv-scale" id="tgt-scale">
+              <span>Use Object Scale</span>
+              <span class="pv-check"></span>
+            </div>
+          </div>
+
+          <div class="pv-box" id="box-objects">
+            <p class="pv-slabel">OBJECT PIVOTS</p>
+            <p class="pv-sub">3 pivots added</p>
+            <div class="pv-seg two" id="tgt-objseg">
+              <span class="pv-seg-btn is-default">Default</span>
+              <span class="pv-seg-btn is-edit">Edit Pivots</span>
+            </div>
+            <button class="pv-add" id="tgt-add" type="button" tabindex="-1">Add New Pivot</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- flowing steps -->
+      <div class="pv-steps">
+        <div class="pv-step is-active" data-mode="bounded" data-box="box-enabled" data-target="tgt-enabled">
+          <div class="pv-card">
+            <h3>The master switch</h3>
+            <p>Green means Pivot++ is driving Unity's transform handles. Click it to fall back to the default pivot at any time — your offsets and saved pivots stay exactly where you left them.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-shared" data-target="box-shared">
+          <div class="pv-card">
+            <h3>One quick offset for the whole selection</h3>
+            <p>The <strong>Shared Pivot</strong> is a fast, selection-wide offset. It applies to whatever you have selected right now and is shared across every object in that selection.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-shared" data-target="tgt-bounded">
+          <div class="pv-card">
+            <h3>Bounded thinks in proportions</h3>
+            <p>In <strong>Bounded</strong> mode the offset is expressed relative to the object's bounds. Each slider places the pivot inside them: <span class="mono">-1</span> is one face, <span class="mono">0</span> is dead centre, and <span class="mono">1</span> is the opposite face. Set it once and it lands correctly on a pebble or a skyscraper.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="unbounded" data-box="box-shared" data-target="tgt-unbounded">
+          <div class="pv-card">
+            <h3>Unbounded thinks in units</h3>
+            <p>Switch to <strong>Unbounded</strong> to work in fixed distances in the object's local space. Type the precise offset of the pivot from the object's centre in scene units — no slider, no rounding, just the number you want. Perfect for placing a pivot outside the mesh entirely, or matching a measurement from another tool.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="unbounded" data-box="box-shared" data-target="tgt-scale">
+          <div class="pv-card">
+            <h3>Scale-aware offsets</h3>
+            <p><strong>Unbounded only.</strong> Ticked, the offset is multiplied by the object's scale. Unticked, it stays an absolute world-distance offset regardless of how the object is scaled.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="box-objects">
+          <div class="pv-card">
+            <h3>Save pivots that stay put</h3>
+            <p><strong>Object Pivots</strong> are per-object and permanent. Create as many custom pivots as an object needs — a lid, a handle, a base — and they're still there the next time you open the scene.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="tgt-objseg">
+          <div class="pv-card">
+            <h3>Default moves the object</h3>
+            <p>With <strong>Default</strong> selected, the handles behave normally — grab the object and manipulate it around its active pivot.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="tgt-objseg" data-objseg="edit">
+          <div class="pv-card">
+            <h3>Edit moves the pivots</h3>
+            <p>Switch to <strong>Edit Pivots</strong> and the handles move and rotate the saved pivots themselves. This is also where you delete the ones you no longer need. <span class="mono">Ctrl + Z</span> undoes the whole way.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="tgt-add">
+          <div class="pv-card">
+            <h3>Bank the current pivot</h3>
+            <p><strong>Add New Pivot</strong> saves the current Shared Pivot position as a new permanent pivot on the selected object. Line it up once, save it, and reuse it forever.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- requirements / non-destructive ---------- -->
+  <section class="wrap wrap-wide" style="padding:24px 28px 8px;">
+    <p class="section-label">Good to know</p>
+    <div class="meta-grid">
+      <div class="meta-cell">
+        <p class="k">Unity</p>
+        <p class="v">2022.3 or newer<br><span class="mono" style="color:var(--muted);font-size:13px;">(Scene view Overlays)</span></p>
+      </div>
+      <div class="meta-cell">
+        <p class="k">Footprint</p>
+        <p class="v">Editor only. Stripped from every build.</p>
+      </div>
+      <div class="meta-cell">
+        <p class="k">Your scene</p>
+        <p class="v">No components added to your GameObjects</p>
+      </div>
+      <div class="meta-cell">
+        <p class="k">Your assets</p>
+        <p class="v">Meshes &amp; prefabs never modified</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- CTA ---------- -->
+  <section class="wrap wrap-wide">
+    <div class="cta-band">
+      <h2>Start pivoting around the right point.</h2>
+      <p>Grab Pivot++ on the Unity Asset Store, or read the full manual first.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://assetstore.unity.com/packages/packages/393670" target="_blank" rel="noopener">Get it on the Asset Store ↗</a>
+        <a class="btn btn-secondary" href="/tools/pivot/user-manual/">Read the manual</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="pivot-showcase.js" defer></script>
+</body>
+</html>

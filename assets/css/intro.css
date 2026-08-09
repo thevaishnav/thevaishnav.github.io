@@ -1,0 +1,333 @@
+/* ============================================================
+   Landing intro — the full-height opener that introduces the
+   person before the page introduces the tools.
+
+   It is the only section on the site that claims a whole screen,
+   and that claim is the reason it exists: everything below it is
+   a list of things, and a list opens badly. What it must not do
+   is claim a whole screen and then look like the page ended, so
+   the scroll cue at the bottom is load-bearing rather than
+   decorative — see .scroll-cue.
+   ============================================================ */
+
+.intro{
+  /* One screen, less the header above it. The header is sticky, not fixed, so
+     it occupies flow at the top of the page; a plain 100vh here would push the
+     intro's own bottom edge — and with it the scroll cue — exactly --nav-h
+     below the fold, which is the one place a "there is more down here" hint
+     must never be. */
+  min-height:calc(100vh - var(--nav-h));
+  /* svh is the *small* viewport height: the height with the mobile browser's
+     address bar showing. vh on a phone is the large height, so a vh-sized
+     section is taller than the visible screen until the user scrolls and the
+     bar retracts — the cue would start life hidden behind the URL bar. Sizing
+     to the small height means the section always fits, and the extra space
+     when the bar retracts is just breathing room. Declared second so engines
+     that know svh take it and the rest keep the line above. */
+  min-height:calc(100svh - var(--nav-h));
+
+  /* Two rows: the copy takes the free space and centres in it, the cue sits on
+     the bottom edge. Centring the copy in a *row* rather than in the section
+     keeps it optically centred regardless of how tall the cue is. */
+  display:grid;
+  grid-template-rows:1fr auto;
+  align-items:center;
+  padding-top:40px;
+  padding-bottom:28px;
+}
+
+/* Copy on the left, the mark on the right. Before the mark moved up here the
+   copy was a single column against a full-width container, which on a wide
+   screen is a block of text in the left third and a lot of nothing beside it —
+   the layout read as unfinished rather than spacious. The mark gives the right
+   half something to be, and the pair reads as one composition.
+   The mark's column is capped so the extra width on a large display goes to
+   the headline, which can use it, rather than to a bigger circle, which
+   cannot. */
+.intro-body{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,380px);
+  gap:clamp(32px, 5vw, 72px);
+  align-items:center;
+}
+.intro-copy{ min-width:0; }
+
+/* ---------- the mark ----------
+   Moved here from the tools hero below. It was competing with this section for
+   the role of "the first thing you see", and the section that introduces the
+   person is the one that should carry the identity. */
+.intro-mark{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+/* A soft wash behind the disc so it sits in the page instead of on it. Sized
+   off the container and blurred well past its own edge, it reads as light
+   coming off the mark rather than as a second circle drawn behind it — which
+   is what a tighter, harder gradient would look like. */
+.intro-mark::before{
+  content:"";
+  position:absolute;
+  width:78%;
+  aspect-ratio:1;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    color-mix(in srgb, var(--axis-z) 22%, transparent) 0%,
+    transparent 66%);
+  filter:blur(34px);
+  pointer-events:none;
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .intro-mark::before{ background:radial-gradient(circle, rgba(90,169,255,0.2), transparent 66%); }
+}
+
+/* The mark sits in a ring. The logo file is padded — the glyph fills only the
+   middle of it — so the image is scaled past the ring's edge to bring the glyph
+   up to a readable size, and the ring clips the overflow. The image is taken
+   out of flow so it can be oversized without stretching the circle into an
+   ellipse; `aspect-ratio` then has nothing to fight with. */
+.gizmo{
+  position:relative; /* also lifts the disc above the wash behind it */
+  display:block;
+  overflow:hidden;
+  width:clamp(200px, 19vw, 300px);
+  aspect-ratio:1;
+  border:1px solid var(--line);
+  border-radius:50%;
+  background:var(--surface);
+}
+.gizmo img{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:124%;
+  height:auto;
+  transform:translate(-50%, -50%);
+}
+
+/* Four words, so it can take the site's full display size — a short headline is
+   what earns a large one. The earlier three-line version had to be set smaller
+   just to fit, which is the wrong way round: the size should follow from how
+   much there is to say, not the other way about. */
+.intro-title{
+  font-size:clamp(2.125rem, 4.4vw, 3.5rem);
+  line-height:1.05;
+  letter-spacing:-0.024em;
+  margin:0 0 16px;
+}
+
+/* The claim, now at reading size rather than headline size. It is a sentence
+   with a real clause in it — "that don't break when 1000s of players join at
+   once" is the specific part, and specifics read as prose, not as display type.
+   Set large it would have been four lines of very big text competing with the
+   greeting above it; set here it supports the greeting instead.
+   The measure is capped near 52 characters so it breaks into two or three even
+   lines rather than one long ribbon on a wide screen. */
+.intro-lead{
+  color:var(--muted);
+  font-size:clamp(1.0625rem, 1.5vw, 1.1875rem);
+  line-height:1.5;
+  max-width:52ch;
+  margin:0;
+}
+
+/* ---------- the figure rail ----------
+   Each entry is one sentence broken across three lines, and only the middle
+   line is sized to be seen at a glance. That is the whole structure: the
+   lead-in and the tail are deliberately small, because an entry where all
+   three lines compete is just a paragraph.
+
+   One hairline runs across the top of the group and there is no box around
+   any single entry. Boxing them said these are three separate objects; they
+   are three readings of one record, and the shared rule says exactly that
+   with one line instead of twelve edges. It also keeps the section quiet —
+   three filled panels turned the intro back into a component gallery, which
+   is the thing the copy above it is trying not to be.
+
+   Read as a row they answer the three questions the greeting leaves open:
+   how long, how much, and what now. */
+.intro-cards{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:20px clamp(24px, 3.2vw, 52px);
+  list-style:none;
+  margin:30px 0 0;
+  padding:24px 0 0;
+  border-top:1px solid var(--line);
+  max-width:620px;
+}
+.intro-card{ min-width:0; }
+
+/* Direct children only. The figure line wraps its own <span> around the counted
+   year, and a blanket `.intro-card span` turned that inline number into a block
+   — which broke "4 years" onto two lines while the other two entries stayed on
+   one, and left the row taller than any of its contents needed. */
+.intro-card > span{ display:block; }
+/* The two supporting lines share a size and a colour so neither pulls rank on
+   the other; they are the two halves of one sentence with the figure between
+   them. */
+.intro-card .c-pre,
+.intro-card .c-post{
+  font-size:0.8125rem;
+  line-height:1.4;
+  color:var(--muted);
+}
+.intro-card .c-pre{ margin-bottom:6px; }
+.intro-card .c-post{ margin-top:6px; }
+
+/* Space Grotesk with tabular figures: the display face gives the number
+   presence at a size body text could not carry, and fixed-width figures keep
+   "6" and "81,521" on the same rhythm instead of drifting against each other.
+   Tightened tracking because it is set large — the same size-specific rule the
+   headings follow. */
+.intro-card .c-key{
+  font-family:'Space Grotesk', sans-serif;
+  font-size:clamp(1.25rem, 1.9vw, 1.625rem);
+  font-weight:600;
+  line-height:1.1;
+  letter-spacing:-0.018em;
+  font-variant-numeric:tabular-nums;
+  color:var(--text);
+  /* "81,521 props" must not split its number from its unit across a line */
+  text-wrap:balance;
+}
+
+/* ---------- scroll cue ----------
+   A full-height section's cost is that it hides the fact that anything follows
+   it. This is the repayment: a labelled target, not a bare chevron. "Tools"
+   says what is down there, which is the difference between a hint and an
+   instruction to scroll — and it is a real anchor, so it also works as a
+   control for anyone who would rather click than scroll.
+
+   It is placed at the bottom edge because that is the direction it refers to;
+   the label and the arrow together point at the thing they lead to. */
+.scroll-cue{
+  justify-self:center;
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  padding:8px 14px 6px;
+  border-radius:10px;
+  text-decoration:none;
+  color:var(--muted);
+  font-size:0.6875rem;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent;
+  transition:color var(--dur-1) var(--ease-out),
+             opacity var(--dur-2) var(--ease-out);
+}
+.scroll-cue:hover{ color:var(--text); }
+
+.scroll-cue-arrow{
+  width:18px;
+  height:18px;
+  display:block;
+  /* A slow, small drift downward. It is not decoration: a static arrow reads as
+     a label, a moving one reads as a direction. The travel is 4px — enough to
+     register at the edge of vision, small enough that it never competes with
+     the headline for attention.
+
+     ~0.5Hz on purpose. A loop closer to one cycle every five seconds sits in
+     the range that reads as drifting rather than pulsing and is the range
+     motion-sensitive users report problems with; reduced-motion stops it
+     outright via the blanket rule in motion.css. */
+  animation:cue-drift 1.9s var(--ease-out) infinite;
+  transition:transform var(--dur-1) var(--ease-out);
+}
+@keyframes cue-drift{
+  0%, 100%{ transform:translateY(0); }
+  50%     { transform:translateY(4px); }
+}
+/* On hover the drift gives way to a committed step down — the interface
+   answering the pointer with the same movement it was hinting at. */
+.scroll-cue:hover .scroll-cue-arrow{
+  animation:none;
+  transform:translateY(3px);
+}
+
+/* Once the page has moved, the cue has been obeyed and has nothing left to say;
+   leaving it on screen would be the interface still asking for something it
+   already got. `.is-scrolled` is set on <html> by site-header.js — the same
+   state the header's scroll edge uses, so both react to one fact about the
+   page rather than each watching the scroll separately.
+   `visibility` follows the fade so the faded-out cue also leaves the tab order
+   instead of being a focusable target sitting invisibly on the page. */
+.is-scrolled .scroll-cue{
+  opacity:0;
+  visibility:hidden;
+  transition:opacity var(--dur-2) var(--ease-in),
+             visibility 0s linear var(--dur-2);
+}
+
+/* ---------- responsive ---------- */
+
+/* Between phone and desktop the split survives — it just needs a smaller mark.
+   Stacking here instead would be the wrong trade: side by side, the two
+   columns share the screen's height, and stacked they add up. On a 880x700
+   laptop that sum ran past the fold and took the scroll cue with it, which is
+   the one thing this section cannot afford — a full-height section whose "more
+   below" hint is itself below the fold is worse than no hint at all. So the
+   stack is held back to the width where two columns genuinely stop fitting. */
+@media (max-width: 900px){
+  .intro-body{ grid-template-columns:minmax(0,1fr) minmax(0,220px); }
+  .gizmo{ width:clamp(150px, 22vw, 220px); }
+}
+
+/* Below this the headline has no room to be a headline beside the mark, so the
+   mark goes above the copy — it is the identity, so it stays the first thing
+   seen, and it aligns to the text's left edge rather than centring, which
+   keeps one vertical line down the whole section. */
+@media (max-width: 720px){
+  /* One column, so everything centres on one axis.
+     Left-aligned text under a centred mark reads as a layout that lost an
+     argument — the mark sits on the page's centre line and the copy on its
+     left edge, and nothing lines up with anything. Centred, the section has a
+     single spine running from the eyebrow through the figures to the scroll
+     cue, which was already centred at the foot. The copy is short enough for
+     this: centred text costs reading speed when there are many lines with
+     ragged left edges to find, and here the longest block is three. */
+  .intro-body{
+    grid-template-columns:1fr;
+    gap:clamp(18px, 4vw, 30px);
+    justify-items:center;
+  }
+  .intro-copy{ text-align:center; }
+  .intro-mark{ order:-1; align-self:center; }
+  .gizmo{ width:clamp(110px, 26vw, 150px); }
+  .intro-mark::before{ width:150%; filter:blur(28px); }
+
+  .intro{ padding-top:20px; padding-bottom:20px; }
+  .intro-title{ margin-bottom:14px; }
+  /* The measure cap stays; it just centres in the column now instead of
+     hanging off the left. */
+  .intro-lead{ margin-inline:auto; }
+
+  /* The row stays a row. Stacking three entries would add roughly 200px of
+     height to a screen that has none to give, and push the scroll cue under
+     the fold — the one thing this section cannot do. So they get narrower and
+     quieter instead: a smaller figure and a step down on the two supporting
+     lines, so three columns still hold real words. */
+  .intro-cards{
+    margin:22px auto 0;
+    padding-top:18px;
+    gap:14px clamp(10px, 3vw, 20px);
+  }
+  .intro-card .c-pre,
+  .intro-card .c-post{ font-size:0.75rem; line-height:1.35; }
+  .intro-card .c-key{ font-size:1.125rem; }
+}
+
+/* A short landscape phone has no room for a full screen of copy plus a cue —
+   let the section be as tall as its contents rather than squeezing them. */
+@media (max-height: 560px){
+  .intro{ min-height:0; padding-top:32px; padding-bottom:32px; }
+  .scroll-cue{ display:none; }
+  /* A stacked mark on a 400px-tall screen would push the copy off the bottom
+     on its own — put it back beside the text and shrink it. */
+  .intro-body{ grid-template-columns:minmax(0,1fr) auto; align-items:center; }
+  .intro-mark{ order:0; }
+  .gizmo{ width:clamp(110px, 16vw, 150px); }
+}

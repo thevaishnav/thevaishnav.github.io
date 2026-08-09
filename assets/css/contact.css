@@ -1,0 +1,339 @@
+/* ============================================================
+   Contact popup — the <dialog> built by scripts/render-contact.js
+   and appended to every page. Everything here is scoped to it.
+   ============================================================ */
+
+/* Native <dialog> rather than a hand-rolled overlay: focus trapping, Esc,
+   inert background and the ::backdrop are all free and behave the way the
+   platform does, which is more than a div can promise. */
+.contact-modal{
+  /* <dialog> is shrink-to-fit and centred by `margin:auto`; give it a width and
+     let that stay true. `max-width:none` clears the UA's 100vw-minus-padding. */
+  width:min(760px, calc(100vw - 40px));
+  max-width:none;
+  max-height:min(90vh, 900px);
+  padding:0;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+  color:var(--text);
+  /* the body scrolls, so clip it to keep the rounded corners */
+  overflow:hidden;
+  box-shadow:0 32px 90px rgba(0,0,0,0.6);
+}
+.contact-modal[open]{ display:flex; flex-direction:column; }
+.contact-modal::backdrop{
+  background:rgba(8,9,11,0.72);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+/* In and out along the same path. The popup rises 12px and settles; closing it
+   returns it down the same 12px, on the mirrored curve — --ease-out leaves fast
+   and settles slow, --ease-in does the reverse, so the two halves read as one
+   movement reversed rather than as two separate animations. The exit is also
+   shorter than the entrance: an arrival is worth watching, a dismissal is not,
+   and matching their lengths makes closing feel slow. */
+.contact-modal[open]{ animation:contact-modal-in var(--dur-2) var(--ease-out); }
+.contact-modal[open]::backdrop{ animation:contact-backdrop-in var(--dur-2) var(--ease-out); }
+@keyframes contact-modal-in{
+  from{ opacity:0; transform:translateY(12px) scale(.985); }
+}
+@keyframes contact-backdrop-in{ from{ opacity:0; } }
+
+/* `.is-closing` is set by render-contact.js, which then waits for these to end
+   before it actually closes the dialog. `forwards` holds the final frame so the
+   surface does not snap back to full opacity for the frame between the
+   animation ending and .close() running. */
+.contact-modal[open].is-closing{
+  animation:contact-modal-out 160ms var(--ease-in) forwards;
+}
+.contact-modal[open].is-closing::backdrop{
+  animation:contact-backdrop-out 160ms var(--ease-in) forwards;
+}
+@keyframes contact-modal-out{
+  to{ opacity:0; transform:translateY(12px) scale(.985); }
+}
+@keyframes contact-backdrop-out{ to{ opacity:0; } }
+
+/* Locks the page behind the popup. <html> already reserves the scrollbar's
+   width, so this takes the scroll away without moving the layout. */
+body.modal-open{ overflow:hidden; }
+
+.contact-modal-head{
+  position:relative; /* anchors the phone grab handle */
+  flex:none;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:20px;
+  padding:22px 28px 18px;
+  border-bottom:1px solid var(--line);
+  /* the same axis-blue wash the featured card uses, so the popup opens with
+     some colour instead of a flat panel */
+  background:linear-gradient(180deg, rgba(90,169,255,0.06), rgba(90,169,255,0));
+}
+.contact-modal-heading .eyebrow{ margin:0 0 8px; }
+.contact-modal-heading h2{ margin:0; }
+
+.contact-close{
+  flex:none;
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+  transition:color .15s ease, border-color .15s ease, background .15s ease;
+}
+.contact-close svg{ width:16px; height:16px; display:block; }
+.contact-close:hover{ color:var(--text); border-color:var(--muted); background:var(--surface-2); }
+
+.contact-modal-body{
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:20px 28px 24px;
+}
+.contact-modal-body .lead{ color:var(--muted); font-size:16px; max-width:60ch; margin:0 0 14px; }
+
+/* ---------- local time chip ----------
+   Not decoration: three of the four channels reach a person in one timezone,
+   and "it is 2am there" explains a slow reply better than a promise would. */
+.contact-status{
+  display:inline-flex;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:4px 10px;
+  width:max-content;
+  max-width:100%;
+  margin:0 0 18px;
+  padding:6px 14px 6px 12px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--surface-2);
+}
+.contact-status::before{
+  content:"";
+  align-self:center;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--axis-y);
+}
+.contact-clock{
+  font-size:14px;
+  color:var(--text);
+  margin:0;
+  /* tabular figures: without them the minute digits change width and the chip
+     twitches once a minute */
+  font-variant-numeric:tabular-nums;
+}
+.contact-status-note{ font-size:12.5px; color:var(--muted); margin:0; }
+
+/* ---------- contact channels ---------- */
+/* One cell per channel, all the same size: `1fr` columns plus `1fr` rows, so a
+   longer note grows every card in the grid rather than just its own. */
+.contact-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  grid-auto-rows:1fr;
+  gap:14px;
+}
+@media (min-width: 620px){
+  .contact-grid{ grid-template-columns:repeat(2, 1fr); }
+}
+
+.contact-card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  overflow:hidden;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:18px 22px 20px;
+  text-decoration:none;
+  transition:border-color .18s ease, transform .18s ease, background .18s ease;
+}
+.contact-card[data-accent="x"]{ --accent:var(--axis-x); }
+.contact-card[data-accent="y"]{ --accent:var(--axis-y); }
+.contact-card[data-accent="z"]{ --accent:var(--axis-z); }
+.contact-card[data-accent="w"]{ --accent:var(--axis-w); }
+
+/* ::before is the corner wash and ::after the top hairline. Both are absolutely
+   positioned, which paints them above inline content — so the card's own
+   children carry position:relative to land above the wash. The hairline is a
+   2px sliver in the padding, so it can stay on top. */
+.contact-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(120% 110% at 0% 0%,
+    color-mix(in srgb, var(--accent, transparent) 14%, transparent), transparent 62%);
+  opacity:0;
+  transition:opacity .2s ease;
+}
+.contact-card::after{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:2px;
+  background:var(--accent, var(--line));
+  /* a stub of accent at rest that runs the full edge on hover */
+  transform:scaleX(0.16);
+  transform-origin:left;
+  transition:transform .25s ease;
+}
+.contact-card > *{ position:relative; }
+
+.contact-card:hover,
+.contact-card:focus-visible{
+  background:var(--surface-2);
+  border-color:color-mix(in srgb, var(--accent, var(--muted)) 45%, var(--line));
+  transform:translateY(-2px);
+}
+.contact-card:hover::before,
+.contact-card:focus-visible::before{ opacity:1; }
+.contact-card:hover::after,
+.contact-card:focus-visible::after{ transform:scaleX(1); }
+@media (prefers-reduced-motion: reduce){
+  .contact-card{ transition:background .18s ease, border-color .18s ease; }
+  .contact-card:hover, .contact-card:focus-visible{ transform:none; }
+  .contact-card::after{ transition:none; }
+}
+
+.contact-head{ display:flex; align-items:center; gap:12px; }
+.contact-icon{
+  flex:none;
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  border-radius:9px;
+  border:1px solid color-mix(in srgb, var(--accent, var(--line)) 32%, var(--line));
+  background:color-mix(in srgb, var(--accent, transparent) 9%, var(--surface-2));
+  color:var(--accent, var(--text));
+}
+.contact-icon svg{ display:block; width:19px; height:19px; }
+.contact-label{
+  font-size:11px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0;
+}
+.contact-arrow{
+  margin-left:auto;
+  font-size:15px;
+  line-height:1;
+  color:var(--muted);
+  transition:transform .18s ease, color .18s ease;
+}
+.contact-card:hover .contact-arrow,
+.contact-card:focus-visible .contact-arrow{
+  color:var(--accent, var(--text));
+  transform:translate(3px, -3px);
+}
+
+.contact-value{
+  font-size:16px;
+  color:var(--text);
+  margin:0;
+  /* addresses and handles are long and must not push the grid wider */
+  overflow-wrap:anywhere;
+}
+.contact-note{ font-size:13.5px; line-height:1.5; color:var(--muted); margin:0; max-width:46ch; }
+
+/* ---------- contact popup: what to include ---------- */
+.contact-extra{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+  gap:18px 40px;
+  margin:22px 0 0;
+  padding-top:20px;
+  border-top:1px solid var(--line);
+}
+.contact-extra-title{
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 10px;
+}
+.contact-extra-cell p{ font-size:15px; color:#c9ccd1; margin:0; max-width:52ch; }
+.contact-checklist{ list-style:none; margin:0; padding:0; }
+.contact-checklist li{
+  position:relative;
+  padding-left:20px;
+  font-size:15px;
+  color:#c9ccd1;
+  margin:0 0 6px;
+}
+.contact-checklist li::before{
+  content:"›";
+  position:absolute;
+  left:0;
+  color:var(--axis-z);
+}
+
+/* ---------- on phones: a bottom sheet ----------
+   A centred box on a phone is a small window with dead space above and below it
+   and a close button up in the far corner, away from the thumb. Pinned to the
+   bottom edge it uses the full width, rises from the edge it is anchored to,
+   and puts the whole thing inside reach. */
+@media (max-width: 620px){
+  .contact-modal{
+    /* the UA centres a dialog with `margin:auto`; override the box outright */
+    position:fixed;
+    inset:auto 0 0 0;
+    width:100%;
+    max-height:90dvh;
+    margin:0;
+    border-radius:16px 16px 0 0;
+    border-bottom:0;
+  }
+  /* Anchored to the bottom edge, so it leaves through the bottom edge — a sheet
+     that comes up from the thumb and then fades in place loses the one spatial
+     fact the user had about it. */
+  .contact-modal[open]{ animation:contact-sheet-in var(--dur-3) var(--ease-out); }
+  .contact-modal[open].is-closing{
+    animation:contact-sheet-out 200ms var(--ease-in) forwards;
+  }
+
+  .contact-modal-head{
+    /* room above the title for the grab handle */
+    padding:22px 20px 16px;
+  }
+  /* The handle says "this came up from the bottom and goes back down" — it is
+     the shape people already read as a sheet. */
+  .contact-modal-head::before{
+    content:"";
+    position:absolute;
+    top:9px;
+    left:50%;
+    transform:translateX(-50%);
+    width:38px;
+    height:4px;
+    border-radius:999px;
+    background:var(--line);
+  }
+  .contact-modal-body{ padding:18px 20px 24px; }
+  .contact-modal-body .lead{ font-size:15px; }
+  .contact-card{ padding:18px 20px 20px; }
+  /* Equal-height rows are a desktop nicety; stacked on a phone they only pad
+     the short cards out and make the sheet longer to scroll. */
+  .contact-grid{ grid-auto-rows:auto; }
+}
+@keyframes contact-sheet-in{
+  from{ opacity:0; transform:translateY(100%); }
+}
+@keyframes contact-sheet-out{
+  to{ opacity:0; transform:translateY(100%); }
+}
+/* The reduced-motion treatment for this popup lives in motion.css, next to the
+   blanket rule it has to out-rank — that file is imported last, so an override
+   written here would be undone by it. */

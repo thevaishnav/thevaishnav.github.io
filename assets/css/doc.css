@@ -1,0 +1,97 @@
+/* ============================================================
+   Manual layout — the sticky table of contents beside a long
+   prose column. Used by the user manual pages.
+   ============================================================ */
+
+.doc{
+  display:grid;
+  grid-template-columns:clamp(280px, 26vw, 360px) minmax(0,1fr);
+  gap:56px;
+  padding:48px 0 64px;
+  align-items:start;
+}
+
+/* The rail carries the page title block and the table of contents together, so
+   both stay on screen for the whole read. Sticky on the rail rather than on the
+   toc alone — one pinned column reads as a fixed sidebar instead of a heading
+   that scrolls away and a list that doesn't. */
+.doc-rail{
+  position:sticky;
+  top:calc(var(--nav-h) + 28px);
+  align-self:start;
+  max-height:calc(100vh - var(--nav-h) - 56px);
+  overflow-y:auto;
+  /* The rail's scrollbar is styled with every other scroller on the site — see
+     the scrollers block in content.css. `scrollbar-width` is deliberately not
+     set here: in Chrome it would opt this one element out of the ::-webkit
+     pseudos and give it back the standard bar, complete with stepper arrows. */
+}
+.doc-rail .page-hero{
+  padding:0;
+  margin:0 0 32px;
+}
+.doc-rail .page-hero h1{ font-size:clamp(30px, 3vw, 40px); }
+.doc-rail .page-hero .lead{ font-size:15px; max-width:none; margin:0 0 20px; }
+.doc-rail .page-hero .actions{ flex-wrap:wrap; }
+/* Prose has a ceiling that the container does not — past roughly 1500px the
+   text column stops growing and the leftover would all pile up on the right.
+   Size the block to its measure instead and centre it, so the extra width
+   reads as deliberate margin rather than an abandoned half-screen. The nav and
+   page header still span the full fluid width above it. */
+@media (min-width: 1500px){
+  .doc{
+    grid-template-columns:minmax(300px, 360px) minmax(0, 78ch);
+    column-gap:80px;
+    justify-content:center;
+  }
+}
+.toc .toc-title{
+  font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--muted); margin:0 0 14px;
+}
+.toc ol{ list-style:none; margin:0; padding:0; }
+.toc li{ margin:0; }
+.toc a{
+  display:block;
+  padding:6px 0;
+  font-size:14px;
+  color:var(--muted);
+  text-decoration:none;
+  border-left:2px solid transparent;
+  padding-left:12px;
+  margin-left:-12px;
+  transition:color .15s ease, border-color .15s ease;
+}
+.toc a:hover{ color:var(--text); border-left-color:var(--axis-z); }
+.toc a.active{ color:var(--text); border-left-color:var(--axis-z); }
+
+.doc-content{ min-width:0; }
+.doc-content section{ padding-top:12px; margin-bottom:44px; scroll-margin-top:24px; }
+.doc-content section > h2{ padding-bottom:12px; border-bottom:1px solid var(--line); }
+.doc-content h3{ margin-top:32px; }
+/* The content column is now wide enough that unconstrained prose would run
+   past a comfortable line length — cap the measure, not the column. */
+.doc-content p{ color:#c9ccd1; max-width:74ch; }
+.doc-content ul, .doc-content ol{ color:#c9ccd1; padding-left:20px; max-width:74ch; }
+.doc-content li{ margin:6px 0; }
+.doc-content strong{ color:var(--text); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 860px){
+  .doc{ grid-template-columns:1fr; gap:24px; padding-top:32px; }
+  /* No room for a sidebar — the rail unwinds back into normal flow, title
+     first, contents underneath, exactly as the page read before. */
+  .doc-rail{
+    position:static;
+    max-height:none;
+    overflow:visible;
+  }
+  .doc-rail .page-hero h1{ font-size:clamp(32px, 8vw, 44px); }
+  .toc{
+    position:static;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 20px;
+    background:var(--surface);
+  }
+}

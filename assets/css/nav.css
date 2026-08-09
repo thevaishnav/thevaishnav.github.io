@@ -1,0 +1,131 @@
+/* ============================================================
+   Site header — the sticky top nav, rendered on every page by
+   scripts/site-header.js.
+   ============================================================ */
+
+/* The header's height is pinned to --nav-h rather than derived from whatever
+   it contains. Content-derived height is what makes a shared header still feel
+   different page to page: a font that hasn't swapped in yet, a longer link
+   label or a different zoom level all change the band by a pixel or two, and
+   that shows up as a jerk when navigating. --nav-h is also what anchors and
+   sticky offsets are measured against, so pinning it makes that number true
+   instead of approximately true. */
+.nav{
+  position:sticky;
+  top:0;
+  z-index:50;
+  height:var(--nav-h);
+  padding:28px 0 0;
+  /* translucent so content scrolling underneath stays readable */
+  background:color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter:blur(10px) saturate(160%);
+  -webkit-backdrop-filter:blur(10px) saturate(160%);
+}
+/* Scroll edge, not a permanent rule.
+   A 1px line under the header is drawn whether or not there is anything to
+   separate — at the top of the page it divides the header from blank space,
+   which is a border for its own sake. This is the same separation expressed
+   as a short gradient falling away from the header, and it only exists once
+   content has actually travelled under the bar. `.is-scrolled` is set on <html>
+   by site-header.js — it is a fact about the page, not about the nav, and the
+   landing page's scroll cue reads the same class. */
+.nav::after{
+  content:"";
+  position:absolute;
+  top:100%;
+  left:0;
+  right:0;
+  height:22px;
+  pointer-events:none;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--bg) 62%, transparent),
+    transparent);
+  opacity:0;
+  transition:opacity var(--dur-2) var(--ease-out);
+}
+.is-scrolled .nav::after{ opacity:1; }
+.nav-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:calc(var(--nav-h) - 28px);
+  /* The hairline is the header's own baseline — it stays, but it strengthens
+     once content is passing beneath it and the bar has to read as a layer in
+     front rather than a band at the top. */
+  border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  transition:border-color var(--dur-2) var(--ease-out);
+  gap:20px;
+}
+.is-scrolled .nav-inner{ border-bottom-color:var(--line); }
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  font-size:15px;
+  /* fixed line-height: fallback and webfont metrics differ, and without this
+     the swap changes the text's box and nudges the header contents */
+  line-height:1;
+  letter-spacing:0.02em;
+  color:var(--text);
+}
+/* Same disc treatment as the hero mark (see hero.css): the logo file is padded,
+   so the image is oversized and the circle clips it. Larger than the old inline
+   svg mark because the glyph only fills the middle of the file. */
+.brand .brand-mark{
+  position:relative;
+  display:block;
+  overflow:hidden;
+  flex:none;
+  width:28px;
+  height:28px;
+  border:1px solid var(--line);
+  border-radius:50%;
+  background:var(--surface);
+}
+.brand .brand-mark img{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:124%;
+  height:auto;
+  transform:translate(-50%, -50%);
+}
+
+.nav-links{
+  display:flex;
+  align-items:center;
+  gap:22px;
+}
+.nav-link{
+  font-size:13px;
+  line-height:1;
+  letter-spacing:0.02em;
+  color:var(--muted);
+  text-decoration:none;
+  border-bottom:1px solid transparent;
+  -webkit-tap-highlight-color:transparent;
+  transition:color var(--dur-1) var(--ease-out),
+             border-color var(--dur-1) var(--ease-out),
+             opacity var(--dur-1) var(--ease-out);
+}
+.nav-link:hover{ color:var(--text); border-color:var(--axis-z); }
+/* the page you are on stays in the nav, just marked rather than removed */
+.nav-link.is-current{ color:var(--text); border-color:var(--axis-z); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 720px){
+  .nav-links{ gap:16px; }
+}
+
+@media (max-width: 460px){
+  /* Brand + link list stop fitting on one line around 340px — let them stack
+     rather than push the page wider than the viewport. Stacking needs the
+     height back off the pin, so the header grows instead of clipping. */
+  /* --nav-h drives every anchor and sticky offset, so it has to follow the
+     wrapped header rather than keep claiming the one-line height. */
+  :root{ --nav-h:89px; }
+  .nav{ height:auto; }
+  .nav-inner{ height:auto; padding-bottom:16px; flex-wrap:wrap; row-gap:12px; }
+  .nav-links{ flex-wrap:wrap; gap:14px; }
+}

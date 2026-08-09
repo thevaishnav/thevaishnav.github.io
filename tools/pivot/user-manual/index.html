@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pivot++ · User Manual</title>
+<meta name="description" content="The complete Pivot++ user manual: getting started, interface reference, the Shared Pivot, Object Pivots, Edit Pivots mode, and troubleshooting.">
+<link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+<script src="/scripts/site-header.js"></script>
+
+<div class="wrap wrap-wide">
+  <div class="doc" id="top">
+
+    <!-- ---------- sticky rail: title + TOC ---------- -->
+    <div class="doc-rail">
+
+    <div class="page-hero">
+      <p class="eyebrow mono">User Manual</p>
+      <h1>Pivot++</h1>
+      <p class="lead">Custom pivots for the Unity Editor. This guide covers setup and every feature, so you can start working with custom pivots in a few minutes.</p>
+    </div>
+
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#introduction">1 · Introduction</a></li>
+        <li><a href="#getting-started">2 · Getting Started</a></li>
+        <li><a href="#interface">3 · Interface Overview</a></li>
+        <li><a href="#shared-pivot">4 · The Shared Pivot</a></li>
+        <li><a href="#object-pivots">5 · Object Pivots</a></li>
+        <li><a href="#troubleshooting">6 · Tips &amp; Troubleshooting</a></li>
+        <li><a href="#support">7 · Support</a></li>
+      </ol>
+    </aside>
+
+    </div><!-- /.doc-rail -->
+
+    <!-- ---------- content ---------- -->
+    <div class="doc-content">
+
+      <!-- 1 -->
+      <section id="introduction">
+        <h2>1 · Introduction</h2>
+        <p>Thanks for picking up <strong>Pivot++</strong>. This guide covers setup and every feature, so you can start working with custom pivots in a few minutes.</p>
+        <p>Pivot++ is an <strong>editor-only</strong> plugin that lets you move the transform handles of any object right in the Scene view. Instead of being stuck with the pivot baked into a mesh, you can move, rotate and scale objects around any point you choose:</p>
+        <ul>
+          <li>the corner of a door,</li>
+          <li>the base of a lamp post,</li>
+          <li>the hinge of a lid.</li>
+        </ul>
+        <p>All without re-exporting models or adding empty parent objects. It lives in a small overlay inside the Scene view. It never touches your meshes, adds no components at runtime, and is stripped from every build. It is a pure editor tool.</p>
+
+        <h3>1.1 · Key features</h3>
+        <ul>
+          <li><strong>Shared Pivot.</strong> Offset the handle for the current selection, bounded or unbounded.</li>
+          <li><strong>Bounded offsets.</strong> Set the pivot inside the object's bounds, so one setting fits meshes of any size.</li>
+          <li><strong>Unbounded offsets.</strong> Place the pivot at an exact distance in local space.</li>
+          <li><strong>Many pivots per object.</strong> Save as many as you need, all within reach while you work.</li>
+          <li><strong>Edit Pivots mode.</strong> Move, rotate and delete saved pivots right in the Scene view.</li>
+          <li><strong>Non-destructive.</strong> Your meshes, prefabs and hierarchy are never changed.</li>
+        </ul>
+
+        <h3>1.2 · Requirements</h3>
+        <ul>
+          <li>Unity <strong>2022.3</strong> or newer.</li>
+        </ul>
+      </section>
+
+      <!-- 2 -->
+      <section id="getting-started">
+        <h2>2 · Getting Started</h2>
+
+        <h3>2.1 · Activating the Pivot++ overlay</h3>
+        <p>Pivot++ is delivered as a Scene view overlay. To enable it:</p>
+        <ol>
+          <li>Focus the Scene view by clicking anywhere inside it.</li>
+          <li>Press <span class="kbd">`</span> (the backtick key, above Tab) to open the <strong>Overlays Menu</strong>.</li>
+          <li>Enable <strong>Pivot++</strong> under the <strong>Custom</strong> foldout.</li>
+          <li>The Pivot++ overlay appears in the Scene view. Drag it by its header and dock or place it wherever is comfortable.</li>
+        </ol>
+
+        <h3>2.2 · First steps</h3>
+        <figure class="figure panel">
+          <div class="frame">
+            <img class="shot" src="/assets/img/pivot/overlay-bounded.png" width="259" height="93" loading="lazy"
+                 alt="The Pivot++ overlay header with the Enabled toggle switched on.">
+          </div>
+          <figcaption>The Pivot++ overlay in Bounded mode.</figcaption>
+        </figure>
+        <ol>
+          <li>Select any GameObject with a renderer in the Scene view or Hierarchy.</li>
+          <li>Make sure the toggle at the top of the overlay reads <strong>Enabled</strong>.</li>
+          <li>Drag the <span class="axis-x">X</span>, <span class="axis-y">Y</span> or <span class="axis-z">Z</span> sliders in the Shared Pivot section. The move / rotate / scale handles jump to the new position immediately.</li>
+          <li>Rotate or scale the object: it now pivots around the new handle position.</li>
+        </ol>
+
+        <div class="callout note">
+          <span class="label">Note</span>
+          <p>Disabling the toggle restores Unity's default handle behaviour at any time. Your settings are kept, so re-enabling brings you right back to where you left off.</p>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section id="interface">
+        <h2>3 · Interface Overview</h2>
+        <p>The overlay is organized into three areas: the master toggle, the <strong>Shared Pivot</strong> section, and the <strong>Object Pivots</strong> section. The numbered reference below covers every control.</p>
+
+        <figure class="figure">
+          <div class="frame">
+            <img class="shot" src="/assets/img/pivot/overlay-numbered.png" width="4452" height="2500" loading="lazy"
+                 alt="The Pivot++ overlay shown twice with every control numbered from 1 to 11. Left: Bounded mode. Right: Unbounded mode.">
+          </div>
+          <figcaption>Left: Bounded mode. Right: Unbounded mode. Numbers match the table below.</figcaption>
+        </figure>
+
+        <div class="table-scroll">
+          <table class="control-table">
+            <thead>
+              <tr><th>#</th><th>Control</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="num">1</td><td class="name">Enabled / Disabled</td><td class="desc">Master toggle. Green (Enabled) means Pivot++ is overriding the transform handles; click it to fall back to Unity's default pivot without losing your settings.</td></tr>
+              <tr><td class="num">2</td><td class="name">Shared Pivot section</td><td class="desc">A quick, selection-wide pivot offset. Applies to whatever is currently selected and is shared across all objects. See section 4 of this document.</td></tr>
+              <tr><td class="num">3</td><td class="name">Object Pivots section</td><td class="desc">Per-object saved pivots. Create any number of custom pivots stored on the selected object. See section 5 of this document.</td></tr>
+              <tr><td class="num">4</td><td class="name">Bounded</td><td class="desc">Switches the Shared Pivot to Bounded mode: offsets are expressed relative to the object's bounds (−1 to 1).</td></tr>
+              <tr><td class="num">5</td><td class="name">Unbounded</td><td class="desc">Switches the Shared Pivot to Unbounded mode: offsets are fixed distances in the object's local space.</td></tr>
+              <tr><td class="num">6</td><td class="name">Bounded X / Y / Z sliders</td><td class="desc">Position of the shared pivot within the bounds on each axis. −1 is one face of the bounds, 0 is the centre, 1 is the opposite face.</td></tr>
+              <tr><td class="num">7</td><td class="name">Unbounded X / Y / Z fields</td><td class="desc">Exact local-space offset of the shared pivot from the object's centre, in scene units.</td></tr>
+              <tr><td class="num">8</td><td class="name">Use Object Scale</td><td class="desc">Unbounded mode only. When ticked, the offset is multiplied by the object's scale; when unticked, it is an absolute world-distance offset.</td></tr>
+              <tr><td class="num">9</td><td class="name">Default</td><td class="desc">When selected, the handles let you manipulate the object as usual.</td></tr>
+              <tr><td class="num">10</td><td class="name">Edit Pivots</td><td class="desc">When selected, handles let you move and rotate the saved pivots. You can also delete them.</td></tr>
+              <tr><td class="num">11</td><td class="name">Add New Pivot</td><td class="desc">Saves the current Shared Pivot position as a new permanent pivot on the selected object.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout note">
+          <span class="label">Note</span>
+          <p>When multiple pivots have been added to the selected object, the Object Pivots section also shows a counter (e.g. “3 pivots added”) so you always know how many custom pivots the object carries.</p>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section id="shared-pivot">
+        <h2>4 · The Shared Pivot</h2>
+        <p>The Shared Pivot is the fast way to work: one offset, applied to whatever you have selected. It is called <em>shared</em> because the same offset carries from object to object as your selection changes. Great for repeat tasks like rotating a batch of doors around their hinges or scaling props from their base.</p>
+        <p>The Shared Pivot has two modes, chosen with the <strong>Bounded / Unbounded</strong> tab at the top of the section.</p>
+
+        <h3>4.1 · Bounded offsets</h3>
+        <figure class="figure inline-right">
+          <div class="frame">
+            <img class="shot" src="/assets/img/pivot/overlay-bounded.png" width="257" height="286" loading="lazy"
+                 alt="The Pivot++ overlay in Bounded mode with X, Y and Z sliders.">
+          </div>
+          <figcaption>Bounded mode. Normalized sliders from −1 to 1.</figcaption>
+        </figure>
+        <p>Bounded mode (the default) positions the pivot relative to the <strong>bounds of the mesh</strong>. Each axis is a normalized slider from −1 to 1:</p>
+        <ul>
+          <li><span class="mono axis-x">−1</span> places the pivot at one end of the mesh on that axis.</li>
+          <li><span class="mono">0</span> places the pivot at the centre of the mesh.</li>
+          <li><span class="mono axis-z">1</span> places the pivot at the opposite end, whatever the mesh's actual size.</li>
+        </ul>
+        <p>Because the values are proportional, the same setting adapts to every object. Set <span class="mono">Y = −1</span> and the pivot sits at the bottom of a pebble and at the bottom of a skyscraper alike. Switch your selection between differently-sized objects and watch the pivot re-adjust itself automatically.</p>
+        <div class="callout when">
+          <span class="label">When to use it</span>
+          <p>Bounded mode is ideal when you think in terms of the object's shape: “the base”, “the top-left corner”, “the left edge”. It is the recommended mode for day-to-day level design.</p>
+        </div>
+
+        <h3>4.2 · Unbounded offsets</h3>
+        <figure class="figure inline-right">
+          <div class="frame">
+            <img class="shot" src="/assets/img/pivot/overlay-unbounded.png" width="259" height="309" loading="lazy"
+                 alt="The Pivot++ overlay in Unbounded mode with exact X, Y and Z value fields and the Use Object Scale toggle.">
+          </div>
+          <figcaption>Unbounded mode. Exact local-space values.</figcaption>
+        </figure>
+        <p>Unbounded mode places the pivot at a <strong>fixed distance in the object's local space</strong>, measured from the object's centre. Enter exact values into the X, Y and Z fields with no limits. You can place the pivot far outside the mesh if you need to, say to orbit a moon around a planet.</p>
+        <p><strong>Use Object Scale toggle</strong></p>
+        <ul>
+          <li><strong>Ticked:</strong> the offset is multiplied by the object's local scale. An offset of 1 on a stretched object moves further on the stretched axis, keeping the pivot consistent with the object's proportions.</li>
+          <li><strong>Unticked:</strong> the offset is an absolute distance, unaffected by the object's scale.</li>
+        </ul>
+        <div class="callout when">
+          <span class="label">When to use it</span>
+          <p>Unbounded mode shines when you need precision or points outside the mesh: rotating around a world landmark, offsetting by an exact number of units, or matching a measurement from your DCC tool.</p>
+        </div>
+      </section>
+
+      <!-- 5 -->
+      <section id="object-pivots">
+        <h2>5 · Object Pivots</h2>
+        <p>While the Shared Pivot is a single, selection-wide offset, <strong>Object Pivots</strong> are permanently available on a specific object. An object can hold any number of such pivots:</p>
+        <ul>
+          <li>A door can have a pivot on each hinge.</li>
+          <li>An L-shape can have a pivot on every corner.</li>
+        </ul>
+        <p>…and you can switch between them as you work.</p>
+
+        <figure class="figure">
+          <div class="frame">
+            <img class="shot" src="/assets/img/pivot/showcase-pivots.png" width="768" height="560" loading="lazy"
+                 alt="An L-shaped mesh in the Scene view with three saved pivots, one at each corner.">
+          </div>
+          <figcaption>An L-shaped mesh with three saved pivots.</figcaption>
+        </figure>
+
+        <h3>5.1 · Adding a new pivot</h3>
+        <ol>
+          <li>Using the Shared Pivot controls, position the pivot exactly where you want the new saved pivot to be.</li>
+          <li>Click the <strong>Add New Pivot</strong> button at the bottom of the overlay window.</li>
+          <li>A new pivot is created exactly where the shared pivot is.</li>
+        </ol>
+        <div class="callout important">
+          <span class="label">Important</span>
+          <p>The new pivot sits <em>exactly</em> where the shared pivot is. That gives you precise placement, but it can throw you off at first: the new handle and the shared pivot handle overlap perfectly, so it looks like nothing happened.</p>
+          <p>The counter in the Object Pivots section tells you how many extra pivots the object has. Repeat the steps to add as many pivots as the object needs.</p>
+        </div>
+
+        <h3>5.2 · Edit Pivots mode</h3>
+        <figure class="figure">
+          <div class="frame">
+            <img class="shot" src="/assets/img/pivot/showcase-edit.png" width="768" height="537" loading="lazy"
+                 alt="Edit Pivots mode: each saved pivot shows move and rotate handles and a red delete button.">
+          </div>
+          <figcaption>Edit Pivots mode. Each saved pivot shows move and rotate handles and a delete button.</figcaption>
+        </figure>
+        <p>Click the <strong>Edit Pivots</strong> button to enter editing mode. Every saved pivot on the object is drawn in the Scene view with its own gizmo:</p>
+        <ul>
+          <li><strong class="axis-x">Move.</strong> Drag a pivot's position arrows to relocate it.</li>
+          <li><strong class="axis-y">Rotate.</strong> Drag the rotation rings to orient the pivot.</li>
+          <li><strong class="axis-z">Delete.</strong> Click the red ✕ button next to a pivot to remove it from the object.</li>
+        </ul>
+        <p>When you are done, click <strong>Default</strong> to leave editing mode and return to normal handle control.</p>
+        <div class="callout pro">
+          <span class="label">Pro tips</span>
+          <p>1. Use the <strong>Global / Local</strong> toggle at the top-left of the Scene view to properly place &amp; orient these pivots.<br>
+          2. Edit mode supports Undo with <span class="kbd">Ctrl + Z</span>.<br>
+          3. Saved pivots stick through sessions. Set up once and reuse them forever.</p>
+        </div>
+      </section>
+
+      <!-- 6 -->
+      <section id="troubleshooting">
+        <h2>6 · Tips &amp; Troubleshooting</h2>
+
+        <h3>6.1 · Workflow tips</h3>
+        <ul>
+          <li>Dock the overlay to an edge of the Scene view to keep it out of the way; collapse it from its ▾ header arrow when you need the space.</li>
+          <li>Use <strong>Bounded</strong> mode for shape-relative work (bases, corners, edges) and <strong>Unbounded</strong> mode for exact distances or pivots outside the mesh.</li>
+          <li>Keep the master toggle on <strong>Enabled</strong> and set the sliders to 0 when you want the original pivot. Or click the toggle to turn Pivot++ off entirely.</li>
+        </ul>
+
+        <h3>6.2 · Common questions</h3>
+
+        <p><strong>The overlay says “No object selected.”</strong><br>
+        Pivot++ needs an active selection to work with. Select a GameObject in the Scene view or Hierarchy and the controls will appear.</p>
+
+        <p><strong>The overlay says “Selected object does not have any component to draw bounds from.”</strong><br>
+        Pivot++ only works on objects that have visuals: 3D models, Images and UI elements. If a GameObject and its children have no visible component, there is no “top-right” or “bottom-left” corner to go to, so Pivot++ shows you Unity's default handles.</p>
+
+        <p><strong>I can't find Pivot++ in the Overlays menu.</strong><br>
+        Make sure the Scene view is focused when you press <span class="kbd">`</span>, and look under the <strong>Custom</strong> foldout of the Overlays menu. If it is still missing, confirm the plugin imported without console errors and that your Unity version supports overlays (2022.3+).</p>
+
+        <p><strong>The Pivot++ window is not visible, even after I enabled it in the Overlays menu.</strong><br>
+        Unity lets you disable all overlays in the Scene view. To re-enable them, open the Overlays menu (focus the Scene view and press <span class="kbd">`</span>) and make sure the <strong>Enable Overlays</strong> toggle at the top of that window is ticked.</p>
+
+        <p><strong>The handles don't move when I change the sliders.</strong><br>
+        The sliders only affect the Shared Pivot, not the object's saved pivots. If the handle doesn't react, you may be looking at one of the saved pivots while the shared pivot is elsewhere.</p>
+
+        <p><strong>Does Pivot++ change my mesh or add components?</strong><br>
+        No. Pivot++ only overrides where the editor draws and applies the transform handles. Your mesh assets, import settings and runtime data are untouched.</p>
+      </section>
+
+      <!-- 7 -->
+      <section id="support">
+        <h2>7 · Support</h2>
+        <p>If you run into a problem, have a feature request, or just want to share what you have built with it, we would love to hear from you.</p>
+        <div class="callout note">
+          <span class="label">Contact</span>
+          <p>Email: <a class="axis-z" href="mailto:itsdevlogger@gmail.com" style="text-decoration:none;">itsdevlogger@gmail.com</a></p>
+        </div>
+        <p>When reporting an issue, please include your <strong>Unity version</strong> and the <strong>plugin version</strong>. If you can, add a screenshot or short clip of the problem. It helps us get you a fix much faster.</p>
+        <p class="mono" style="color:var(--muted);margin-top:28px;">Happy pivoting!</p>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var links = Array.prototype.slice.call(
+    document.querySelectorAll('.toc a[href^="#"]')
+  );
+  if (!links.length) return;
+
+  // Map each section id to its TOC link.
+  var linkById = {};
+  var sections = [];
+  links.forEach(function (link) {
+    var id = link.getAttribute('href').slice(1);
+    var section = document.getElementById(id);
+    if (section) {
+      linkById[id] = link;
+      sections.push(section);
+    }
+  });
+
+  function setActive(id) {
+    links.forEach(function (link) {
+      link.classList.toggle('active', link === linkById[id]);
+    });
+  }
+
+  // Pick the section whose top is closest to (but not far below) the
+  // scroll offset — the last one that has passed the highlight line.
+  function update() {
+    var offset = 100; // px from top where a section counts as "current"
+    var current = sections[0];
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].getBoundingClientRect().top - offset <= 0) {
+        current = sections[i];
+      } else {
+        break;
+      }
+    }
+    // At the very bottom of the page, force-select the last section.
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+      current = sections[sections.length - 1];
+    }
+    if (current) setActive(current.id);
+  }
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function () {
+      update();
+      ticking = false;
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
+})();
+</script>
+
+</body>
+</html>

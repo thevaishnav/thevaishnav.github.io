@@ -1,0 +1,150 @@
+/* ============================================================
+   The pointer.
+
+   Two parts, because a cursor has two jobs that want opposite
+   things. The dot is *where the pointer is* — it must be exact and
+   it must never lag, so it is moved every frame with no smoothing.
+   The ring is *what the pointer is over* — that is a judgement the
+   page makes about a region, so it is allowed to take a few frames
+   to catch up, and it is allowed to leave the pointer entirely and
+   sit on the thing under it.
+
+   Nothing here draws unless scripts/cursor.js says so: the whole
+   file is scoped to .has-cursor on <html>, which that script only
+   sets on a device with a real pointer. So a touch screen, a
+   keyboard-only session and a no-JS load all keep the native
+   cursor and never see any of this.
+   ============================================================ */
+
+.cursor-dot,
+.cursor-ring{
+  position:fixed;
+  top:0; left:0;
+  z-index:9999;
+  pointer-events:none;      /* never eat a click, never trigger a hover */
+  will-change:transform;
+  opacity:0;                /* until the pointer has actually been somewhere */
+  contain:strict;           /* it moves every frame; keep it off the page's layout */
+}
+.has-cursor.cursor-ready .cursor-dot,
+.has-cursor.cursor-ready .cursor-ring{ opacity:1; }
+
+/* The pointer left the window, or landed on something the OS draws its own
+   cursor for (a text field, a native scrollbar drag). Fade rather than cut —
+   a cursor that blinks out reads as a glitch. */
+.has-cursor.cursor-out .cursor-dot,
+.has-cursor.cursor-out .cursor-ring{ opacity:0; transition:opacity 160ms linear; }
+
+/* ---------- the dot ----------
+   4px, the size of a Unity gizmo handle's centre. Not the accent colours:
+   this is the one thing on screen that must be findable against every
+   surface the site has, so it is the text colour with a dark halo. */
+.cursor-dot{
+  width:6px; height:6px;
+  margin:-3px 0 0 -3px;
+  border-radius:50%;
+  background:var(--text);
+  box-shadow:0 0 0 1.5px rgba(8,9,11,0.55);
+  transition:width 120ms var(--ease-out),
+             height 120ms var(--ease-out),
+             margin 120ms var(--ease-out),
+             border-radius 120ms var(--ease-out),
+             background-color var(--dur-1) linear;
+}
+
+/* ---------- the ring ----------
+   The trailing part. Its size and radius are animated (it grows to fit a
+   card), but its *position* is not — position is set every frame by script,
+   and a transition on transform would fight that and smear.  */
+.cursor-ring{
+  width:30px; height:30px;
+  /* Not var(--line). That token is for hairlines drawn *on* a surface, and it
+     is nearly the surface colour by design — correct for a card edge, invisible
+     for a thing that has to be findable anywhere on the page. This is a light
+     stroke at low alpha instead: visible on --bg and on --surface-2, still
+     quiet enough not to compete with the content it passes over.
+     A whole pixel, not 1.5: on a 1x display the browser floors the fraction
+     back to 1px anyway, so the half only ever bought a blurrier edge on some
+     screens and nothing on others. The visibility comes from the alpha. */
+  border:1px solid rgba(232,233,234,0.55);
+  border-radius:50%;
+  background:rgba(232,233,234,0.07);
+  /* --dur-snap, not --dur-2. The shape change is the one piece of motion here
+     that is meant to be *watched* rather than merely felt — at the 220ms of a
+     normal UI transition it is over before the eye finds it. Three times that
+     is long enough to read as the ring travelling and reshaping onto the
+     target, and it is still shorter than the pointer usually dwells. */
+  transition:width var(--dur-snap) var(--ease-out),
+             height var(--dur-snap) var(--ease-out),
+             border-radius var(--dur-snap) var(--ease-out),
+             border-color var(--dur-snap) var(--ease-out),
+             background-color var(--dur-snap) var(--ease-out),
+             opacity 160ms linear;
+}
+/* The ring's own centering. Script writes translate(x,y) in px; this keeps
+   the box centred on that point at any size without script doing the maths. */
+.cursor-ring{ translate:-50% -50%; }
+
+/* Deliberately nothing inside the ring. An earlier version drew X/Y axis ticks
+   on it to echo the hero gizmo; at cursor scale they read as rendering
+   artefacts rather than as a mark, so the ring is a plain circle. The site's
+   identity is carried by the colour it takes on a target, not by decoration
+   attached to the pointer.
+
+   ---------- over something pressable ----------
+   The ring stops being a cursor and becomes an outline of the target: script
+   writes its width, height and radius from the element's own box, so the ring
+   is literally the shape of the thing you are about to press. */
+.cursor-ring.is-snapped{
+  border-color:var(--axis-z);
+  background:rgba(90,169,255,0.06);
+}
+.cursor-dot.is-snapped{ background:var(--axis-z); }
+
+/* A target too large to outline — the featured card is wider than the
+   viewport's snap ceiling. Outlining it would draw a border around most of
+   the screen, which stops reading as a cursor. So the ring stays a ring and
+   keeps following the pointer; only the colour changes, which is enough to
+   say "this whole area is pressable" without the geometry. */
+.cursor-ring.is-over{
+  border-color:var(--axis-z);
+  background:rgba(90,169,255,0.06);
+}
+
+/* ---------- over text ----------
+   A caret is information the native cursor was giving for free, so it has to
+   come back: the dot stretches into a bar and the ring gets out of the way. */
+.cursor-dot.is-text{
+  width:2px; height:20px;
+  margin:-10px 0 0 -1px;
+  border-radius:1px;
+}
+.cursor-ring.is-text{ opacity:0; }
+
+/* ---------- pressed ---------- */
+.cursor-ring.is-down{ background:rgba(90,169,255,0.14); }
+.cursor-dot.is-down{ background:var(--axis-w); }
+
+/* ---------- hiding the real one ----------
+   Only once the replacement is on screen. If the script fails between setting
+   .has-cursor and its first frame, `cursor-ready` never lands and the native
+   cursor stays — the page is never left with no pointer at all.
+   Interactive elements are listed explicitly because `cursor:pointer` and
+   `cursor:text` are set on them by the UA and by other files in this system,
+   and those beat a bare inherit on specificity. */
+.has-cursor.cursor-ready,
+.has-cursor.cursor-ready body,
+.has-cursor.cursor-ready a,
+.has-cursor.cursor-ready button,
+.has-cursor.cursor-ready summary,
+.has-cursor.cursor-ready [role="button"],
+.has-cursor.cursor-ready label,
+.has-cursor.cursor-ready input,
+.has-cursor.cursor-ready textarea,
+.has-cursor.cursor-ready select{ cursor:none; }
+
+/* ---------- reduced motion ----------
+   The lag is the part this setting is about, and script drops it (the ring
+   snaps to the pointer with no easing). What is left — a dot and a ring that
+   outlines what you are over — carries no travel of its own, so it stays.
+   The size transitions are already clamped to 1ms by motion.css. */

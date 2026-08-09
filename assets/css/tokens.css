@@ -1,0 +1,58 @@
+/* ============================================================
+   Design tokens — every colour, and the two measurements the
+   layout is built on. Nothing here draws anything; changing a
+   value here changes it everywhere at once.
+   ============================================================ */
+
+:root{
+  --bg:        #0D0F12;
+  --surface:   #15181D;
+  --surface-2: #1B1F26;
+  --line:      #262B33;
+  --text:      #E8E9EA;
+  --muted:     #8A8F98;
+  --axis-x:    #E5484D; /* Unity X-axis red   */
+  --axis-y:    #46A758; /* Unity Y-axis green */
+  --axis-z:    #5AA9FF; /* Unity Z-axis blue  */
+  /* A fourth accent for places that need one more than the three axes give —
+     W, as in the fourth component of a quaternion. Unity tints that one amber
+     too, so it sits in the same family rather than looking borrowed. */
+  --axis-w:    #E8A33D;
+  --nav-h:     76px;    /* sticky nav height, used for scroll offsets */
+
+  /* Containers have no px ceiling — they're viewport-relative, so the layout
+     keeps growing on 1440, 1080p, 1440p and ultrawide instead of stopping at a
+     fixed cap and turning the extra space into dead margin. Width is expressed
+     as the gutter: the content is whatever is left over.
+     Readability is handled separately — long-form text carries its own `ch`
+     measure cap, so a wide container never means a 200-character line. */
+  --gutter:    clamp(20px, 5vw, 96px);
+
+  /* ---------- motion ----------
+     Three curves, not one, so nothing on the site picks an easing by feel.
+
+     --ease-out is the spring-like default: it leaves fast and settles, which
+     is what a critically damped spring looks like sampled as a curve. It is
+     what anything arriving or responding to a press uses.
+     --ease-in is its mirror, for the return leg of a reversible transition —
+     a panel that slid in must slide back out along the same path, and mirrored
+     control points are what makes the two halves read as one movement rather
+     than two animations (see also .contact-modal).
+     --ease-spring overshoots slightly. It is reserved for motion that follows
+     a deliberate, physical action (a press releasing, a card being thrown) —
+     never for something that merely appeared.
+
+     Durations are named by role rather than by number so the same class of
+     movement stays the same length everywhere. --dur-1 is the press/hover
+     tier: short enough to read as instant feedback, long enough not to flicker. */
+  --ease-out:    cubic-bezier(.22,.68,.28,1);
+  --ease-in:     cubic-bezier(.72,0,.78,.32);
+  --ease-spring: cubic-bezier(.34,1.42,.44,1);
+  --dur-1:       120ms;  /* press, hover, colour */
+  --dur-2:       220ms;  /* small element entering or moving */
+  --dur-3:       320ms;  /* a surface arriving */
+  /* The one deliberately slow tier. Reserved for motion whose whole purpose is
+     to be noticed — currently the cursor ring reshaping onto a target
+     (cursor.css). Anything reacting to input belongs in --dur-1. */
+  --dur-snap:    660ms;
+}

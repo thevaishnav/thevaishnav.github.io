@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>unity-cli · A Claude skill for driving the Unity Editor</title>
+<meta name="description" content="A free, open-source Claude skill that inspects and edits an existing Unity project by talking to your running Unity Editor over the official Unity CLI. Scenes, prefabs, materials, play mode, console errors, tests and builds.">
+<link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+<script src="/scripts/site-header.js"></script>
+
+<div class="wrap wrap-wide">
+  <div class="doc" id="top">
+
+    <!-- ---------- sticky rail: title + TOC ---------- -->
+    <div class="doc-rail">
+
+    <div class="page-hero">
+      <p class="eyebrow mono">Free &amp; open source · Claude skill</p>
+      <h1>unity-cli</h1>
+      <p class="lead">Let Claude inspect and edit an <strong>already-existing</strong> Unity project by talking to your <strong>running Unity Editor</strong> over the official Unity CLI.</p>
+      <div class="actions" style="margin-bottom:8px;">
+        <a class="btn btn-primary" href="https://github.com/itsdevlogger/unity-cli-skill" target="_blank" rel="noopener">Get it on GitHub ↗</a>
+        <a class="btn btn-secondary" href="#install">Install steps</a>
+      </div>
+    </div>
+
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#what-it-does">1 · What it does</a></li>
+        <li><a href="#before-you-install">2 · Read before installing</a></li>
+        <li><a href="#prerequisites">3 · Prerequisites</a></li>
+        <li><a href="#install">4 · Install</a></li>
+        <li><a href="#first-run">5 · First run</a></li>
+        <li><a href="#questions">6 · The two questions</a></li>
+        <li><a href="#whats-inside">7 · What's inside</a></li>
+        <li><a href="#contributing">8 · Contributing</a></li>
+        <li><a href="#support">9 · Support</a></li>
+      </ol>
+    </aside>
+
+    </div><!-- /.doc-rail -->
+
+    <!-- ---------- content ---------- -->
+    <div class="doc-content">
+
+      <!-- 1 -->
+      <section id="what-it-does">
+        <h2>1 · What it does</h2>
+        <p><strong>unity-cli</strong> is a Claude skill. With it, Claude works on a Unity project the same way you would: through the Editor that is already open in front of you, over the official
+          <a class="axis-z" href="https://docs.unity.com/en-us/unity-cli" target="_blank" rel="noopener" style="text-decoration:none;">Unity CLI</a>.</p>
+        <p>That covers scenes, GameObjects, components, transforms, prefabs, materials, shaders, lighting, animation, Timeline, assets, UPM packages, project settings, play mode, console errors, screenshots, tests and builds.</p>
+        <p>It does <strong>not</strong> create projects, install Editors, or handle licensing. That stays in Unity Hub.</p>
+
+        <h3>1.1 · Why it exists</h3>
+        <p>Anything an agent does by hand-editing Unity's YAML is a guess. Going through the running Editor means the change is made by Unity itself: serialization stays valid, prefab links survive, and a wrong answer shows up as a console error rather than a corrupted scene.</p>
+        <p>The other half of the idea is the <strong>shared macro library</strong>. When Claude works out a compact command that any Unity project could reuse — a search, a digest, an audit — it becomes a macro, and one library is shared by every project on your machine. The library gets sharper the more projects it is used against.</p>
+
+        <h3>1.2 · Requirements</h3>
+        <ul>
+          <li>Unity <strong>6.0</strong> or newer. The CLI bridge does not exist on older versions, and the skill stops rather than falling back to hand-editing YAML.</li>
+          <li><strong>Windows only</strong>, for now. See below.</li>
+          <li>Claude Desktop or Cowork, and Git.</li>
+        </ul>
+      </section>
+
+      <!-- 2 -->
+      <section id="before-you-install">
+        <h2>2 · Read before installing</h2>
+        <p>Four things about this skill that aren't obvious, and that you should agree to before it runs.</p>
+
+        <div class="callout important">
+          <span class="label">Windows only</span>
+          <p>The macro library path is hardcoded to <code>C:/unity-cli-skill</code> throughout the skill. It will not work on macOS or Linux as-is.</p>
+        </div>
+
+        <div class="callout note">
+          <span class="label">It creates C:/unity-cli-skill</span>
+          <p>A Claude skill lives in a temporary, session-scoped folder that is deleted afterwards. So on first run the skill clones the repo to <code>C:/unity-cli-skill</code> and uses that as the permanent home for the shared macro library. That clone, not the installed skill copy, is the source of truth from then on.</p>
+        </div>
+
+        <div class="callout note">
+          <span class="label">It edits Packages/manifest.json</span>
+          <p>Once per project, on the first run. Two dependencies get added: <code>com.unity.pipeline</code> (the CLI bridge itself) and <code>com.unitycli.macros</code>, linked as a local package from <code>file:C:/unity-cli-skill/macros</code>.</p>
+          <p>That means <strong>every Unity project on this machine shares a single macro library</strong> — which is the point, and also the constraint. Claude tells you before it writes to the manifest.</p>
+        </div>
+
+        <div class="callout tip">
+          <span class="label">It asks two setup questions</span>
+          <p>On first run, once per machine. Both are explained in <a class="axis-y" href="#questions" style="text-decoration:none;">section 6</a>.</p>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section id="prerequisites">
+        <h2>3 · Prerequisites</h2>
+
+        <h3>3.1 · The Unity CLI</h3>
+        <p>Installed and signed in. In PowerShell:</p>
+        <pre class="code" data-lang="powershell"><code>$env:UNITY_CLI_CHANNEL='beta'; irm https://public-cdn.cloud.unity3d.com/hub/prod/cli/install.ps1 | iex</code></pre>
+        <p>Reopen your terminal, then:</p>
+        <pre class="code" data-lang="powershell"><code>unity --version
+unity auth login</code></pre>
+        <p>The CLI is Unity's own tool and is currently on the beta channel.
+          <a class="axis-z" href="https://docs.unity.com/en-us/unity-cli/use-unity-cli" target="_blank" rel="noopener" style="text-decoration:none;">Unity's install docs</a> are the authoritative source if that command changes.</p>
+
+        <h3>3.2 · The Unity Pipeline package</h3>
+        <p>Needed in the project you want to work on. Open the project in Unity, then from the project directory:</p>
+        <pre class="code" data-lang="powershell"><code>unity pipeline install
+unity pipeline list</code></pre>
+        <p><code>Pipeline: Installed</code> means you're set. Requires Unity 6.0+. The skill can do this step for you and will ask first, since it modifies your project. See the
+          <a class="axis-z" href="https://docs.unity.com/en-us/unity-production-pipeline/local-tools-cli/unity-pipeline-package" target="_blank" rel="noopener" style="text-decoration:none;">Unity Pipeline package docs</a>.</p>
+
+        <h3>3.3 · Git</h3>
+        <p>For the <code>C:/unity-cli-skill</code> clone and macro updates.</p>
+      </section>
+
+      <!-- 4 -->
+      <section id="install">
+        <h2>4 · Install</h2>
+        <ol>
+          <li><strong>If you might contribute a macro back, fork the repo first</strong>, using <code>Fork</code> at the top right of the GitHub page. Contributions go through your fork, and having it up front saves a detour later. Skip this if you just want to use the skill.</li>
+          <li><strong>Download it.</strong> <code>Code ▸ Download ZIP</code> on GitHub, from your fork or from the main repo — the contents are the same.</li>
+          <li><strong>Install the ZIP as a skill.</strong> In Claude Desktop or Cowork, open Settings, find the Skills section, and upload the ZIP.</li>
+          <li><strong>Restart Claude</strong>, then ask for something Unity-shaped. The skill triggers on its own.</li>
+        </ol>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://github.com/itsdevlogger/unity-cli-skill" target="_blank" rel="noopener">Open the repo ↗</a>
+        </div>
+      </section>
+
+      <!-- 5 -->
+      <section id="first-run">
+        <h2>5 · First run</h2>
+        <p>The first run costs some extra tokens, because of the setup process. Open your project in Claude Code or the <strong>code</strong> section of Claude Desktop, and ask Claude to do something. With the Editor open on your project, Claude will:</p>
+        <ol>
+          <li>Clone the repo to <code>C:/unity-cli-skill</code>.</li>
+          <li>Ask you the two setup questions, and save your preferences to <code>C:/unity-cli-skill/settings.local.json</code>.</li>
+          <li>Check the project is on Unity 6.0+ and wired up with the Unity CLI, adding the two packages if needed.</li>
+          <li>Ask you to <strong>click on the Unity Editor window</strong>, because a manifest change is only picked up when the Editor regains focus. Then it waits out the package resolve and domain reload, which can take a couple of minutes.</li>
+          <li>Get on with what you actually asked for.</li>
+        </ol>
+        <div class="callout tip">
+          <span class="label">Once only</span>
+          <p>Steps 1 to 4 are first-run only. Later sessions start at step 5.</p>
+        </div>
+      </section>
+
+      <!-- 6 -->
+      <section id="questions">
+        <h2>6 · The two questions</h2>
+        <p>Answers are stored in <code>C:/unity-cli-skill/settings.local.json</code>, which is per-machine, gitignored, and never committed. Delete that file to be asked again.</p>
+
+        <div class="table-scroll">
+          <table class="control-table">
+            <thead>
+              <tr><th>Question</th><th>Yes</th><th>No</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="name">Auto-update<br>the macros?</td>
+                <td class="desc">Before each run, fetches the shared repo and rebases <code>C:/unity-cli-skill</code> on top of it, so you pick up macros other people have contributed while keeping your own. It never discards your local work: if the rebase can't complete, Claude aborts it, says so, and carries on.</td>
+                <td class="desc">The library stays exactly as you left it. Update it yourself with <code>git pull --rebase upstream main</code> whenever you feel like it.</td>
+              </tr>
+              <tr>
+                <td class="name">Contribute<br>macros?</td>
+                <td class="desc">When Claude writes or improves a macro while working, it commits it, pushes a branch to <strong>your fork</strong>, and opens a pull request — asking you first, every time. Nothing is ever pushed to the shared repo.</td>
+                <td class="desc">Macros are written to <code>C:/unity-cli-skill/macros</code> and left uncommitted, local to your machine.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Claude decides whether something is a macro <em>while</em> it works: a one-off query runs through <code>eval</code> and is thrown away, while a shape that any project could reuse becomes a macro. Most sessions produce none, and that's the expected outcome.</p>
+      </section>
+
+      <!-- 7 -->
+      <section id="whats-inside">
+        <h2>7 · What's inside</h2>
+        <div class="table-scroll">
+          <table class="control-table">
+            <thead>
+              <tr><th>Path</th><th>What it is</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="name">SKILL.md</td>
+                <td class="desc">The instructions Claude follows: setup, the seven steps, the contribution flow.</td>
+              </tr>
+              <tr>
+                <td class="name">macros/</td>
+                <td class="desc">The shared <code>m_*</code> macro library, a Unity UPM package (<code>com.unitycli.macros</code>) that gets linked into each project. Compact, token-cheap commands for searching, digesting and auditing a project.</td>
+              </tr>
+              <tr>
+                <td class="name">references/<wbr>talk-to-editor.md</td>
+                <td class="desc">The operating manual: addressing objects, which macros to prefer, <code>eval</code> rules, how to write a macro.</td>
+              </tr>
+              <tr>
+                <td class="name">references/<wbr>eval-cookbook.md</td>
+                <td class="desc">Working C# snippets for running through <code>eval</code>.</td>
+              </tr>
+              <tr>
+                <td class="name">references/<wbr>troubleshooting.md</td>
+                <td class="desc">Bridge not responding, compile errors, stale handles, exit codes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout note">
+          <span class="label">Project-agnostic by design</span>
+          <p>Macros carry no hardcoded scene names, layer conventions, or a game's own types, and no hard dependency on optional packages. A macro that only pays off in one project makes the shared set worse for everyone.</p>
+        </div>
+      </section>
+
+      <!-- 8 -->
+      <section id="contributing">
+        <h2>8 · Contributing</h2>
+        <p>It's open source, and the whole point is that it gets better with contributors. The macro library is only as good as the number of Unity projects it has been sharpened against.</p>
+        <p>The shared repo takes <strong>pull requests only</strong>; nobody pushes to it directly. With <code>contribute: yes</code>, Claude does the mechanical part: it commits the macro, pushes it to a <code>macro/&lt;name&gt;</code> branch on your fork (it asks for the fork URL once and remembers it), and — after checking with you — opens the PR with <code>gh</code>. If <code>gh</code> isn't set up, it hands you the link instead.</p>
+        <p>Your local <code>C:/unity-cli-skill</code> stays on <code>main</code> throughout. Claude never checks out a branch there, because that directory is a live Unity package: switching away would delete the macro off disk and out of every project on your machine. One branch per contribution, but they only exist on your fork, so nothing piles up locally. GitHub doesn't auto-delete fork branches — merged or closed, they stay until someone removes them, and they're harmless if you don't.</p>
+
+        <h3>8.1 · Good contributions to make</h3>
+        <ul>
+          <li>A macro that answers a <em>kind</em> of question any Unity project could ask.</li>
+          <li>An improvement to an existing macro, such as a missing filter or a better output shape. This beats adding a new one, because it costs the shared set nothing in surface area.</li>
+          <li>A line in <code>references/</code> that would have saved you a failed first attempt.</li>
+        </ul>
+      </section>
+
+      <!-- 9 -->
+      <section id="support">
+        <h2>9 · Support</h2>
+        <p>Bugs, macro ideas and "this failed on my project" reports are all welcome. Issues and pull requests on GitHub are the fastest route; email works too.</p>
+        <div class="callout note">
+          <span class="label">Contact</span>
+          <p><a class="axis-z" href="https://github.com/itsdevlogger/unity-cli-skill/issues" target="_blank" rel="noopener" style="text-decoration:none;">github.com/itsdevlogger/unity-cli-skill/issues</a></p>
+          <p>Email: <a class="axis-z" href="mailto:itsdevlogger@gmail.com" style="text-decoration:none;">itsdevlogger@gmail.com</a></p>
+        </div>
+        <p>When reporting an issue, please include your <strong>Unity version</strong>, your <strong>Unity CLI version</strong> (<code>unity --version</code>), and the command or request that failed.</p>
+      </section>
+
+      <!-- ---------- CTA ---------- -->
+      <div class="cta-band">
+        <h2>Point Claude at your Unity project.</h2>
+        <p>Free, open source, and it gets better every time someone contributes a macro.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://github.com/itsdevlogger/unity-cli-skill" target="_blank" rel="noopener">Get it on GitHub ↗</a>
+          <a class="btn btn-secondary" href="#prerequisites">Check the prerequisites</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var links = Array.prototype.slice.call(
+    document.querySelectorAll('.toc a[href^="#"]')
+  );
+  if (!links.length) return;
+
+  // Map each section id to its TOC link.
+  var linkById = {};
+  var sections = [];
+  links.forEach(function (link) {
+    var id = link.getAttribute('href').slice(1);
+    var section = document.getElementById(id);
+    if (section) {
+      linkById[id] = link;
+      sections.push(section);
+    }
+  });
+
+  function setActive(id) {
+    links.forEach(function (link) {
+      link.classList.toggle('active', link === linkById[id]);
+    });
+  }
+
+  // Pick the section whose top is closest to (but not far below) the
+  // scroll offset — the last one that has passed the highlight line.
+  function update() {
+    var offset = 100; // px from top where a section counts as "current"
+    var current = sections[0];
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].getBoundingClientRect().top - offset <= 0) {
+        current = sections[i];
+      } else {
+        break;
+      }
+    }
+    // At the very bottom of the page, force-select the last section.
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+      current = sections[sections.length - 1];
+    }
+    if (current) setActive(current.id);
+  }
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function () {
+      update();
+      ticking = false;
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
+})();
+</script>
+
+<script src="/scripts/code-blocks.js"></script>
+
+</body>
+</html>

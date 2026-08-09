@@ -1,0 +1,287 @@
+/* ============================================================
+   Pivot++ — interactive scroll showcase
+   Isolated from style.css. Recreates the Scene-view overlay
+   in pure HTML/CSS and drives the scrollytelling layout.
+   Reuses --axis-x/y/z + surface tokens from style.css.
+   ============================================================ */
+
+.pv-showcase{
+  --ui-blue:   #2f6fee;   /* Unity selected/accent blue   */
+  --ui-blue-2: #4b83f2;
+  --ui-green:  #3fb84e;   /* Enabled toggle green         */
+  --pv-panel:  #14171c;
+  --pv-inset:  #0e1116;   /* recessed field background    */
+  --pv-box:    #191d23;   /* section box background       */
+  --pv-track:  #3a3f47;   /* slider track                 */
+  --pv-seg:    #2a2f37;   /* segmented-control track      */
+  --pv-line:   #2b3038;
+  --pv-txt:    #d7dade;
+  --pv-mut:    #8b909a;
+}
+
+/* ---------- intro ---------- */
+.pv-intro{ padding:48px 0 8px; }
+.pv-intro h2{ margin:0 0 12px; max-width:20ch; }
+.pv-intro p{ color:var(--muted); max-width:56ch; margin:0 0 6px; }
+.pv-scrollhint{
+  display:inline-flex; align-items:center; gap:9px;
+  margin-top:22px; font-size:13px; letter-spacing:0.04em;
+  color:var(--muted);
+}
+.pv-scrollhint .dot{
+  width:22px; height:34px; border:1.5px solid var(--line);
+  border-radius:12px; position:relative; flex:none;
+}
+.pv-scrollhint .dot::after{
+  content:""; position:absolute; left:50%; top:7px;
+  width:3px; height:6px; border-radius:2px; background:var(--axis-z);
+  transform:translateX(-50%);
+  animation:pv-wheel 1.6s ease-in-out infinite;
+}
+@keyframes pv-wheel{ 0%,100%{opacity:0;transform:translate(-50%,0)} 40%{opacity:1} 70%{opacity:0;transform:translate(-50%,9px)} }
+
+/* ============================================================
+   Scrollytelling layout: sticky graphic + flowing steps
+   ============================================================ */
+.pv-scrolly{
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr);
+  gap:40px;
+  align-items:start;
+}
+
+.pv-stage{
+  position:sticky;
+  top:var(--nav-h);
+  height:calc(100vh - var(--nav-h));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+/* soft spotlight behind the panel */
+.pv-stage::before{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(420px 420px at 46% 46%, rgba(47,111,238,.14), transparent 70%);
+  pointer-events:none;
+}
+
+.pv-steps{ padding:6vh 0 10vh; }
+.pv-step{
+  min-height:82vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.pv-card{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(27,31,38,.72), rgba(21,24,29,.72));
+  backdrop-filter:blur(3px);
+  border-radius:14px;
+  padding:26px 28px;
+  max-width:520px;
+  opacity:.32;
+  transform:translateY(14px);
+  transition:opacity .45s ease, transform .45s ease, border-color .45s ease;
+}
+.pv-step.is-active .pv-card{
+  opacity:1;
+  transform:none;
+  border-color:var(--pv-line);
+}
+.pv-card h3{
+  font-family:'Space Grotesk', sans-serif;
+  font-size:21px; line-height:1.25; margin:0 0 10px; color:var(--text);
+}
+.pv-card p{ color:#c2c6cd; font-size:15px; line-height:1.6; margin:0; }
+.pv-card p + p{ margin-top:10px; }
+.pv-card .mono{ color:var(--text); }
+
+/* ============================================================
+   The recreated Pivot++ overlay
+   ============================================================ */
+.pv-panel{
+  width:380px;
+  max-width:88vw;
+  background:var(--pv-panel);
+  border:1px solid #000;
+  border-radius:9px;
+  padding:12px;
+  box-shadow:0 24px 60px -18px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.02) inset;
+  font-family:'Inter', system-ui, sans-serif;
+  color:var(--pv-txt);
+  user-select:none;
+}
+
+/* header */
+.pv-head{ display:flex; align-items:center; gap:9px; padding:2px 4px 12px; }
+.pv-grip{
+  width:15px; height:10px; flex:none;
+  background:
+    linear-gradient(var(--pv-mut),var(--pv-mut)) 0 2px/15px 1.5px no-repeat,
+    linear-gradient(var(--pv-mut),var(--pv-mut)) 0 7px/15px 1.5px no-repeat;
+  opacity:.7;
+}
+.pv-caret{ color:var(--pv-mut); font-size:11px; }
+.pv-title{ font-size:15px; font-weight:600; color:#e7e9ec; letter-spacing:.01em; }
+
+/* focus units */
+.pv-box{
+  border-radius:8px;
+  padding:12px;
+  margin-top:8px;
+  background:var(--pv-box);
+  border:1px solid transparent;
+  transition:opacity .4s ease;
+}
+.pv-box#box-enabled{ background:transparent; padding:0; }
+
+/* dim non-active boxes while focusing */
+.pv-panel.focusing .pv-box{ opacity:.30; }
+.pv-panel.focusing .pv-box.active-box{ opacity:1; }
+
+/* highlight ring on the active control */
+.pv-lit{
+  position:relative;
+  box-shadow:0 0 0 2px var(--ui-blue-2), 0 0 22px -2px rgba(75,131,242,.65);
+  border-radius:8px;
+  transition:box-shadow .35s ease;
+}
+
+/* section labels */
+.pv-slabel{
+  font-size:11px; letter-spacing:.10em; font-weight:600;
+  color:var(--pv-mut); margin:0 0 10px;
+}
+.pv-sub{ font-size:12.5px; color:var(--pv-mut); margin:-4px 0 10px; }
+
+/* Enabled toggle */
+.pv-enabled{
+  width:100%; border:0; cursor:default;
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; border-radius:6px;
+  background:var(--ui-green); color:#fff;
+  font-size:15px; font-weight:600; font-family:inherit;
+}
+.pv-led{ width:11px; height:11px; border-radius:50%; background:#fff; box-shadow:0 0 6px rgba(255,255,255,.7); }
+
+/* segmented control */
+.pv-seg{
+  display:grid; grid-template-columns:1fr 1fr; gap:5px;
+  background:var(--pv-seg); border-radius:7px; padding:4px;
+}
+.pv-seg-btn{
+  text-align:center; padding:8px 6px; border-radius:5px;
+  font-size:13.5px; font-weight:600; color:var(--pv-mut);
+  transition:background .3s ease, color .3s ease;
+}
+/* shared-pivot mode reflects the panel's current mode */
+.pv-panel[data-mode="bounded"]  .pv-seg-btn.is-bounded,
+.pv-panel[data-mode="unbounded"] .pv-seg-btn.is-unbounded{
+  background:var(--ui-blue); color:#fff;
+}
+/* object-pivots segment reflects the panel's current data-objseg */
+.pv-panel[data-objseg="default"] .pv-seg.two .is-default,
+.pv-panel[data-objseg="edit"]    .pv-seg.two .is-edit{
+  background:var(--ui-blue); color:#fff;
+}
+
+/* value rows */
+.pv-vals{ margin:12px 0 4px; }
+.pv-row{ display:flex; align-items:center; gap:12px; height:30px; }
+.pv-row + .pv-row{ margin-top:8px; }
+.pv-ax{ width:12px; font-size:13px; font-weight:700; text-align:center; flex:none; }
+.pv-ax.x{ color:var(--axis-x); } .pv-ax.y{ color:var(--axis-y); } .pv-ax.z{ color:var(--axis-z); }
+
+/* bounded: slider + readout */
+.pv-slider{
+  position:relative; flex:1; height:4px; border-radius:2px;
+  background:var(--pv-track);
+}
+.pv-slider::before{
+  content:""; position:absolute; left:0; top:0; height:100%;
+  width:var(--p,50%); border-radius:2px; background:#606671;
+}
+.pv-knob{
+  position:absolute; top:50%; left:var(--p,50%);
+  width:13px; height:13px; border-radius:50%; background:#cfd3d9;
+  transform:translate(-50%,-50%);
+  box-shadow:0 1px 3px rgba(0,0,0,.6);
+}
+.pv-num{
+  flex:none; width:58px; height:26px; border-radius:5px;
+  background:var(--pv-inset); border:1px solid var(--pv-line);
+  display:flex; align-items:center; padding:0 9px;
+  font-size:13px; color:var(--pv-txt);
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* unbounded: full-width field */
+.pv-field{
+  flex:1; height:28px; border-radius:5px;
+  background:var(--pv-inset); border:1px solid var(--pv-line);
+  display:flex; align-items:center; padding:0 10px;
+  font-size:13px; color:var(--pv-txt);
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* mode-driven visibility */
+.pv-panel[data-mode="bounded"]  .pv-vals-unbounded{ display:none; }
+.pv-panel[data-mode="unbounded"] .pv-vals-bounded{ display:none; }
+.pv-panel[data-mode="bounded"]  .pv-scale{ display:none; }
+
+/* Use Object Scale */
+.pv-scale{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top:12px; padding:2px; font-size:13.5px; color:var(--pv-mut);
+}
+.pv-check{
+  width:16px; height:16px; border-radius:4px;
+  background:var(--pv-inset); border:1px solid #444a53;
+}
+
+/* Add New Pivot */
+.pv-add{
+  width:100%; margin-top:10px; border:0; cursor:default;
+  padding:10px; border-radius:6px;
+  background:var(--ui-blue); color:#fff;
+  font-size:14px; font-weight:700; font-family:inherit;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+/* The overlay is drawn at Unity's native 380px. On a large monitor that leaves
+   the stage mostly empty — and because the panel is CSS rather than a
+   screenshot, scaling it up stays sharp instead of going soft. */
+@media (min-width:1500px){
+  .pv-panel{ transform:scale(1.25); }
+  .pv-card{ max-width:600px; }
+}
+
+@media (max-width:860px){
+  .pv-scrolly{ grid-template-columns:1fr; gap:0; }
+  /* pin the overlay to the top ~56% of the screen; cards flow through
+     the visible zone underneath it */
+  .pv-stage{
+    position:sticky; top:var(--nav-h); height:56vh;
+    padding:0; z-index:2;
+    background:linear-gradient(180deg, var(--bg) 84%, transparent);
+  }
+  .pv-stage::before{ display:none; }
+  .pv-panel{ width:320px; transform:scale(.8); transform-origin:center; }
+  .pv-steps{ padding:0 0 22vh; }
+  .pv-step{ min-height:62vh; justify-content:flex-end; }
+  .pv-card{ max-width:none; }
+}
+
+@media (max-width:420px){
+  .pv-panel{ width:300px; padding:10px; }
+  .pv-card{ padding:20px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .pv-card, .pv-box, .pv-lit, .pv-seg-btn{ transition:none; }
+  .pv-scrollhint .dot::after{ animation:none; }
+}

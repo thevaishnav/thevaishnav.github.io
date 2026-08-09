@@ -1,0 +1,420 @@
+/* ============================================================
+   Content blocks — the pieces pages are built out of below the
+   hero: screenshots, alternating how-it-works rows, the spec
+   strip, the CTA band, callouts, code and tables.
+   ============================================================ */
+
+/* ---------- figures / screenshots ---------- */
+figure.figure{ margin:0 0 8px; }
+.figure .frame{
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+  background:var(--surface-2);
+}
+.figure img.shot{ display:block; width:100%; height:auto; }
+.figure figcaption{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:10px;
+  line-height:1.45;
+}
+/* Small UI panel screenshots are only ~260px native — don't upscale them */
+.figure.panel{ max-width:280px; }
+.figure.inline-right{ float:right; margin:0 0 16px 28px; max-width:270px; }
+.split-media .figure.panel{ margin-inline:auto; }
+
+/* ---------- product page: how-it-works rows ---------- */
+.split{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:36px;
+  align-items:center;
+  padding:40px 0;
+  border-top:1px solid var(--line);
+}
+.split.reverse .split-media{ order:-1; }
+.split-body p{ color:var(--muted); margin:0 0 14px; max-width:52ch; }
+.split-body p strong{ color:var(--text); font-weight:600; }
+
+.pill-row{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 8px; }
+.pill{
+  font-size:12px;
+  letter-spacing:0.04em;
+  color:var(--muted);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:5px 12px;
+}
+.pill .x{ color:var(--axis-x); } .pill .y{ color:var(--axis-y); } .pill .z{ color:var(--axis-z); }
+
+/* ---------- requirements / meta strip ---------- */
+.meta-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:16px;
+  padding:28px 0;
+}
+.meta-cell{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:20px;
+}
+.meta-cell .k{ font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
+.meta-cell .v{ font-size:15px; color:var(--text); margin:0; }
+
+/* ---------- CTA band ---------- */
+.cta-band{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:40px;
+  text-align:center;
+  margin:48px 0 8px;
+}
+.cta-band h2{ margin:0 0 10px; }
+.cta-band p{ color:var(--muted); max-width:62ch; margin:0 auto 24px; }
+.cta-band .actions{ justify-content:center; }
+
+/* ---------- callouts (manual) ----------
+   One shape, recoloured per type. Each callout is a tinted panel with a
+   circular glyph badge in its own column, so the type reads at a glance
+   from the icon and the wash rather than from a thin rule on the edge.
+   The glyph and the accent are the only things a variant changes — set
+   --accent and --glyph, everything else follows. */
+.callout{
+  --accent:var(--muted);
+  --glyph:"i";
+  display:grid;
+  grid-template-columns:26px minmax(0,1fr);
+  gap:14px;
+  align-items:start;
+  border:1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--accent) 9%, var(--surface)),
+      color-mix(in srgb, var(--accent) 4%, var(--surface)));
+  border-radius:12px;
+  padding:16px 20px 17px;
+  margin:22px 0;
+  max-width:80ch;
+}
+/* the badge: a filled disc carrying the type's glyph */
+.callout::before{
+  content:var(--glyph);
+  grid-column:1;
+  grid-row:1;
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-family:'Space Grotesk', sans-serif;
+  font-size:14px;
+  font-weight:700;
+  line-height:1;
+  color:var(--accent);
+  background:color-mix(in srgb, var(--accent) 18%, transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+  /* optically centre the glyph against the label's cap height */
+  margin-top:-1px;
+}
+.callout .label{
+  font-family:'Space Grotesk', sans-serif;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:0;
+  text-transform:none;
+  color:var(--accent);
+  display:block;
+  margin-bottom:5px;
+}
+/* every real child sits in the text column — the badge is the only thing
+   in column 1, so content never wraps under it however many blocks it has */
+.callout > *{ grid-column:2; }
+.callout p{ margin:0; color:#d6d8db; font-size:15px; max-width:66ch; }
+.callout p + p{ margin-top:9px; }
+
+.callout.tip{       --accent:var(--axis-y); --glyph:"\2726"; } /* ✦ */
+.callout.note{      --accent:var(--axis-z); --glyph:"i";     }
+.callout.important{ --accent:var(--axis-x); --glyph:"!";     }
+.callout.pro{       --accent:var(--axis-y); --glyph:"\2605"; } /* ★ */
+.callout.when{      --accent:var(--axis-w); --glyph:"\25C6"; } /* ◆ */
+
+/* Fallback for engines without color-mix: flat surface, coloured badge. */
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .callout{ background:var(--surface); border-color:var(--line); }
+  .callout::before{ background:var(--surface-2); box-shadow:inset 0 0 0 1px var(--accent); }
+}
+
+/* ---------- inline code ----------
+   Inline code sits inside running prose, so it has to mark itself out
+   without punching a hole in the line. A tint and a hairline ring do
+   that; a full-contrast border made every path in a paragraph read as
+   a separate object and broke the line up. */
+code{
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-size:0.86em;
+  background:color-mix(in srgb, var(--axis-z) 8%, var(--surface-2));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius:5px;
+  padding:1.5px 6px;
+  color:#dfe2e6;
+  /* a long path or flag in inline code must not widen the page */
+  overflow-wrap:anywhere;
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  code{ background:var(--surface-2); box-shadow:inset 0 0 0 1px var(--line); }
+}
+
+/* ---------- scrollers ----------
+   A scrollbar drawn by the OS is a bright chunky bar sitting on a dark
+   panel's edge — loud enough to undo the panel it sits in. Every element
+   on the site that scrolls its own contents gets the same slim dark thumb
+   on a transparent track instead.
+
+   "Every element" is the point, and it is why the target list is written
+   once in the `:is()` below rather than repeated down the block. A scroller
+   that misses this treatment doesn't look unstyled, it looks like a
+   different site for the height of the panel — which is exactly how the
+   contact popup's body and the manual's sticky rail read before they were
+   added here. A new scrolling panel belongs in that list.
+
+   The two branches below are exclusive, and the split matters. Setting
+   `scrollbar-width`/`scrollbar-color` makes Chrome ignore every
+   ::-webkit-scrollbar pseudo — and its standard bar draws stepper
+   arrows at both ends that nothing can then turn off. So the pseudos
+   are the default path (they can drop the arrows and inset the thumb),
+   and the standard properties are quarantined to Firefox, which has no
+   pseudos to offer. `not selector(::-webkit-scrollbar)` is the test:
+   false in Chrome and Safari, true in Firefox.
+
+   The corollary is that no scroller in this list may set `scrollbar-width`
+   of its own: doing so opts that one element out of the pseudos in Chrome
+   and hands it back the stepper arrows. */
+:is(pre.code, .table-scroll, .contact-modal-body, .doc-rail)::-webkit-scrollbar{
+  height:10px;
+  width:10px;
+}
+:is(pre.code, .table-scroll, .contact-modal-body, .doc-rail)::-webkit-scrollbar-track{
+  background:transparent;
+}
+:is(pre.code, .table-scroll, .contact-modal-body, .doc-rail)::-webkit-scrollbar-thumb{
+  /* the transparent border plus padding-box clipping insets the thumb, so
+     it floats clear of the panel edge instead of butting against it */
+  background:color-mix(in srgb, var(--muted) 45%, transparent);
+  background-clip:padding-box;
+  border:3px solid transparent;
+  border-radius:999px;
+}
+:is(pre.code, .table-scroll, .contact-modal-body, .doc-rail):hover::-webkit-scrollbar-thumb{
+  background:color-mix(in srgb, var(--muted) 75%, transparent);
+  background-clip:padding-box;
+}
+:is(pre.code, .table-scroll, .contact-modal-body, .doc-rail)::-webkit-scrollbar-corner{
+  background:transparent;
+}
+/* the stepper arrows at each end of the track — the thing the standard
+   bar can't be talked out of drawing */
+:is(pre.code, .table-scroll, .contact-modal-body, .doc-rail)::-webkit-scrollbar-button{
+  display:none; width:0; height:0;
+}
+
+/* Firefox: no pseudos, so the standard properties do the whole job. */
+@supports not selector(::-webkit-scrollbar){
+  pre.code,
+  .table-scroll,
+  .contact-modal-body,
+  .doc-rail{
+    scrollbar-width:thin;
+    scrollbar-color:color-mix(in srgb, var(--muted) 45%, transparent) transparent;
+  }
+}
+
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  pre.code, .table-scroll, .contact-modal-body, .doc-rail{
+    scrollbar-color:#4a505a transparent;
+  }
+  :is(pre.code, .table-scroll, .contact-modal-body, .doc-rail)::-webkit-scrollbar-thumb{
+    background:#4a505a; background-clip:padding-box;
+  }
+}
+
+/* ---------- code blocks ----------
+   Same card as the tables: surface fill, 12px radius, the two-layer
+   shadow. `code-blocks.js` wraps each block and adds the header bar
+   with the language and a copy button; without it the bare <pre> is
+   still a finished card on its own, which is why both carry the card
+   rules and the wrapper hands them back when it takes over. */
+pre.code,
+.code-block{
+  margin:22px 0;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.4),
+    0 12px 28px -12px rgba(0,0,0,0.7);
+}
+pre.code{
+  padding:16px 18px;
+  overflow-x:auto;
+}
+/* wrapped: the wrapper is the card, the pre is just the body */
+.code-block{ overflow:hidden; }
+.code-block > pre.code{
+  margin:0;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background:none;
+}
+.code-block .code-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:7px 10px 7px 18px;
+  background:var(--surface-2);
+  border-bottom:1px solid var(--line);
+}
+.code-block .code-lang{
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-size:11px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.code-block .code-copy{
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-size:11px;
+  letter-spacing:0.06em;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:4px 10px;
+  cursor:pointer;
+  transition:color .15s ease, border-color .15s ease, background .15s ease;
+}
+.code-block .code-copy:hover{
+  color:var(--text);
+  border-color:color-mix(in srgb, var(--axis-z) 45%, var(--line));
+  background:rgba(255,255,255,0.04);
+}
+.code-block .code-copy[data-state="done"]{
+  color:var(--axis-y);
+  border-color:color-mix(in srgb, var(--axis-y) 45%, var(--line));
+}
+.code-block .code-copy[data-state="fail"]{
+  color:var(--axis-x);
+  border-color:color-mix(in srgb, var(--axis-x) 45%, var(--line));
+}
+
+pre.code code{
+  background:none;
+  box-shadow:none;
+  padding:0;
+  font-size:13px;
+  line-height:1.65;
+  color:#c9ccd1;
+  white-space:pre;
+}
+pre.code .cmt{ color:var(--muted); }
+/* these blocks exist to be selected and pasted — make the selection legible
+   against the dark fill rather than leaving it to the browser default */
+pre.code code::selection{ background:color-mix(in srgb, var(--axis-z) 35%, transparent); }
+
+/* ---------- keys and axis-coloured inline text ---------- */
+.kbd{
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-size:12px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:5px;
+  padding:2px 7px;
+}
+.axis-x{ color:var(--axis-x); } .axis-y{ color:var(--axis-y); } .axis-z{ color:var(--axis-z); }
+
+/* ---------- control reference table (manual §3) ----------
+   The scroller is the card: it owns the border, the radius and the
+   shadow, and clips the table's corners. That lets the table itself
+   stay a plain grid of rows while the block as a whole lifts off the
+   page background instead of dissolving into it. */
+.table-scroll{
+  overflow-x:auto;
+  margin:26px 0;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  /* a close contact shadow plus a wide soft one — reads as raised on the
+     near-black page without turning into a visible grey halo */
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.4),
+    0 12px 28px -12px rgba(0,0,0,0.7);
+}
+.control-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+  min-width:520px;
+}
+.control-table th, .control-table td{
+  text-align:left;
+  vertical-align:top;
+  padding:13px 18px;
+}
+.control-table thead th{
+  font-size:11px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:600;
+  padding-top:14px;
+  padding-bottom:14px;
+  background:var(--surface-2);
+  border-bottom:1px solid var(--line);
+  /* keeps the header visible while a wide table scrolls sideways */
+  white-space:nowrap;
+}
+.control-table tbody tr + tr td{ border-top:1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+.control-table tbody tr:nth-child(even){ background:rgba(255,255,255,0.014); }
+.control-table tbody tr{ transition:background .12s ease; }
+.control-table tbody tr:hover{ background:rgba(255,255,255,0.035); }
+
+.control-table td.num{
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-size:12px;
+  color:var(--axis-z);
+  width:56px;
+  white-space:nowrap;
+  text-align:center;
+  padding-inline:12px;
+  /* a faint tinted rail down the index column, tying it to the numbered
+     callouts on the screenshot above it */
+  background:color-mix(in srgb, var(--axis-z) 7%, transparent);
+}
+.control-table td.name{ color:var(--text); font-weight:600; white-space:nowrap; }
+.control-table td.desc{ color:#a9aeb6; }
+.control-table td.desc code{ font-size:0.85em; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 860px){
+  .meta-grid{ grid-template-columns:1fr 1fr; }
+}
+
+@media (max-width: 720px){
+  .split{ grid-template-columns:1fr; gap:22px; padding:32px 0; }
+  .split.reverse .split-media{ order:0; }
+  .split-media{ order:-1; }
+  .figure.inline-right{ float:none; margin:0 0 16px; max-width:300px; }
+  .cta-band{ padding:32px 24px; }
+  .meta-grid{ grid-template-columns:1fr 1fr; }
+  .callout{ padding:14px 16px 15px; gap:11px; }
+  .control-table th, .control-table td{ padding:11px 14px; }
+}
+
+@media (max-width: 460px){
+  .meta-grid{ grid-template-columns:1fr; }
+}

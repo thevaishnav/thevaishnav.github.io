@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Access · Pin your most-used Unity assets, scenes and objects</title>
+<meta name="description" content="A lightweight Unity Editor window for pinning frequently-used assets, scenes, and in-scene GameObjects or components for one-click access. Free and open source.">
+<link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+<script src="/scripts/site-header.js"></script>
+
+<div class="wrap wrap-wide">
+  <div class="doc" id="top">
+
+    <!-- ---------- sticky rail: title + TOC ---------- -->
+    <div class="doc-rail">
+
+    <div class="page-hero">
+      <p class="eyebrow mono">Free &amp; open source · Unity Editor tool</p>
+      <h1>Quick Access</h1>
+      <p class="lead">Pin the assets, scenes and scene objects you keep hunting for, and get to them in <strong>one click</strong>, instead of digging through the Project window or the Hierarchy again.</p>
+      <div class="actions" style="margin-bottom:8px;">
+        <a class="btn btn-primary" href="https://github.com/itsdevlogger/quick-access-window" target="_blank" rel="noopener">Get it on GitHub ↗</a>
+        <a class="btn btn-secondary" href="#install">Install steps</a>
+      </div>
+    </div>
+
+    <aside class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#what-it-does">1 · What it does</a></li>
+        <li><a href="#install">2 · Install</a></li>
+        <li><a href="#usage">3 · Usage</a></li>
+        <li><a href="#persistence">4 · Persistence</a></li>
+        <li><a href="#requirements">5 · Requirements</a></li>
+        <li><a href="#support">6 · Support</a></li>
+      </ol>
+    </aside>
+
+    </div><!-- /.doc-rail -->
+
+    <!-- ---------- content ---------- -->
+    <div class="doc-content">
+
+      <!-- 1 -->
+      <section id="what-it-does">
+        <h2>1 · What it does</h2>
+        <p><strong>Quick Access</strong> is a lightweight Editor window for pinning frequently-used assets, scenes, and in-scene GameObjects or components. Drag something in, and it stays one click away for the rest of the project's life.</p>
+        <p>Open it from <code>Tools &gt; Quick Access</code>.</p>
+
+        <figure class="figure panel">
+          <div class="frame">
+            <img class="shot" src="/assets/img/QuickAccess.jpg" width="870" height="810" loading="lazy"
+                 alt="The Quick Access Editor window with pinned assets, scenes and scene objects grouped into three columns.">
+          </div>
+          <figcaption>Pinned items, grouped into Assets, Scenes and Scene Objects.</figcaption>
+        </figure>
+
+        <h3>1.1 · Why it exists</h3>
+        <p>Every project has a handful of things you open twenty times a day: the player prefab, the boot scene, the one settings asset buried five folders deep. Favourites help a little, but they don't open a scene, they don't survive a layout reset, and they don't hold scene objects at all. This window does all three.</p>
+      </section>
+
+      <!-- 2 -->
+      <section id="install">
+        <h2>2 · Install</h2>
+        <p>Add it as a UPM package from Git. In Unity: <code>Window ▸ Package Manager ▸ + ▸ Add package from git URL…</code> and paste:</p>
+        <pre class="code" data-lang="text"><code>https://github.com/itsdevlogger/quick-access-window.git</code></pre>
+        <p>Or clone / download the repo and drop the folder anywhere under <code>Assets/</code>.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://github.com/itsdevlogger/quick-access-window" target="_blank" rel="noopener">Open the repo ↗</a>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section id="usage">
+        <h2>3 · Usage</h2>
+        <p><strong>Drag and drop</strong> any asset, scene, or scene object (GameObject or Component) into the window to pin it. Pinned items are grouped into three columns:</p>
+
+        <div class="table-scroll">
+          <table class="control-table">
+            <thead>
+              <tr><th>Column</th><th>What clicking does</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="name">Assets</td>
+                <td class="desc">Click the row to open the asset. Click <strong>@</strong> to ping and select it in the Project window.</td>
+              </tr>
+              <tr>
+                <td class="name">Scenes</td>
+                <td class="desc">Click the row to open the scene. Click <strong>@</strong> to ping it. Click <strong>▶</strong> to open the scene and enter Play mode.</td>
+              </tr>
+              <tr>
+                <td class="name">Scene Objects</td>
+                <td class="desc">Click the row (or <strong>@</strong>) to open the object's scene if it isn't already loaded, then ping and select it in the Hierarchy.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ul>
+          <li>Click <strong>X</strong> on any row to unpin it.</li>
+          <li>Newly dropped items briefly highlight and auto-scroll into view.</li>
+        </ul>
+      </section>
+
+      <!-- 4 -->
+      <section id="persistence">
+        <h2>4 · Persistence</h2>
+        <p>Pinned items are stored per-project in <code>UserSettings/QuickAccessData.asset</code>. That file is:</p>
+        <ul>
+          <li><strong>Not</strong> version controlled, because Unity's default <code>.gitignore</code> excludes <code>UserSettings/</code>.</li>
+          <li><strong>Not</strong> synced between machines. Each clone of the project keeps its own pinned list.</li>
+          <li>Preserved across Editor restarts and Editor layout resets.</li>
+        </ul>
+        <div class="callout note">
+          <span class="label">Your list is yours</span>
+          <p>Because the data lives outside the project's tracked files, pinning something never shows up in a teammate's diff, and their pins never show up in yours.</p>
+        </div>
+      </section>
+
+      <!-- 5 -->
+      <section id="requirements">
+        <h2>5 · Requirements</h2>
+        <p>Unity <strong>2022.3</strong> or later (verified). Earlier LTS versions with <code>ScriptableSingleton</code> and <code>GlobalObjectId</code> support may also work, but have not been tested.</p>
+      </section>
+
+      <!-- ---------- CTA ---------- -->
+      <div class="cta-band">
+        <h2>Stop hunting for the same five files.</h2>
+        <p>Drag them in once. Free, open source, and it stays out of your way.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://github.com/itsdevlogger/quick-access-window" target="_blank" rel="noopener">Get it on GitHub ↗</a>
+          <a class="btn btn-secondary" href="#install">See the install steps</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var links = Array.prototype.slice.call(
+    document.querySelectorAll('.toc a[href^="#"]')
+  );
+  if (!links.length) return;
+
+  // Map each section id to its TOC link.
+  var linkById = {};
+  var sections = [];
+  links.forEach(function (link) {
+    var id = link.getAttribute('href').slice(1);
+    var section = document.getElementById(id);
+    if (section) {
+      linkById[id] = link;
+      sections.push(section);
+    }
+  });
+
+  function setActive(id) {
+    links.forEach(function (link) {
+      link.classList.toggle('active', link === linkById[id]);
+    });
+  }
+
+  // Pick the section whose top is closest to (but not far below) the
+  // scroll offset, i.e. the last one that has passed the highlight line.
+  function update() {
+    var offset = 100; // px from top where a section counts as "current"
+    var current = sections[0];
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].getBoundingClientRect().top - offset <= 0) {
+        current = sections[i];
+      } else {
+        break;
+      }
+    }
+    // At the very bottom of the page, force-select the last section.
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+      current = sections[sections.length - 1];
+    }
+    if (current) setActive(current.id);
+  }
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function () {
+      update();
+      ticking = false;
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
+})();
+</script>
+
+<script src="/scripts/code-blocks.js"></script>
+
+</body>
+</html>

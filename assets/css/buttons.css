@@ -1,0 +1,45 @@
+/* ============================================================
+   Buttons and the action rows they sit in.
+   ============================================================ */
+
+.actions{ display:flex; gap:12px; flex-wrap:wrap; }
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 18px;
+  border-radius:7px;
+  font-size:14px;
+  font-weight:500;
+  text-decoration:none;
+  border:1px solid transparent;
+  cursor:pointer;
+  /* Touch devices otherwise sit on the :hover state after a tap, and iOS adds
+     a grey flash of its own on top of the press state below. */
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:transform var(--dur-1) var(--ease-out),
+             background var(--dur-1) var(--ease-out),
+             border-color var(--dur-1) var(--ease-out);
+}
+.btn:hover{ transform:translateY(-1px); }
+
+/* The press, not the click, is what has to answer. :active fires on
+   pointer-down, so the button acknowledges the finger the instant it lands
+   rather than at release — waiting for the click is what makes a control feel
+   dead even when the navigation itself is fast. It is also the cheapest
+   affordance for a cancelled press: drag off the button and the scale returns,
+   which is the interface saying "nothing will happen if you let go here".
+   Scale rather than translate, so the feedback reads as the surface taking
+   pressure instead of the button moving somewhere. */
+.btn:active{
+  transform:scale(0.97);
+  transition-duration:60ms;
+}
+
+.btn-primary{ background:var(--axis-z); color:#0B0D10; }
+.btn-primary:hover{ background:#79bcff; }
+.btn-primary:active{ background:#4b93e0; }
+.btn-secondary{ background:transparent; color:var(--text); border-color:var(--line); }
+.btn-secondary:hover{ border-color:var(--muted); }
+.btn-secondary:active{ background:rgba(255,255,255,0.05); border-color:var(--muted); }

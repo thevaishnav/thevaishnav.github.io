@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.claude/
+.vscode/
+.idea/
+*.swp
+
+# Logs / temp
+*.log
+*.tmp
+# image editors leave these beside the file they overwrote
+*~

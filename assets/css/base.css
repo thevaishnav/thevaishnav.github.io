@@ -1,0 +1,119 @@
+/* ============================================================
+   Base — the reset, the page shell, type scale, the container,
+   focus rings and the two generic section labels. Everything a
+   page gets before any component is on it.
+   ============================================================ */
+
+*{ box-sizing:border-box; }
+
+html{
+  scroll-behavior:smooth;
+  /* keep anchor targets clear of the sticky nav */
+  scroll-padding-top:var(--nav-h);
+  /* Always reserve the scrollbar's width, even on pages short enough not to
+     need one. Without this, moving from a long page to a short one widens the
+     content box by the scrollbar width and every right-aligned thing — the nav
+     links most visibly — jumps sideways on navigation. */
+  scrollbar-gutter:stable;
+}
+@supports not (scrollbar-gutter: stable){
+  html{ overflow-y:scroll; }
+}
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+}
+
+/* The root stays at the browser's own size — a user who has set their default
+   text to 20px gets 20px. A hard `font-size:16px` on <body> silently overrode
+   that setting, and every `rem` measured against it downstream inherited the
+   override. Everything below is sized in rem/em from here, so the layout grows
+   with the text instead of the text overflowing a fixed layout. */
+html{ font-size:100%; }
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter', system-ui, sans-serif;
+  font-size:1rem;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  /* faces that ship an optical size axis should use it rather than being
+     scaled geometrically from one master */
+  font-optical-sizing:auto;
+}
+
+a{ color:inherit; }
+
+img{ max-width:100%; }
+
+.mono{ font-family:'JetBrains Mono', ui-monospace, monospace; }
+
+/* ---------- container ---------- */
+.wrap{
+  width:100%;
+  margin:0 auto;
+  padding:0 var(--gutter);
+}
+/* "wide" is now a narrower gutter rather than a bigger cap — same idea, but it
+   scales with the viewport instead of stopping at a fixed pixel width. */
+.wrap-wide{ --gutter:clamp(20px, 3vw, 64px); }
+
+/* ---------- focus visibility ---------- */
+a:focus-visible, button:focus-visible{
+  outline:2px solid var(--axis-z);
+  outline-offset:3px;
+  border-radius:4px;
+}
+
+/* ---------- headings ----------
+   Tracking and leading are set per size, not once for all three. Letterforms
+   look further apart the larger they get, so display type needs negative
+   tracking to hold together and body-scale type needs roughly none; a single
+   -0.01em was too loose on the 54px h1 and too tight on the 22px h3. Leading
+   moves the opposite way — tight on the big sizes, open on the small ones —
+   because a long line needs more room between rows than a three-word headline. */
+h1,h2,h3{
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:600;
+  font-optical-sizing:auto;
+  /* headings are short and deliberate; never let one break mid-word */
+  text-wrap:balance;
+}
+h1{
+  font-size:clamp(2rem, 4.4vw, 3.375rem);
+  line-height:1.08;
+  letter-spacing:-0.022em;
+  margin:0 0 18px;
+}
+h2{
+  font-size:clamp(1.5rem, 3vw, 1.875rem);
+  line-height:1.18;
+  letter-spacing:-0.014em;
+  margin:0 0 16px;
+}
+h3{
+  font-size:1.375rem;
+  line-height:1.3;
+  letter-spacing:-0.008em;
+  margin:0 0 12px;
+}
+
+/* ---------- generic section label / eyebrow ----------
+   Small, uppercase and widely tracked: capitals have no ascender/descender
+   rhythm to separate them, so at 12px they need the extra space to stay
+   readable — the exact inverse of what the h1 above wants. */
+.eyebrow{
+  font-size:0.75rem;
+  letter-spacing:0.14em;
+  color:var(--axis-z);
+  text-transform:uppercase;
+  margin:0 0 18px;
+}
+.section-label{
+  font-size:0.75rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 20px;
+}

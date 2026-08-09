@@ -1,0 +1,139 @@
+/* ============================================================
+   Motion and environment preferences.
+
+   Two jobs, and they belong together because they are the same
+   idea seen twice: the site has one set of curves, and it has one
+   place where the browser's accessibility settings override them.
+
+   This file is imported last so its preference blocks win over any
+   component that set a transition of its own earlier in the cascade.
+   ============================================================ */
+
+/* ---------- press feedback on everything pressable ----------
+   Anything a pointer can commit — a card that is a link, a nav item, a
+   close button — answers on pointer-down, the same way .btn does. The
+   rule is deliberately about *commit targets* rather than about buttons:
+   if letting go of it does something, pressing it has to say so. */
+.card-featured .btn:active,
+.scroll-cue:active,
+.contact-card:active,
+.contact-close:active,
+.code-block .code-copy:active,
+.toc a:active,
+.nav-link:active{
+  transform:scale(0.985);
+  transition-duration:60ms;
+}
+/* The nav and TOC links are text, not surfaces — scaling type is mush at
+   13px. They dim on press instead, which is the same acknowledgement in
+   the only channel small text has. */
+.nav-link:active,
+.toc a:active{
+  transform:none;
+  opacity:0.62;
+}
+
+/* ---------- reduced motion ----------
+   Not "no feedback" — a gentler feedback. What triggers vestibular
+   discomfort is large positional change, parallax and overshoot, not the
+   fact that something changed. So this block strips travel and bounce and
+   keeps colour and opacity, which is what actually carries the meaning:
+   the button still confirms the press, it just no longer moves to do it.
+
+   The blanket rule catches components added later that forget to opt in,
+   which is the failure mode of handling this per-file. It clamps rather
+   than removes: a 1ms transition still fires transitionend, so any script
+   waiting on one does not hang. */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:1ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:1ms !important;
+    scroll-behavior:auto !important;
+  }
+  /* travel and overshoot go; the state change itself stays visible */
+  .btn:hover,
+  .btn:active,
+  .card-featured:hover,
+  .contact-card:hover,
+  .contact-card:focus-visible{ transform:none; }
+  .contact-card:hover .contact-arrow,
+  .contact-card:focus-visible .contact-arrow{ transform:none; }
+  /* The cue's drift is already stopped by the blanket rule above. The hover
+     step down has to go too, or the arrow jumps its 3px in one frame — a
+     movement made instant is more jarring than the movement was. */
+  .scroll-cue:hover .scroll-cue-arrow{ transform:none; }
+  /* The cue's `visibility` is normally delayed so it stays visible for the
+     length of the fade. The blanket rule above clamps durations but not delays,
+     so without this the cue would fade out instantly and then sit there
+     invisible-but-focusable for the rest of the delay. */
+  .is-scrolled .scroll-cue{ transition-delay:0s !important; }
+  /* colour is the whole feedback now, so let it be legible rather than
+     the 1ms flicker the blanket rule above would otherwise leave */
+  .btn:active{ transition-duration:1ms !important; filter:brightness(0.88); }
+
+  /* The one deliberate exemption. A modal is a layer arriving in front of the
+     page, and a hard cut gives no cue that it did — the user is left to work
+     out that the screen changed. So the popup keeps a short cross-fade in both
+     directions; what it loses is the travel and the scale, which is the part
+     the setting is actually about. The exit fade also has to survive, because
+     render-contact.js waits on animationend before it closes the dialog.
+     These sit after the blanket rule and are equally !important, so they win
+     on order. */
+  .contact-modal[open],
+  .contact-modal[open]::backdrop{
+    animation-name:contact-backdrop-in !important;
+    animation-duration:140ms !important;
+    animation-timing-function:linear !important;
+  }
+  .contact-modal[open].is-closing,
+  .contact-modal[open].is-closing::backdrop{
+    animation-name:contact-backdrop-out !important;
+    animation-duration:120ms !important;
+    animation-fill-mode:forwards !important;
+  }
+}
+
+/* ---------- reduced transparency ----------
+   A translucent header over scrolling text is a legibility trade the user
+   is allowed to decline. Declined, the surfaces go solid and the blur is
+   dropped entirely — a frosted-but-still-see-through compromise keeps the
+   exact cost the setting exists to remove. The header then needs a real
+   edge, because without translucency there is nothing to separate it from
+   the content passing beneath. */
+@media (prefers-reduced-transparency: reduce){
+  .nav{
+    background:var(--bg);
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+  }
+  .nav::after{ opacity:1; }
+  .contact-modal::backdrop{
+    background:rgba(8,9,11,0.92);
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+  }
+}
+
+/* ---------- increased contrast ----------
+   The site's structure is drawn almost entirely in low-contrast hairlines
+   and muted grey text, which is exactly what this setting says is not
+   working. Lift the borders to a defined edge and bring the secondary text
+   up out of the muted range; the accents stay as they are, since they are
+   already the high-contrast part of the palette. */
+@media (prefers-contrast: more){
+  :root{
+    --line:#4A525E;
+    --muted:#B4BAC3;
+    --surface:#111419;
+  }
+  .card, .meta-cell, .contact-card, .table-scroll, pre.code, .code-block{
+    border-width:1px;
+    border-color:var(--line);
+  }
+  .doc-content p,
+  .doc-content ul,
+  .doc-content ol{ color:#E2E4E7; }
+  .callout p{ color:#E8EAED; }
+  a:focus-visible, button:focus-visible{ outline-width:3px; }
+}

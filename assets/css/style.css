@@ -1,0 +1,23 @@
+/* ============================================================
+   Vaishnav Chincholkar — shared design system
+   Dark theme, Unity X/Y/Z axis-color accents.
+   Used by every page in the site.
+
+   This file is the entry point and nothing else: pages link only
+   style.css, and the parts below are what actually hold rules.
+   The order is the cascade — a later file may override an earlier
+   one on equal specificity, so it is deliberate, not alphabetical.
+   ============================================================ */
+
+@import url("tokens.css");   /* colours + the two layout measurements   */
+@import url("base.css");     /* reset, page shell, type, container      */
+@import url("nav.css");      /* the sticky site header                  */
+@import url("buttons.css");  /* .btn and the action rows                */
+@import url("cards.css");    /* tool cards, ghost card, featured card   */
+@import url("intro.css");    /* landing: the full-height opening screen  */
+@import url("hero.css");     /* landing hero, gizmo, subpage intros     */
+@import url("content.css");  /* figures, splits, meta, CTA, code, tables*/
+@import url("doc.css");      /* manual: sticky TOC + prose column       */
+@import url("contact.css");  /* the contact <dialog>                    */
+@import url("cursor.css");   /* the custom pointer (fine pointers only)  */
+@import url("motion.css");   /* press feedback + the a11y preference set */

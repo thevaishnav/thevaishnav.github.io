@@ -1,322 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaishnav Chincholkar - Unity Developer Portfolio</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaishnav Chincholkar · Unity Editor Tools</title>
+<meta name="description" content="Small, focused editor tools for Unity, each built to fix one specific workflow problem. Pivot++ and unity-cli.">
+<link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<script src="/scripts/tools.js"></script>
 </head>
 <body>
-<div class="bg-animation"></div>
 
-<nav>
-    <div class="nav-container">
-        <div class="logo">VAISHNAV</div>
-        <ul class="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>
+<div id="site-header"></div>
+<script src="/scripts/site-header.js"></script>
+
+<main id="top">
+  <!-- The opening screen. It introduces the person; everything below it
+       introduces the work. The scroll cue at its foot is what keeps that a
+       sequence rather than two unrelated pages stacked on each other. -->
+  <section class="wrap wrap-wide intro" id="intro">
+    <div class="intro-body">
+      <div class="intro-copy">
+        <p class="eyebrow mono">Senior Unity Developer · Pune, India</p>
+        <h1 class="intro-title">Hey, I'm Vaishnav.</h1>
+        <p class="intro-lead">I build editor tools and multiplayer systems that don't break when 1000s of players join at once.</p>
+
+        <!-- Three figures, each read as one sentence broken across three lines:
+             a lead-in, the number, and what the number is of. The middle line is
+             the only thing sized to be seen from across the room — the other two
+             are there so it means something. -->
+        <ul class="intro-cards">
+          <li class="intro-card">
+            <span class="c-pre">More than</span>
+            <!-- Counted from 2022 by scripts/experience.js. The number written
+                 here is correct as it stands and is what shows without JS. -->
+            <span class="c-key"><span data-years-since="2022">4</span> years</span>
+            <span class="c-post">of working experience</span>
+          </li>
+          <li class="intro-card">
+            <span class="c-pre">Handled</span>
+            <span class="c-key">81,521 props</span>
+            <span class="c-post">in a single scene</span>
+          </li>
+          <li class="intro-card">
+            <span class="c-pre">Currently leading</span>
+            <span class="c-key">6-person</span>
+            <span class="c-post">dev team</span>
+          </li>
         </ul>
-    </div>
-</nav>
+      </div>
 
-<section id="home" class="hero">
-    <div class="hero-content">
-        <div class="hero-subtitle">Unity 3D Developer</div>
-        <h1 class="hero-title">VAISHNAV CHINCHOLKAR</h1>
-        <p class="hero-description">Im a Unity 3D Game Developer with 4+ years of Working Experience.</p>
-        <div class="hero-cta">
-            <a href="#projects" class="btn-primary">
-                <i class="fas fa-gamepad"></i>
-                View My Work
-            </a>
-            <a href="#contact" class="btn-secondary">
-                <i class="fas fa-envelope"></i>
-                Get In Touch
-            </a>
-        </div>
-    </div>
-</section>
-
-<section id="experience" class="section reveal scroll-element">
-    <div class="section-header">
-        <h2 class="section-title"> Working Experience</h2>
-        <p class="section-subtitle">Building amazing games and XR experiences across different platforms</p>
+      <div class="intro-mark">
+        <span class="gizmo" aria-hidden="true">
+          <img src="/assets/img/logo-256.png" width="512" height="512" alt="">
+        </span>
+      </div>
     </div>
 
-    <div class="experience-timeline">
-        <div class="experience-item scroll-element">
-            <div class="experience-dot"></div>
-            <div class="experience-card">
-                <h3 class="job-title">Sr. Unity Developer</h3>
-                <div class="company">ForeExcel Pvt. Ltd.</div>
-                <div class="duration">Oct 2024 - Present</div>
-                <div class="job-description">
-                    <ul>
-                        <li>Leading a team of 5 developers on to deliver 4 different XR projects from concept to delivery</li>
-                        <li>Managing client relationships and project coordination</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <a class="scroll-cue" href="#highlight">
+      <span>Tools</span>
+      <svg class="scroll-cue-arrow" viewBox="0 0 24 24" aria-hidden="true"
+           fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v13M6 12.5l6 6 6-6"/>
+      </svg>
+    </a>
+  </section>
 
-        <div class="experience-item scroll-element">
-            <div class="experience-dot"></div>
-            <div class="experience-card">
-                <h3 class="job-title">Unity 3D Developer</h3>
-                <div class="company">EDIIIE Pvt. Ltd.</div>
-                <div class="duration">Jul 2022 - Sep 2024</div>
-                <div class="job-description">
-                    <ul>
-                        <li>Contributed to 2 Metaverse games- Sinverse (14,000+ active players) and Huslverse.</li>
-                        <li>Created 4 plugins that are utilized across multiple projects, reducing development time and standardizing workflows</li>
-                    </ul>
-                </div>
-                <div class="my-contributions">
-                    <h4>My Contributions (See My Works Section) </h4>
-                    <ul>
-                        <li>Battle Royal & E-Sports</li>
-                        <li>Virtual Estate System Plugin</li>
-                        <li>Character Customization Plugin</li>
-                        <li>Resources Window Plugin</li>
-                        <li>Scene Window Plugin</li>
-                    </ul>
-                </div>
-                <div class="project-links" style="margin-top: 1rem;">
-                    <a href="https://drive.google.com/file/d/1-FWQZrR5t9B_OqiyhqwjYCwnrSSUuNGC/view?usp=sharing" target="_blank" class="project-link">
-                        <i class="fas fa-certificate"></i>
-                        Certificate
-                    </a>
-                </div>
-            </div>
-        </div>
+  <section class="wrap wrap-wide hero">
+    <p class="eyebrow mono">Unity Editor Tools</p>
+    <!-- h2, not h1: the intro above owns the page's one h1. It keeps the
+         display size through .hero-title, so the demotion is structural
+         only — see hero.css. -->
+    <h2 class="hero-title">One Tool <span class="hero-title-op">==</span> One Job</h2>
+    <p class="lead">Small editor tools for Unity.<br>Each fixes a single problem, and fixes it well.</p>
+  </section>
 
-        <div class="experience-item scroll-element">
-            <div class="experience-dot"></div>
-            <div class="experience-card">
-                <h3 class="job-title">Unity Developer Intern</h3>
-                <div class="company">Frolic Frog Pvt. Ltd.</div>
-                <div class="duration">Sep 2021 - Mar 2022</div>
-                <div class="job-description">
-                    <ul>
-                        <li>Developed 2 hyper-casual mobile games from scratch</li>
-                        <li>Implemented complex rope physics systems</li>
-                        <li>Optimized performance for 1500+ active physics objects</li>
-                    </ul>
-                </div>
-                <div class="my-contributions">
-                    <h4>My Contributions (See My Works Section) </h4>
-                    <ul>
-                        <li>Free The Girl (Mobile Game)</li>
-                        <li>Balls To Cup (Mobile Game)</li>
-                    </ul>
-                </div>
-                <div class="project-links" style="margin-top: 1rem;">
-                    <a href="https://drive.google.com/file/d/1kOHm7epW4I4cMxLDnZSPlpAztKtdIbNC/view?usp=sharing" target="_blank" class="project-link">
-                        <i class="fas fa-certificate"></i>
-                        Certificate
-                    </a>
-                </div>
-            </div>
-        </div>
+  <section class="wrap wrap-wide highlight" id="highlight">
+    <!-- The single highlighted tool is rendered from scripts/tools.js — see TOOLS_DATA.highlight. -->
+  </section>
 
-        <div class="experience-item scroll-element">
-            <div class="experience-dot"></div>
-            <div class="experience-card">
-                <h3 class="job-title">Unity Developer Intern</h3>
-                <div class="company">Kid Aptivity Technologies Pvt. Ltd.</div>
-                <div class="duration">Sep 2020 - Dec 2020</div>
-                <div class="job-description">
-                    <ul>
-                        <li>Worked on multiple physics based simulation projects</li>
-                    </ul>
-                </div>
-                <div class="project-links" style="margin-top: 1rem;">
-                    <a href="https://drive.google.com/file/d/1V4WfeFbO9U9NeA7Em1vD9A9r2MdXKIYD" target="_blank" class="project-link">
-                        <i class="fas fa-certificate"></i>
-                        Certificate
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+  <section class="wrap wrap-wide tools" id="tools">
+    <p class="section-label">Tools</p>
+    <!-- Cards are rendered from scripts/tools.js — see TOOLS_DATA.tools. -->
+  </section>
+</main>
 
-<section id="projects" class="section reveal">
-    <div class="section-header scroll-element">
-        <h2 class="section-title">My Work</h2>
-        <p class="section-subtitle">Listed bellow is the best of my work</p>
-    </div>
+<script src="/scripts/render-tools.js"></script>
+<script src="/scripts/experience.js"></script>
 
-    <div class="projects-grid">
-        <!-- Battle Royal & E-Sports -->
-        <div class="project-card scroll-element">
-            <h3 class="project-title">Battle Royal & E-Sports</h3>
-            <div class="project-type">Multiplayer Gaming</div>
-            <p class="project-description">
-                Developed a complete Battle Royal system for Sinverse with matchmaking, team formation,
-                and seamless multiplayer experience supporting up to <span class="highlight">20 players per lobby.</span>
-            </p>
-            <div class="project-links">
-                <a href="https://www.youtube.com/watch?v=v1rGRSIFQwE" target="_blank" class="project-link">
-                    <i class="fab fa-youtube"></i>
-                    Demo
-                </a>
-            </div>
-        </div>
-
-        <!-- Virtual Estate System Plugin -->
-        <div class="project-card scroll-element">
-            <h3 class="project-title">Virtual Estate System Plugin</h3>
-            <div class="project-type">Unity Plugin</div>
-            <p class="project-description">
-                Modular house-building system plugin that allows the players to create their own house, base, and business.
-                Handled <span class="highlight">70,000+ Physics Objects</span> in a single multiplayer scene.
-            </p>
-            <div class="project-links">
-                <a href="https://www.youtube.com/watch?v=E3lFW_aCI2U" target="_blank" class="project-link">
-                    <i class="fab fa-youtube"></i>
-                    Demo
-                </a>
-            </div>
-        </div>
-
-        <!-- Character Customization Plugin -->
-        <div class="project-card scroll-element">
-            <h3 class="project-title">Character Customization Plugin</h3>
-            <div class="project-type">Unity Plugin</div>
-            <p class="project-description">
-                Comprehensive character customization system allowing players to modify
-                clothing, accessories, and body types with real-time preview.
-            </p>
-            <div class="project-links">
-                <a href="https://www.youtube.com/watch?v=bnCh2lrQdDk" target="_blank" class="project-link">
-                    <i class="fab fa-youtube"></i>
-                    Demo
-                </a>
-            </div>
-        </div>
-
-        <!-- Free The Girl -->
-        <div class="project-card scroll-element">
-            <h3 class="project-title">Free The Girl</h3>
-            <div class="project-type">Mobile Game</div>
-            <p class="project-description">
-                Built the complete mobile game from scratch to finished. Implemented
-                <span class="highlight">Rope Physics</span> and
-                <span class="highlight">Rope Overlapping Detection</span>
-                in a Mobile Game
-            </p>
-            <div class="project-links">
-                <a href="https://apps.apple.com/us/app/free-the-girl/id1581317624" target="_blank" class="project-link">
-                    <i class="fab fa-apple"></i>
-                    IOS App
-                </a>
-            </div>
-        </div>
-
-        <!-- Balls To Cup -->
-        <div class="project-card scroll-element">
-            <h3 class="project-title">Balls To Cup</h3>
-            <div class="project-type">Mobile Game</div>
-            <p class="project-description">
-                Built the complete mobile game from scratch to finished. Handled
-                <span class="highlight">1000s of Physics Objects</span> in mobile game. Implemented
-                <span class="highlight">Object Pooling</span> for performance optimization.
-            </p>
-            <div class="project-links">
-                <a href="https://apps.apple.com/us/app/balls-to-cup/id1616477125" target="_blank" class="project-link">
-                    <i class="fab fa-apple"></i>
-                    IOS App
-                </a>
-            </div>
-        </div>
-
-        <!-- Resources Window Plugin -->
-        <div class="project-card scroll-element">
-            <h3 class="project-title">Resources Window Plugin</h3>
-            <div class="project-type">Editor Tool</div>
-            <p class="project-description">
-                Unity Editor tool for Asset Management, reducing navigation
-                friction and improving developer workflow efficiency.
-            </p>
-            <div class="project-links">
-                <a href="https://drive.google.com/file/d/1no5nwhv_ZEQt3B4kvAu7YdsgykwWJQbS" target="_blank" class="project-link">
-                    <i class="fas fa-play"></i>
-                    Demo
-                </a>
-                <a href="https://github.com/thevaishnav/editor-projects/tree/main/Editor/Resources%20Window" target="_blank" class="project-link">
-                    <i class="fab fa-github"></i>
-                    Code
-                </a>
-            </div>
-        </div>
-
-        <!-- Scenes Window Plugin -->
-        <div class="project-card scroll-element">
-            <h3 class="project-title">Scenes Window Plugin</h3>
-            <div class="project-type">Editor Tool</div>
-            <p class="project-description">
-                Unity Editor tool to find all scenes at one place, simplifying scene management
-            </p>
-            <div class="project-links">
-                <a href="https://drive.google.com/file/d/1l5SFQ8mrfxU45YcU1giA6CyKSoz-piPH" target="_blank" class="project-link">
-                    <i class="fas fa-play"></i>
-                    Demo
-                </a>
-                <a href="https://github.com/thevaishnav/editor-projects/tree/main/Editor/Scenes%20WIndow" target="_blank" class="project-link">
-                    <i class="fab fa-github"></i>
-                    Code
-                </a>
-            </div>
-        </div>
-
-        <!-- Metaverse Games -->
-        <div class="project-card scroll-element">
-            <h3 class="project-title">Metaverse Games</h3>
-            <div class="project-type">PC Gaming</div>
-            <p class="project-description">
-                Contributed to major metaverse projects including HusleVerse and Sinverse,
-                reaching over 14,000 active players worldwide.
-            </p>
-            <div class="project-links">
-                <a href="https://www.thehusl.io" target="_blank" class="project-link">
-                    <i class="fas fa-desktop"></i>
-                    HusleVerse
-                </a>
-                <a href="https://www.sinverse.com/home" target="_blank" class="project-link">
-                    <i class="fas fa-desktop"></i>
-                    Sinverse
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="contact" class="contact-section reveal">
-    <div class="section-header">
-        <h2 class="section-title">Contact Me</h2>
-        <p class="section-subtitle">Let's Make Good Games</p>
-    </div>
-
-    <div class="contact-info">
-        <a href="mailto:thevaishnavchincholkar@gmail.com" class="contact-item">
-            <i class="fas fa-envelope"></i>
-            thevaishnavchincholkar@gmail.com
-        </a>
-        <a href="tel:+918668226982" class="contact-item">
-            <i class="fas fa-phone"></i>
-            +91 8668226982
-        </a>
-        <a href="https://www.linkedin.com/in/vaishnav-chincholkar" target="_blank" class="contact-item">
-            <i class="fab fa-linkedin"></i>
-            LinkedIn
-        </a>
-    </div>
-</section>
-
-<script src="script.js"></script>
 </body>
 </html>
