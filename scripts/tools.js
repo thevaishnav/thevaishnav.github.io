@@ -7,7 +7,7 @@ window.TOOLS_DATA = {
     label: "Free & open source"
   },
   tools: [
-    {
+    /*{
       id: "pivot-plus-plus",
       image: {
         src: "/assets/img/pivot/cover.png",
@@ -21,7 +21,7 @@ window.TOOLS_DATA = {
         { label: "Asset Store ↗", href: "https://assetstore.unity.com/packages/packages/393670", style: "secondary", external: true },
         { label: "Read the manual", href: "/tools/pivot/user-manual/", style: "secondary" }
       ]
-    },
+    },*/
     {
       id: "unity-cli",
       image: {
