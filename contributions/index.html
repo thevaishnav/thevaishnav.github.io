@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contributions · Vaishnav Chincholkar — Senior Unity Developer</title>
+<meta name="description" content="The shipped work behind the roles: multiplayer PC game systems, two iOS titles built end to end, and open-source Unity editor tools.">
+<link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+<link rel="canonical" href="https://itsdevlogger.github.io/contributions/">
+
+<!-- Same reasoning as /experience/: this page gets linked to directly, and a
+     bare URL in a feed or a chat window reads as a dead link. Absolute URLs
+     because a scraper resolves these from its own context, not the page's. -->
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Contributions · Vaishnav Chincholkar — Senior Unity Developer">
+<meta property="og:description" content="Battle Royale, a virtual estate system holding 70,000+ physics objects, two shipped iOS games, and open-source Unity editor tools.">
+<meta property="og:url" content="https://itsdevlogger.github.io/contributions/">
+<meta property="og:image" content="https://itsdevlogger.github.io/assets/img/logo-256.png">
+<meta name="twitter:card" content="summary">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<script src="/scripts/contributions.js"></script>
+</head>
+<body>
+
+<div id="site-header"></div>
+<script src="/scripts/site-header.js"></script>
+
+<main class="wrap wrap-wide" id="top">
+
+  <div class="page-hero">
+    <p class="eyebrow mono">Contributions</p>
+    <!-- The count is written here as a real number and kept true by
+         scripts/render-contributions.js — see the note in that file. -->
+    <h1><span data-contributions-count>7</span> things I built and shipped.</h1>
+    <p class="lead">The systems, games and tools behind the roles on the timeline. Every one of them has something you can watch, install, or read the code of — filter by what you came to see.</p>
+  </div>
+
+  <!-- The filter bar and the cards are both rendered from
+       scripts/contributions.js — see CONTRIBUTIONS_DATA. Every tag in that
+       file becomes a filter, so the bar can never offer a filter that matches
+       nothing, and a new project can never arrive without one. -->
+  <div id="contributions" class="proj-board">
+    <noscript>
+      <p class="proj-noscript">These projects are rendered from a script. With JavaScript off,
+      the same work is described role by role on the
+      <a href="/experience/">experience page</a>.</p>
+    </noscript>
+  </div>
+
+  <!-- The reader who has got to the bottom of this list has read the evidence.
+       The timeline is what puts dates and employers around it, so it is the
+       one onward route offered besides a conversation. -->
+  <div class="cta-band">
+    <h2>That's the work. The timeline says when.</h2>
+    <p>Most of these were built inside a studio, on a deadline; the rest are open source and public. The experience page puts the dates, the roles and the scale next to them.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#contact">Get in touch</a>
+      <a class="btn btn-secondary" href="/experience/">See the timeline</a>
+    </div>
+  </div>
+
+</main>
+
+<script src="/scripts/render-contributions.js"></script>
+
+</body>
+</html>

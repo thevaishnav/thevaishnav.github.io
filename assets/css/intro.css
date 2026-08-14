@@ -153,17 +153,47 @@
   gap:20px clamp(24px, 3.2vw, 52px);
   list-style:none;
   margin:30px 0 0;
-  padding:24px 0 0;
+  /* --hit-y is added back on top of the 24px the rule actually wants. Each
+     entry's hit area is inset by that much with a negative margin (see
+     .intro-card-inner), so without the compensation the group would ride up
+     under the hairline by exactly one inset. */
+  padding:calc(24px + var(--hit-y)) 0 0;
   border-top:1px solid var(--line);
   max-width:620px;
+
+  /* How far each entry's pressable area extends past its text. Kept here
+     because .intro-cards has to subtract the vertical half from its own
+     padding, and the two numbers must never drift apart. */
+  --hit-x:12px;
+  --hit-y:10px;
 }
 .intro-card{ min-width:0; }
+
+/* The clickable box is the whole entry, not just the link line at its foot —
+   a figure with a link under it is a target the size of a sentence, and this
+   makes it the size of the block you were already reading.
+   It is inset by a negative margin rather than laid out with padding so the
+   text keeps its original position: the first entry still lines up with the
+   headline's left edge, and the hover fill is the only thing that extends
+   past it. The inert third entry carries the same inset so all three sit on
+   one baseline. */
+.intro-card-inner{
+  display:block;
+  margin:calc(-1 * var(--hit-y)) calc(-1 * var(--hit-x));
+  padding:var(--hit-y) var(--hit-x);
+  border-radius:10px;
+  color:inherit;
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:background var(--dur-1) var(--ease-out);
+}
+.intro-card-link:hover{ background:rgba(255,255,255,0.04); }
 
 /* Direct children only. The figure line wraps its own <span> around the counted
    year, and a blanket `.intro-card span` turned that inline number into a block
    — which broke "4 years" onto two lines while the other two entries stayed on
    one, and left the row taller than any of its contents needed. */
-.intro-card > span{ display:block; }
+.intro-card-inner > span{ display:block; }
 /* The two supporting lines share a size and a colour so neither pulls rank on
    the other; they are the two halves of one sentence with the figure between
    them. */
@@ -192,6 +222,44 @@
   /* "81,521 props" must not split its number from its unit across a line */
   text-wrap:balance;
 }
+
+/* ---------- the link line ----------
+   The affordance, and the reason the entries are not merely "clickable if you
+   happen to try". It is written the way links have looked since the web began
+   — accent colour, underlined, with the direction it goes in — because the
+   audience for this page is someone skimming candidates, not someone learning
+   an interface. The arrow distinguishes the two destinations: → stays on the
+   site, ↗ leaves it. */
+.intro-card .c-cta{
+  margin-top:10px;
+  font-size:0.8125rem;
+  line-height:1.4;
+  color:var(--axis-z);
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:3px;
+  text-decoration-color:color-mix(in srgb, var(--axis-z) 45%, transparent);
+  transition:color var(--dur-1) var(--ease-out),
+             text-decoration-color var(--dur-1) var(--ease-out);
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .intro-card .c-cta{ text-decoration-color:rgba(90,169,255,0.45); }
+}
+/* The arrow moves the way the link goes — one step, on the hover of the whole
+   entry, so the movement confirms that the block and not just the words is the
+   target. Inline-block because a transform does nothing to an inline box. */
+.intro-card .c-cta-arrow{
+  display:inline-block;
+  transition:transform var(--dur-1) var(--ease-out);
+}
+.intro-card-link:hover .c-cta{
+  color:#79bcff;
+  text-decoration-color:currentColor;
+}
+.intro-card-link:hover .c-cta-arrow{ transform:translateX(3px); }
+/* ↗ leads away from the page, so its step is diagonal — the same distance,
+   pointed where the link actually goes. */
+.intro-card-link[target="_blank"]:hover .c-cta-arrow{ transform:translate(2px,-2px); }
 
 /* ---------- scroll cue ----------
    A full-height section's cost is that it hides the fact that anything follows
@@ -312,12 +380,23 @@
      lines, so three columns still hold real words. */
   .intro-cards{
     margin:22px auto 0;
-    padding-top:18px;
+    /* the same "+ inset" the desktop rule makes, against a smaller base */
+    padding-top:calc(18px + var(--hit-y));
     gap:14px clamp(10px, 3vw, 20px);
+    /* The columns are ~100px wide here and the gap can be as little as 10px,
+       so the hit area has to give most of its horizontal reach back or two
+       neighbouring entries would overlap each other's fill. */
+    --hit-x:5px;
+    --hit-y:8px;
   }
   .intro-card .c-pre,
   .intro-card .c-post{ font-size:0.75rem; line-height:1.35; }
   .intro-card .c-key{ font-size:1.125rem; }
+  /* "See the timeline" wraps to two lines in a 100px column and costs the
+     scroll cue the height it needs, so the article drops out and the line
+     reads "See timeline" / "Read post" — same promise, one line. */
+  .intro-card .c-cta{ margin-top:8px; font-size:0.6875rem; }
+  .intro-card .c-cta-opt{ display:none; }
 }
 
 /* A short landscape phone has no room for a full screen of copy plus a cue —

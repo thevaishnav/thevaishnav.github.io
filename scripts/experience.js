@@ -22,24 +22,70 @@
    to keep it true after the year turns over.
    ============================================================ */
 (function () {
-  var nodes = document.querySelectorAll('[data-years-since]');
-  if (!nodes.length) return;
+  var now = new Date();
 
+  // ---- the headline count: whole years since a start year ----------------
+  //
   // Calendar years only. A start month is not recorded, so anything more
   // precise than this would be a made-up figure dressed as an exact one —
   // and the copy reads "More than N years", which is a floor, not a
   // measurement.
-  var thisYear = new Date().getFullYear();
+  var thisYear = now.getFullYear();
 
-  Array.prototype.forEach.call(nodes, function (node) {
-    var start = parseInt(node.getAttribute('data-years-since'), 10);
-    // A missing or malformed year must leave the markup's own text alone
-    // rather than replace it with NaN.
-    if (!start || start > thisYear) return;
+  Array.prototype.forEach.call(
+    document.querySelectorAll('[data-years-since]'),
+    function (node) {
+      var start = parseInt(node.getAttribute('data-years-since'), 10);
+      // A missing or malformed year must leave the markup's own text alone
+      // rather than replace it with NaN.
+      if (!start || start > thisYear) return;
 
-    var years = thisYear - start;
-    if (years < 1) return;
+      var years = thisYear - start;
+      if (years < 1) return;
 
-    node.textContent = String(years);
-  });
+      node.textContent = String(years);
+    }
+  );
+
+  // ---- the length of an ongoing stint ------------------------------------
+  //
+  // The timeline (/experience/) prints how long each role lasted beside its
+  // dates. For the finished ones that is a fixed number written into the
+  // markup; for the one still running it is a number that goes stale every
+  // month, which is precisely the sort of figure a person forgets to revisit
+  // — a resume claiming "1 yr 2 mos" two years on reads as neglect.
+  //
+  //   <span class="tl-len" data-duration-since="2024-10">1 yr 10 mos</span>
+  //
+  // A start month is recorded here, unlike above, so months are honest and
+  // the output carries them. Same contract as the year count otherwise: the
+  // element holds a correct value already, so the page is right without
+  // JavaScript and nothing reflows on load.
+  Array.prototype.forEach.call(
+    document.querySelectorAll('[data-duration-since]'),
+    function (node) {
+      var parts = String(node.getAttribute('data-duration-since')).split('-');
+      var startYear = parseInt(parts[0], 10);
+      var startMonth = parseInt(parts[1], 10); // 1-12, as written
+
+      if (!startYear || !startMonth || startMonth < 1 || startMonth > 12) return;
+
+      // Months elapsed, counting the start month as the first one — the way
+      // a person counts a job they are still in. A role begun in October and
+      // read in October is "1 mo", not "0 mos".
+      var months =
+        (thisYear - startYear) * 12 + (now.getMonth() + 1 - startMonth) + 1;
+      if (months < 1) return; // a future start date: leave the markup alone
+
+      var years = Math.floor(months / 12);
+      var rest = months % 12;
+
+      var text = [];
+      if (years) text.push(years + (years === 1 ? ' yr' : ' yrs'));
+      // A whole number of years reads better without a trailing "0 mos".
+      if (rest || !years) text.push(rest + (rest === 1 ? ' mo' : ' mos'));
+
+      node.textContent = text.join(' ');
+    }
+  );
 })();

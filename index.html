@@ -12,6 +12,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
 <script src="/scripts/tools.js"></script>
+<!-- Only for the count in the intro's third figure; the list itself lives at
+     /contributions/. Loaded here rather than at the foot with its renderer so
+     the data is in place before anything asks for its length. -->
+<script src="/scripts/contributions.js"></script>
 </head>
 <body>
 
@@ -32,24 +36,49 @@
         <!-- Three figures, each read as one sentence broken across three lines:
              a lead-in, the number, and what the number is of. The middle line is
              the only thing sized to be seen from across the room — the other two
-             are there so it means something. -->
+             are there so it means something.
+
+             All three have somewhere to go, and the whole entry is the link —
+             but the thing that says so is the last line, not the hover. A
+             recruiter reading ten of these a day does not explore a page to
+             find out what is clickable, so each one ends in a plainly worded,
+             underlined, blue link: "See the timeline", "Read the post", "See
+             the list". The arrow says which kind of trip it is — → stays on
+             the site, ↗ leaves it — so the row reads as three offers rather
+             than as three panels that happen to respond to a pointer. -->
         <ul class="intro-cards">
           <li class="intro-card">
-            <span class="c-pre">More than</span>
-            <!-- Counted from 2022 by scripts/experience.js. The number written
-                 here is correct as it stands and is what shows without JS. -->
-            <span class="c-key"><span data-years-since="2022">4</span> years</span>
-            <span class="c-post">of working experience</span>
+            <a class="intro-card-inner intro-card-link" href="/experience/">
+              <span class="c-pre">More than</span>
+              <!-- Counted from 2022 by scripts/experience.js. The number written
+                   here is correct as it stands and is what shows without JS. -->
+              <span class="c-key"><span data-years-since="2022">4</span> years</span>
+              <span class="c-post">of working experience</span>
+              <span class="c-cta">See<span class="c-cta-opt"> the</span> timeline <span class="c-cta-arrow" aria-hidden="true">→</span></span>
+            </a>
           </li>
           <li class="intro-card">
-            <span class="c-pre">Handled</span>
-            <span class="c-key">81,521 props</span>
-            <span class="c-post">in a single scene</span>
+            <a class="intro-card-inner intro-card-link"
+               href="https://www.linkedin.com/posts/vaishnav-chincholkar_how-did-we-handle-81521-props-in-one-scene-ugcPost-7489218603838406657-QGoz/"
+               target="_blank" rel="noopener">
+              <span class="c-pre">Handled</span>
+              <span class="c-key">81,521 props</span>
+              <span class="c-post">in a single scene</span>
+              <span class="c-cta">Read<span class="c-cta-opt"> the</span> post <span class="c-cta-arrow" aria-hidden="true">↗</span></span>
+            </a>
           </li>
           <li class="intro-card">
-            <span class="c-pre">Currently leading</span>
-            <span class="c-key">6-person</span>
-            <span class="c-post">dev team</span>
+            <a class="intro-card-inner intro-card-link" href="/contributions/">
+              <span class="c-pre">More than</span>
+              <!-- Counted from the list in scripts/contributions.js by
+                   scripts/render-contributions.js. The number written here is
+                   correct as it stands and is what shows without JS. It is a
+                   floor, like the years figure above: the list holds the work
+                   worth linking to, not everything ever shipped. -->
+              <span class="c-key"><span data-contributions-count>7</span> contributions</span>
+              <span class="c-post">to games and tools</span>
+              <span class="c-cta">See<span class="c-cta-opt"> the</span> list <span class="c-cta-arrow" aria-hidden="true">→</span></span>
+            </a>
           </li>
         </ul>
       </div>
@@ -91,6 +120,7 @@
 </main>
 
 <script src="/scripts/render-tools.js"></script>
+<script src="/scripts/render-contributions.js"></script>
 <script src="/scripts/experience.js"></script>
 
 </body>

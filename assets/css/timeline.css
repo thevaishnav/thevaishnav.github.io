@@ -1,0 +1,311 @@
+/* ============================================================
+   The experience timeline — /experience/.
+
+   One rail, one node per role, newest at the top. The rail is the
+   whole point of the page: a list of jobs answers "what has he
+   done", and a line down the side answers "for how long, and in
+   what order" without the reader having to subtract dates in their
+   head. That is the question this page exists for, so the dates get
+   their own column rather than being the first words of a paragraph.
+
+   Everything else is deliberately plain. There are no cards here —
+   a boxed entry per role turns a career into a component gallery,
+   and the rail already does the grouping a border would.
+   ============================================================ */
+
+/* ---------- the summary strip ----------
+   Four facts, above the rail, in the order a reader asks for them: what he is
+   doing now, what he is responsible for, what has shipped, what he is deep in.
+
+   It is a definition list drawn as two columns rather than a row of cards on
+   purpose. The page's rule is that a career is not a component gallery, and a
+   summary in four boxes would be the first thing to break it — worse, boxes
+   would make the summary louder than the timeline it summarises. A narrow
+   label column and a hairline between rows says "reference table", which is
+   what this is.
+
+   The label column is fixed rather than auto: four labels of different lengths
+   left the values on four different verticals, and a column the eye can run
+   down is the entire reason for setting this as a table rather than as prose. */
+.tl-glance{
+  list-style:none;
+  margin:0 0 26px;
+  padding:0;
+  border-top:1px solid var(--line);
+  max-width:60ch;
+}
+.tl-glance li{
+  display:grid;
+  grid-template-columns:5.5rem minmax(0,1fr);
+  gap:16px;
+  padding:11px 0;
+  border-bottom:1px solid var(--line);
+}
+.tl-glance .k{
+  font-size:0.6875rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  /* aligned to the first line of the value beside it, which is a size larger */
+  padding-top:0.2em;
+}
+.tl-glance .v{
+  font-size:0.9375rem;
+  line-height:1.5;
+  color:var(--text);
+}
+
+.timeline{
+  list-style:none;
+  margin:0;
+  padding:0 0 8px;
+  /* Where the rail sits: the dates column's width plus half the gutter beside
+     it. Written once because the line, the nodes and the column all have to
+     agree on it, and three hand-matched numbers drift the moment one changes. */
+  --date-col:8.5rem;
+  --gutter-col:34px;
+  --rail-x:calc(var(--date-col) + (var(--gutter-col) / 2));
+}
+
+.tl-item{
+  position:relative;
+  display:grid;
+  grid-template-columns:var(--date-col) minmax(0,1fr);
+  column-gap:var(--gutter-col);
+  padding-bottom:44px;
+}
+
+/* The rail, drawn per item rather than once down the whole list. Per item it
+   can stop exactly where the last entry's node is instead of running on past
+   it into empty space, and each segment starts level with its own node, so a
+   short entry never leaves a gap in the line. */
+.tl-item::before{
+  content:"";
+  position:absolute;
+  left:var(--rail-x);
+  top:0.55rem;
+  bottom:0;
+  width:1px;
+  background:var(--line);
+}
+/* The last segment has nothing below it to connect to, so it fades out rather
+   than ending on a hard stop that reads like a cut-off list. */
+.tl-item:last-child::before{
+  bottom:auto;
+  height:52px;
+  background:linear-gradient(180deg, var(--line), transparent);
+}
+
+/* The node. A ring on the page background, so the rail visibly passes behind
+   it instead of the two overlapping into a blob. */
+.tl-item::after{
+  content:"";
+  position:absolute;
+  left:calc(var(--rail-x) - 4px);
+  top:calc(0.55rem - 4px);
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--bg);
+  box-shadow:0 0 0 2px var(--muted);
+}
+/* The role that is still running. It is the one fact on the page a reader
+   wants before any other — "is he available, and what is he doing now" — so
+   it is the only filled node, and it carries a halo the others do not. */
+.tl-item.is-current::after{
+  background:var(--axis-z);
+  box-shadow:0 0 0 2px var(--axis-z),
+             0 0 0 7px color-mix(in srgb, var(--axis-z) 14%, transparent);
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .tl-item.is-current::after{
+    box-shadow:0 0 0 2px var(--axis-z), 0 0 0 7px rgba(90,169,255,0.14);
+  }
+}
+
+/* ---------- the date column ----------
+   Right-aligned against the rail so every date ends on the same vertical, a
+   hairline away from the node it belongs to. Ragged-left is the correct
+   setting for a column of dates read as a sequence: the eye follows the edge
+   nearest the line. */
+.tl-when{
+  grid-column:1;
+  margin:0;
+  text-align:right;
+  font-size:0.75rem;
+  line-height:1.5;
+  letter-spacing:0.02em;
+  color:var(--muted);
+  /* fixed-width figures so the years stack in columns rather than shimmying */
+  font-variant-numeric:tabular-nums;
+}
+.tl-when .tl-now{ color:var(--axis-z); }
+/* The length of the stint, under the dates. It is the arithmetic the reader
+   would otherwise be doing themselves. */
+.tl-len{
+  display:block;
+  margin-top:3px;
+  font-size:0.6875rem;
+  color:color-mix(in srgb, var(--muted) 75%, transparent);
+}
+@supports not (color: color-mix(in srgb, red 10%, blue)){
+  .tl-len{ color:#6c717a; }
+}
+
+/* ---------- the entry ---------- */
+.tl-body{ grid-column:2; min-width:0; }
+
+.tl-role{
+  font-size:1.25rem;
+  line-height:1.25;
+  margin:0 0 4px;
+}
+.tl-where{
+  margin:0 0 14px;
+  font-size:0.9375rem;
+  color:var(--muted);
+}
+.tl-where strong{ color:var(--text); font-weight:600; }
+
+/* ---------- weight by recency ----------
+   The entries are not equal and the page should not draw them as though they
+   are. The longest entry here is the previous job — six bullets against the
+   current job's three — so left alone, the block a skimmer's eye lands on is a
+   role that ended in 2024. On a page whose whole claim is "senior, leading a
+   team, now", that is the layout arguing against the text.
+
+   The fix is hierarchy rather than padding: the current role is set a step
+   larger and a shade brighter, and everything below it recedes slightly. It
+   costs no words and states the right thing — this is what he does; that is
+   what he did. Deliberately small amounts. A current entry that shouted would
+   just move the imbalance to the other end. */
+.tl-item.is-current .tl-role{ font-size:1.4375rem; }
+.tl-item.is-current .tl-where{ color:#9aa0a9; }
+.tl-item.is-current .tl-points li{
+  color:#c3c8d0;
+  font-size:0.96875rem;
+}
+
+.tl-points{
+  margin:0;
+  padding:0;
+  list-style:none;
+  max-width:64ch;
+}
+.tl-points li{
+  position:relative;
+  padding-left:18px;
+  margin-bottom:9px;
+  color:#a9aeb6;
+  font-size:0.9375rem;
+  line-height:1.55;
+}
+/* A dash rather than a disc: at this size a bullet next to a rail full of
+   nodes reads as a second, competing set of markers. */
+.tl-points li::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0.72em;
+  width:8px;
+  height:1px;
+  background:var(--muted);
+}
+.tl-points strong{ color:var(--text); font-weight:600; }
+
+/* An inline link out of a bullet — the LinkedIn write-up on the 81,521 props,
+   reached from the sentence that makes the claim. Underlined at rest for the
+   same reason the landing page's figures are: the reader should not have to
+   hover to find out where the evidence is. */
+.tl-link{
+  color:var(--axis-z);
+  text-decoration:underline;
+  text-underline-offset:3px;
+  text-decoration-thickness:1px;
+  white-space:nowrap;
+  transition:color var(--dur-1) var(--ease-out);
+}
+.tl-link:hover{ color:#79bcff; }
+
+.tl-points + .pill-row{ margin-top:14px; }
+
+/* ---------- the closing blocks ----------
+   Education and honours are not roles, so they are not on the rail. They sit
+   below it as a plain two-column strip — present, dated, and clearly not part
+   of the sequence above. */
+.tl-aside{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:24px clamp(24px, 4vw, 56px);
+  padding-top:34px;
+  margin-top:8px;
+  border-top:1px solid var(--line);
+}
+.tl-aside h2{
+  font-size:0.75rem;
+  font-family:'Inter', system-ui, sans-serif;
+  font-weight:600;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 14px;
+}
+.tl-aside ul{ list-style:none; margin:0; padding:0; }
+.tl-aside li{ margin-bottom:14px; }
+.tl-aside li:last-child{ margin-bottom:0; }
+.tl-aside .k{
+  display:block;
+  font-size:0.9375rem;
+  color:var(--text);
+  font-weight:600;
+}
+.tl-aside .v{
+  display:block;
+  font-size:0.8125rem;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+/* ---------- responsive ---------- */
+
+/* Below this the dates column costs more width than it earns: the entries are
+   down to about forty characters a line while a third of the screen holds two
+   short dates. So the date moves above its own role, the rail moves to the far
+   left, and the page becomes one column with a spine. */
+@media (max-width: 720px){
+  /* The summary keeps its two columns here rather than stacking. Stacking would
+     put each label on its own line and double the strip's height at exactly the
+     width where vertical space is scarcest — and the label column is what makes
+     the four rows scannable in the first place. It narrows instead. */
+  .tl-glance li{ grid-template-columns:4.5rem minmax(0,1fr); gap:12px; padding:10px 0; }
+  .tl-glance .v{ font-size:0.9rem; }
+
+  .timeline{ --date-col:0px; --gutter-col:0px; --rail-x:4px; }
+
+  .tl-item{
+    grid-template-columns:minmax(0,1fr);
+    padding-left:24px;
+    padding-bottom:32px;
+  }
+  .tl-item::before,
+  .tl-item::after{ top:0.45rem; }
+  .tl-item::after{ top:calc(0.45rem - 4px); }
+  .tl-item:last-child::before{ height:40px; }
+
+  .tl-when{
+    grid-column:1;
+    text-align:left;
+    margin-bottom:6px;
+  }
+  /* Side by side with the dates now that there is a full line for them. */
+  .tl-len{ display:inline; margin:0 0 0 8px; }
+  .tl-len::before{ content:"· "; }
+
+  .tl-body{ grid-column:1; }
+  .tl-role{ font-size:1.125rem; }
+  /* Same one-step lead over the entries below it as on desktop, rescaled — the
+     desktop value would be a third of the viewport width here. */
+  .tl-item.is-current .tl-role{ font-size:1.25rem; }
+
+  .tl-aside{ grid-template-columns:minmax(0,1fr); gap:26px; }
+}

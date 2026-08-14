@@ -17,7 +17,10 @@
 @import url("intro.css");    /* landing: the full-height opening screen  */
 @import url("hero.css");     /* landing hero, gizmo, subpage intros     */
 @import url("content.css");  /* figures, splits, meta, CTA, code, tables*/
+@import url("timeline.css"); /* experience: the dated career rail          */
+@import url("contributions.css"); /* contributions: the grouped work list  */
 @import url("doc.css");      /* manual: sticky TOC + prose column       */
 @import url("contact.css");  /* the contact <dialog>                    */
 @import url("cursor.css");   /* the custom pointer (fine pointers only)  */
 @import url("motion.css");   /* press feedback + the a11y preference set */
+@import url("print.css");    /* the site on paper — last, so it can override */

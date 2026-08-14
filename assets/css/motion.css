@@ -15,6 +15,8 @@
    rule is deliberately about *commit targets* rather than about buttons:
    if letting go of it does something, pressing it has to say so. */
 .card-featured .btn:active,
+.proj-filter:active,
+.proj-media-video:active,
 .scroll-cue:active,
 .contact-card:active,
 .contact-close:active,
@@ -63,6 +65,12 @@
      step down has to go too, or the arrow jumps its 3px in one frame — a
      movement made instant is more jarring than the movement was. */
   .scroll-cue:hover .scroll-cue-arrow{ transform:none; }
+  /* Same problem on a project's video cover: made instant, the zoom and the
+     play button's pop are a jump rather than a movement. The colour changes
+     under them stay, so the cover still answers the pointer. The button keeps
+     its centring transform — that one is layout, not motion. */
+  .proj-media-video:hover .proj-cover{ transform:none; }
+  .proj-media-video:hover .proj-play{ transform:translate(-50%,-50%); }
   /* The cue's `visibility` is normally delayed so it stays visible for the
      length of the fade. The blanket rule above clamps durations but not delays,
      so without this the cue would fade out instantly and then sit there
@@ -127,7 +135,7 @@
     --muted:#B4BAC3;
     --surface:#111419;
   }
-  .card, .meta-cell, .contact-card, .table-scroll, pre.code, .code-block{
+  .card, .proj, .meta-cell, .contact-card, .table-scroll, pre.code, .code-block{
     border-width:1px;
     border-color:var(--line);
   }

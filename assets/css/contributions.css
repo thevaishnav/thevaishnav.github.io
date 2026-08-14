@@ -1,0 +1,602 @@
+/* ============================================================
+   The projects board — /contributions/.
+
+   A card grid rather than the site's usual hairline list, and the exception
+   is earned: every entry here has a cover worth looking at. A reader deciding
+   whether to watch a two-minute gameplay video decides from the frame, not
+   from the sentence next to it — so the image is the entry, and the copy is
+   what confirms it.
+
+   Two rules hold the grid together:
+
+   1. Every card is the same shape. The covers arrive at four different aspect
+      ratios (a 16:9 video still, a 2.5:1 store banner, a 1.9:1 screenshot),
+      and a grid of differently-proportioned images reads as a page that did
+      not know what it was doing. They are all cropped to one 2:1 box.
+   2. Every card answers the same questions in the same order — what it is,
+      the one number worth knowing, what was built, whose work it was, what it
+      runs on. Down a column, the eye can compare like with like without
+      re-reading a layout each time.
+   ============================================================ */
+
+/* ---------- the toolbar ----------
+   Filters on the left, the running count on the right. The count is not
+   decoration: when a filter cuts the grid from seven cards to two, the count
+   is what says the rest were filtered rather than never there — the reader
+   has no other way to tell a short list from a hidden one. */
+.proj-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:14px 20px;
+  padding-bottom:20px;
+  margin-bottom:24px;
+  border-bottom:1px solid var(--line);
+}
+.proj-filters{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+/* One is on at a time, and the pressed state is the whole affordance. Set in
+   the site's label language (mono, uppercase, widely tracked) so the row reads
+   as controls rather than as a second navigation. */
+.proj-filter{
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-size:0.6875rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:8px 13px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:color var(--dur-1) var(--ease-out),
+             border-color var(--dur-1) var(--ease-out),
+             background var(--dur-1) var(--ease-out);
+}
+.proj-filter:hover{ color:var(--text); border-color:var(--muted); }
+/* On is a filled state, not a brighter outline: at this size a border colour
+   alone is not a difference a reader can see across a row of seven — and with
+   one filter on at a time, that single lit button is the only thing on the
+   page saying why five cards are missing. */
+.proj-filter[aria-pressed="true"]{
+  color:var(--axis-z);
+  border-color:color-mix(in srgb, var(--axis-z) 45%, var(--line));
+  background:color-mix(in srgb, var(--axis-z) 12%, transparent);
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .proj-filter[aria-pressed="true"]{
+    border-color:rgba(90,169,255,0.45);
+    background:rgba(90,169,255,0.12);
+  }
+}
+
+.proj-count{
+  margin:0;
+  font-size:0.6875rem;
+  letter-spacing:0.1em;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------- the grid ----------
+   auto-fill, so the column count follows the viewport instead of stopping at
+   a fixed cap — the same reasoning as the site's containers (tokens.css). The
+   card has a comfortable width and a wide screen gets more of them, not
+   wider ones. */
+.proj-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap:22px;
+  padding-bottom:8px;
+}
+
+.proj{
+  display:flex;
+  flex-direction:column;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  /* the cover is flush to the card's edge, so the corners have to clip it */
+  overflow:hidden;
+  transition:border-color var(--dur-1) var(--ease-out);
+}
+.proj:hover{ border-color:#39414f; }
+/* Filtering hides cards with the `hidden` attribute, whose display:none comes
+   from the UA stylesheet — and the `display:flex` above, being an author rule,
+   beats it. Without this line a filtered card keeps its place in the grid
+   while the count says it is gone. */
+.proj[hidden]{ display:none; }
+
+/* ---------- the cover ----------
+   One box, one crop, whatever arrives. object-fit does the cropping so the
+   image keeps its own proportions rather than being squashed to fit; the
+   per-image object-position (set by render-contributions.js) is what keeps a
+   store banner's logo end in frame instead of centring on its fine print. */
+.proj-media{
+  position:relative;
+  display:block;
+  width:100%;
+  aspect-ratio:2 / 1;
+  margin:0;
+  padding:0;
+  border:0;
+  border-bottom:1px solid var(--line);
+  background:var(--surface-2);
+  overflow:hidden;
+}
+@supports not (aspect-ratio: 2 / 1){
+  .proj-media{ height:170px; }
+}
+.proj-cover{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* A cover that plays. The whole box is the button, so the target is the
+   picture rather than the small glyph on it. */
+.proj-media-video{
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  color:var(--text);
+}
+.proj-play{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:52px;
+  height:52px;
+  padding-left:3px; /* optical centring: a triangle's mass sits left of centre */
+  border-radius:50%;
+  /* Flat, not frosted. A backdrop-filter here is re-rasterised on every scroll
+     frame — seven of them over seven covers — and it showed as a smeared block
+     mid-scroll on the first machine it was tried on. A solid scrim reads the
+     same at 52px and costs nothing. */
+  background:rgba(13,15,18,0.72);
+  border:1px solid rgba(255,255,255,0.28);
+  transition:background var(--dur-1) var(--ease-out),
+             border-color var(--dur-1) var(--ease-out),
+             transform var(--dur-2) var(--ease-spring);
+}
+.proj-media-video:hover .proj-play{
+  background:rgba(13,15,18,0.88);
+  border-color:rgba(255,255,255,0.5);
+  transform:translate(-50%,-50%) scale(1.08);
+}
+/* The cover lifts slightly under the pointer so the whole box, not just the
+   glyph, reads as the thing being pressed. */
+.proj-media-video .proj-cover{
+  transition:transform var(--dur-3) var(--ease-out), opacity var(--dur-1) var(--ease-out);
+}
+.proj-media-video:hover .proj-cover{ transform:scale(1.03); opacity:0.9; }
+
+/* ---------- the player ----------
+   A lightbox, not an inline swap. The card's media box is 330px wide, which is
+   the right size for a thumbnail and useless for actually watching anything,
+   so the video opens over the page at whatever size the viewport will give it.
+
+   Three ceilings on the width, and the last is the one that matters: a 16:9
+   box sized only by width overflows a short window, and a laptop in landscape
+   is exactly that. Deriving the width from the available *height* keeps the
+   whole player on screen without the dialog needing to scroll. */
+.video-modal{
+  width:min(1180px, calc(100vw - 40px), calc((100vh - 132px) * 16 / 9));
+  max-width:none;
+  padding:0;
+  border:0;
+  /* The surface is the video. A panel around it would be a frame around a
+     frame, and it is already sitting on a dimmed page. */
+  background:transparent;
+  color:var(--text);
+  overflow:visible;
+}
+.video-modal[open]{ display:block; }
+.video-modal::backdrop{
+  background:rgba(6,7,9,0.86);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+
+/* In and out along the same path, mirrored curves — the same movement the
+   contact popup uses, and for the same reason: a surface that animates in and
+   then vanishes on close reads as a glitch rather than a dismissal. */
+.video-modal[open]{ animation:video-modal-in var(--dur-2) var(--ease-out); }
+.video-modal[open]::backdrop{ animation:video-backdrop-in var(--dur-2) var(--ease-out); }
+@keyframes video-modal-in{
+  from{ opacity:0; transform:translateY(10px) scale(.98); }
+}
+@keyframes video-backdrop-in{ from{ opacity:0; } }
+
+/* `.is-closing` is set by render-contributions.js, which waits for these to
+   end before it closes the dialog and destroys the iframe. `forwards` holds
+   the last frame so nothing snaps back for the frame in between. */
+.video-modal[open].is-closing{
+  animation:video-modal-out 160ms var(--ease-in) forwards;
+}
+.video-modal[open].is-closing::backdrop{
+  animation:video-backdrop-out 160ms var(--ease-in) forwards;
+}
+@keyframes video-modal-out{
+  to{ opacity:0; transform:translateY(10px) scale(.98); }
+}
+@keyframes video-backdrop-out{ to{ opacity:0; } }
+
+.video-modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:10px;
+}
+.video-modal-title{
+  margin:0;
+  font-size:0.75rem;
+  letter-spacing:0.08em;
+  color:var(--muted);
+  /* the title of a card, on one line, however long the card's title is */
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.video-close{
+  flex:none;
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+  transition:color var(--dur-1) var(--ease-out),
+             border-color var(--dur-1) var(--ease-out),
+             background var(--dur-1) var(--ease-out);
+}
+.video-close svg{ width:16px; height:16px; display:block; }
+.video-close:hover{ color:var(--text); border-color:var(--muted); background:var(--surface-2); }
+
+.video-frame{
+  position:relative;
+  width:100%;
+  aspect-ratio:16 / 9;
+  border-radius:12px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:0 32px 90px rgba(0,0,0,0.6);
+}
+@supports not (aspect-ratio: 16 / 9){
+  .video-frame{ height:0; padding-bottom:56.25%; }
+}
+.video-frame iframe{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  border:0;
+}
+
+/* ---------- links on the cover ----------
+   A still cover does nothing when clicked, so it carries the card's links —
+   as full-height panels dividing the image between them rather than as pills
+   sitting on it. A pill has to be aimed at; a panel is the half of the picture
+   you are already pointing at, which is the whole reason the links moved onto
+   the image in the first place.
+
+   Written for no-hover first — a bar immediately under the image, always
+   visible — and only lifted onto the cover in the block below. That order
+   matters: a hover-revealed control is invisible until a device proves it can
+   hover, so the visible fallback has to be the default rather than the
+   exception.
+
+   And the proof is three conditions, not one. `hover: hover` alone was tried
+   and it failed on a real phone, which reported itself hoverable and hid the
+   only route to the App Store behind a gesture it cannot perform — a browser
+   is free to be wrong about this and several are. The viewport width cannot
+   be wrong in the same way: below the breakpoint the card is the width of the
+   screen and the buttons stay in the open, whatever the device claims about
+   its pointer.
+
+   The wrapper is what the overlay is positioned against. The media box is a
+   fixed 2:1 frame that clips its own overflow, and these buttons have to be
+   able to sit outside it. */
+.proj-shot{ position:relative; }
+.proj-actions{
+  display:flex;
+  /* No gap and no side padding: the bar is the width of the image, and the
+     buttons divide it. A gap here would leave slivers of card showing between
+     panels that are meant to read as one control. */
+  border-bottom:1px solid var(--line);
+}
+/* Equal shares of the width, whatever the labels are — two buttons of
+   different lengths splitting an image unevenly reads as a mistake. */
+.proj-actions .proj-link{
+  flex:1;
+  justify-content:center;
+  border:0;
+  border-radius:0;
+  /* 13px vertical puts the bar at ~44px, which is the size of a thumb. It has
+     no effect in the overlay below, where the panels are stretched to the full
+     height of the cover anyway. */
+  padding:13px 10px;
+  background:var(--surface-2);
+}
+.proj-actions .proj-link + .proj-link{ border-left:1px solid var(--line); }
+.proj-actions .proj-link:hover{ background:#20242c; }
+
+@media (hover: hover) and (pointer: fine) and (min-width: 721px){
+  .proj-actions{
+    position:absolute;
+    inset:0;
+    border-bottom:0;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity var(--dur-2) var(--ease-out);
+  }
+  /* focus-within is not a nicety here: without it the links exist only for
+     people using a pointer. Opacity alone hides them — they stay in the tab
+     order and in the accessibility tree — so tabbing to one brings the whole
+     overlay up with it. */
+  .proj-shot:hover .proj-actions,
+  .proj-actions:focus-within{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  /* Black rather than the page's near-black, and translucent: the cover has to
+     stay legible under it, or the reader loses track of which card they are
+     on. The pointed-at panel deepens, which is what tells you which half you
+     are about to commit to when both are lit. */
+  .proj-actions .proj-link{
+    background:rgba(0,0,0,0.55);
+    color:#fff;
+    font-size:0.8125rem;
+  }
+  .proj-actions .proj-link + .proj-link{
+    border-left:1px solid rgba(255,255,255,0.18);
+  }
+  .proj-actions .proj-link:hover{
+    background:rgba(0,0,0,0.76);
+    color:var(--link-accent);
+  }
+  .proj-actions .proj-link-arrow{ color:inherit; }
+}
+
+/* ---------- the copy ----------
+   A column, with the links pinned to the bottom by the auto margin below —
+   cards in a row hold different amounts of text, and a link row that floats
+   at a different height in each one turns a tidy grid into a ragged one. */
+.proj-body{
+  display:flex;
+  flex-direction:column;
+  flex:1;
+  padding:18px 18px 20px;
+}
+
+.proj-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:5px;
+}
+.proj-title{
+  font-size:1.0625rem;
+  line-height:1.25;
+  margin:0;
+}
+
+/* The badge says what state the thing is in, and every value is provable by a
+   link on the same card — "Live" next to a store link, "Open source" next to
+   a repository. Colour carries the same split the rest of the site uses:
+   green for what is running, amber for what is readable, plain for what is
+   simply done. */
+.proj-status{
+  flex:none;
+  font-size:0.5625rem;
+  letter-spacing:0.11em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  border-radius:999px;
+  padding:3px 8px;
+  border:1px solid var(--line);
+  color:var(--muted);
+  /* the title beside it is a size larger; this sits on its cap height */
+  margin-top:2px;
+}
+.proj-status.is-live{
+  color:var(--axis-y);
+  border-color:color-mix(in srgb, var(--axis-y) 45%, transparent);
+  background:color-mix(in srgb, var(--axis-y) 12%, transparent);
+}
+.proj-status.is-open{
+  color:var(--axis-w);
+  border-color:color-mix(in srgb, var(--axis-w) 45%, transparent);
+  background:color-mix(in srgb, var(--axis-w) 12%, transparent);
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .proj-status.is-live{ border-color:rgba(70,167,88,0.45); background:rgba(70,167,88,0.12); }
+  .proj-status.is-open{ border-color:rgba(232,163,61,0.45); background:rgba(232,163,61,0.12); }
+}
+
+.proj-kind{
+  margin:0 0 10px;
+  font-size:0.75rem;
+  line-height:1.45;
+  color:var(--muted);
+}
+
+/* The one figure worth reading from across the room, and the only line in the
+   card set in the accent. There is at most one per card on purpose: a card
+   with three highlighted numbers has highlighted none of them. */
+.proj-stat{
+  margin:0 0 10px;
+  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-size:0.75rem;
+  line-height:1.45;
+  color:var(--axis-z);
+  font-variant-numeric:tabular-nums;
+}
+
+.proj-desc{
+  margin:0 0 12px;
+  font-size:0.8125rem;
+  line-height:1.6;
+  color:#a9aeb6;
+}
+.proj-role{
+  margin:0 0 12px;
+  font-size:0.75rem;
+  line-height:1.45;
+  color:var(--muted);
+}
+
+/* ---------- the chips ----------
+   Two weights, one row. Platforms are what a reader is checking for, so they
+   are drawn as filled tiles; the tech behind them is context and recedes to an
+   outline. Both are the same size — the difference is contrast, not scale, so
+   the row keeps one rhythm. */
+.proj-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  list-style:none;
+  margin:0 0 14px;
+  padding:0;
+}
+.proj-chip{
+  font-size:0.6875rem;
+  line-height:1.4;
+  padding:3px 8px;
+  border-radius:6px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  color:var(--text);
+}
+.proj-chip.is-tech{
+  background:transparent;
+  color:var(--muted);
+}
+
+/* ---------- the links ----------
+   The shape a link takes on this page is set by the block above, which lays
+   these out across the cover. What is defined here is the link itself — an
+   outlined pill rather than a .btn, because a button says "this is the action
+   of the page" and these are references.
+
+   The arrow is the direction, matching the figures on the landing page: ↗
+   leaves the site, → stays on it.
+
+   .proj-links is the other home for them: a row at the foot of the card, used
+   when the cover is a video and therefore already spoken for. No project needs
+   it today — the video cards carry no links, since their cover plays the thing
+   a link would have pointed at — but a Steam page added to one tomorrow has
+   somewhere to land other than on top of a play button. */
+.proj-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  /* pins the row to the bottom of a card of any height */
+  margin-top:auto;
+}
+.proj-link{
+  /* Every link falls back to the site's link blue. The per-destination tints
+     below are a nicety; a link type the data invents tomorrow still gets a
+     colour that means "link" rather than no colour at all. */
+  --link-accent:var(--axis-z);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  font-size:0.75rem;
+  line-height:1.4;
+  color:var(--text);
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:color var(--dur-1) var(--ease-out),
+             border-color var(--dur-1) var(--ease-out),
+             background var(--dur-1) var(--ease-out);
+}
+
+/* Where the link goes, as colour, and only on hover — tinted at rest they
+   would be a row of brand badges rather than a place to go. Apple's is a pale
+   blue rather than the white it used to be: over the cover the label is
+   already white, so white-on-hover would have been no answer at all. The type
+   comes from the data — see CONTRIBUTIONS_DATA. */
+.proj-link[data-type="apple"]{  --link-accent:#9ad0ff; }
+.proj-link[data-type="github"]{ --link-accent:var(--axis-y); }
+
+.proj-link:hover{
+  color:var(--link-accent);
+  border-color:color-mix(in srgb, var(--link-accent) 55%, var(--line));
+  background:rgba(255,255,255,0.03);
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .proj-link:hover{ border-color:var(--muted); }
+}
+.proj-link:active{ background:rgba(255,255,255,0.06); }
+
+/* Inline-block because a transform does nothing to an inline box — same as
+   the landing page's cue arrow. */
+.proj-link-arrow{
+  display:inline-block;
+  font-size:0.875em;
+  color:var(--muted);
+  transition:transform var(--dur-1) var(--ease-out),
+             color var(--dur-1) var(--ease-out);
+}
+.proj-link:hover .proj-link-arrow{
+  color:inherit;
+  transform:translateX(3px);
+}
+/* ↗ leads away from the page, so its step is diagonal — the same distance,
+   pointed where the link actually goes. Same rule as the landing page's. */
+.proj-link[target="_blank"]:hover .proj-link-arrow{ transform:translate(2px,-2px); }
+
+/* Only ever seen with scripts off, where the board itself is absent. */
+.proj-noscript{
+  color:var(--muted);
+  font-size:0.9375rem;
+  max-width:60ch;
+  margin:0;
+}
+.proj-noscript a{ color:var(--axis-z); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 720px){
+  .proj-toolbar{
+    /* The count moves under the filters rather than fighting them for the
+       last 40px of a phone's width. */
+    align-items:flex-start;
+    flex-direction:column;
+    gap:12px;
+  }
+  .proj-grid{ gap:18px; }
+  .proj-body{ padding:16px 16px 18px; }
+
+  /* The player takes the width it can get here — a phone has none to spare —
+     and the head above it tightens to match. */
+  .video-modal{ width:min(calc(100vw - 24px), calc((100vh - 116px) * 16 / 9)); }
+  .video-modal-head{ margin-bottom:8px; }
+  .video-frame{ border-radius:10px; }
+  /* Taller pills, because here they are hit with a thumb rather than pointed
+     at. The text stays the same size — this is padding, not scale. */
+  .proj-link{ padding:9px 14px; }
+  .proj-filter{ padding:9px 12px; }
+}

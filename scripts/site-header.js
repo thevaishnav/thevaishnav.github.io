@@ -24,6 +24,14 @@
 
   var LINKS = [
     { label: 'All tools', href: '/' },
+    // The landing page's "4 years" figure links here too. Both routes exist on
+    // purpose: someone skimming the intro finds it in the sentence it belongs
+    // to, and someone who has scrolled past finds it where site sections live.
+    { label: 'Experience', href: '/experience/' },
+    // Same arrangement as Experience above: the landing page's "N contributions"
+    // figure links here, and the nav carries it too for anyone who has scrolled
+    // past the intro.
+    { label: 'Contributions', href: '/contributions/' },
     // Not a page: #contact opens the contact popup, which scripts/render-contact.js
     // builds on every page. A plain hash link rather than a button so the URL
     // carries the open state and Back closes it.

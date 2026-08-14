@@ -1,0 +1,244 @@
+/* ============================================================
+   Print — the site on paper, and in the PDF a recruiter makes of it.
+
+   This is not a nicety. The experience page in particular gets printed:
+   a recruiter who wants to forward a candidate attaches a PDF to an ATS
+   or to an email, because that is the artefact their pipeline accepts.
+   Until this file existed, that PDF was a dark rectangle — either a
+   full-bleed near-black page in a browser that honours backgrounds, or
+   a mess of pale grey text on white in one that drops them, which is
+   worse: the text survives at #8A8F98 on paper it was never meant to
+   touch, and half the page is unreadable rather than obviously broken.
+
+   So the whole theme inverts here. That is the one place on this site
+   where the dark palette is not the design — paper is a light surface
+   and always has been, and a page that ignores that is spending someone
+   else's toner to make a point.
+
+   Two principles run through what follows:
+
+   1. Colour carries no meaning on paper. Every accent — the blue links,
+      the current-role halo, the axis colours — collapses to black, grey
+      and rules. Anything that would only survive as a coloured shape is
+      cut rather than printed pale.
+   2. Anything that only exists to navigate is cut. A sticky header, a
+      pair of buttons and a scroll cue are all instructions to click,
+      and paper cannot be clicked. What is left is the content, plus the
+      URLs of links, spelled out, so the evidence is still reachable
+      from a printout.
+   ============================================================ */
+
+@media print{
+
+  /* Margins are the printer's, not the design's: the site's viewport-relative
+     gutter has no meaning on a fixed sheet, and a clamp() against a paper
+     width produces the minimum every time. */
+  @page{ margin:16mm 14mm; }
+
+  /* The palette, redefined at the root so every component that draws itself
+     from tokens follows without needing its own print rule. This is the whole
+     reason colours live in tokens.css: one override here reaches everything.
+     `print-color-adjust` is deliberately NOT set to exact — the point is to
+     stop the browser painting backgrounds, not to force it to. */
+  :root{
+    --bg:        #ffffff;
+    --surface:   #ffffff;
+    --surface-2: #ffffff;
+    --line:      #c8ccd2;
+    --text:      #000000;
+    --muted:     #4a4f57;
+    --axis-x:    #000000;
+    --axis-y:    #000000;
+    --axis-z:    #000000;
+    --axis-w:    #000000;
+    --nav-h:     0px;
+  }
+
+  html, body{
+    background:#fff !important;
+    color:#000 !important;
+  }
+  /* Hairline dividers and rules do have to survive — they are the structure,
+     not decoration — so the elements that draw them opt back in individually
+     rather than the whole document doing so. */
+  body{ font-size:10.5pt; line-height:1.45; }
+
+  /* Anything whose only job is to be clicked or scrolled. */
+  .nav,
+  .scroll-cue,
+  .cta-band,
+  .contact-modal,
+  .video-modal,
+  .cursor-ring,
+  .cursor-dot{ display:none !important; }
+
+  .wrap{ padding:0 !important; }
+
+  /* Display type is sized for a screen two feet away. On a sheet held at
+     reading distance the same values waste a third of the first page. */
+  h1{ font-size:20pt !important; margin:0 0 8pt !important; }
+  h2{ font-size:13pt !important; }
+  .page-hero{ padding:0 0 4pt !important; }
+  .page-hero .lead{ font-size:10.5pt !important; color:#000 !important; max-width:none; }
+  .eyebrow{ color:#4a4f57 !important; }
+
+  /* ---------- the summary strip ----------
+     Kept, and first. On paper it is the only part of the page a reader
+     scanning a stack of applications is guaranteed to look at. */
+  .tl-glance{ max-width:none; }
+  .tl-glance .v{ color:#000 !important; }
+
+  /* ---------- the timeline ----------
+     The rail goes. It is drawn in pseudo-element backgrounds, which a browser
+     may or may not print depending on the user's own settings — so it would be
+     a line that is there on one machine and absent on the next, with the date
+     column left hanging where it used to be. A printed career does not need a
+     spine anyway: the sheet has edges, and the dates are already in a column. */
+  .tl-item::before,
+  .tl-item::after{ display:none !important; }
+
+  .timeline{ --date-col:7.5rem; --gutter-col:18px; }
+  .tl-item{
+    padding-bottom:14pt;
+    /* A role split across a page break is the one layout failure that actually
+       loses information — the reader gets a company with no dates, or bullets
+       with no employer. */
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+  .tl-when{ color:#3a3f47 !important; }
+  .tl-when .tl-now{ color:#000 !important; font-weight:600; }
+  .tl-len{ color:#5b616a !important; }
+  .tl-points li{ color:#1a1d22 !important; }
+  .tl-points li::before{ background:#666 !important; }
+  /* The size step that marks the current role on screen survives; the colour
+     shift that went with it does not, since everything is black now. */
+  .tl-item.is-current .tl-points li{ color:#000 !important; }
+
+  /* Pills are outlined shapes, and an outline printed at 12px is a row of
+     empty capsules. They read as a comma-separated list instead. */
+  .pill-row{ display:block; margin-top:6pt; }
+  .pill{
+    border:0 !important;
+    padding:0 !important;
+    font-size:9pt;
+    color:#4a4f57 !important;
+  }
+  .pill:not(:last-child)::after{ content:" · "; }
+
+  /* ---------- links ----------
+     A printed link is a dead end unless the address comes with it. Only
+     absolute ones are worth spelling out — an in-page "#contact" printed as
+     text is noise, and a site-relative path is not something a reader can
+     type anywhere useful. */
+  a{ color:#000 !important; text-decoration:underline; }
+  a[href^="http"]::after{
+    content:" (" attr(href) ")";
+    font-size:8.5pt;
+    color:#5b616a;
+    /* URLs are long and unbreakable; without this one can push a whole
+       column past the margin. */
+    word-break:break-all;
+  }
+
+  /* ---------- education and honours ---------- */
+  .tl-aside{
+    break-inside:avoid;
+    page-break-inside:avoid;
+    padding-top:12pt;
+  }
+  .tl-aside h2{ color:#000 !important; }
+  .tl-aside .v{ color:#4a4f57 !important; }
+
+  /* ---------- the projects board ----------
+     Printed for the same reason the timeline is: it is the half of the
+     application that says what was actually built.
+
+     The covers go. On screen they are the entry — a reader picks a video off
+     its frame. On paper they are seven dark rectangles that either eat a
+     cartridge or, in a browser that drops backgrounds, print as empty boxes
+     with captions; and the video ones cannot be played from a sheet at all.
+     What survives is what a printed page can actually deliver: the words, and
+     the URLs spelled out by the link rule above.
+
+     The grid goes with them. Two columns of cards on a sheet is a layout
+     fighting for width it does not have, and a role split across a page break
+     is the one failure that loses information. */
+  .proj-toolbar,
+  .proj-media,
+  .proj-play{ display:none !important; }
+
+  .proj-grid{ display:block; }
+  .proj{
+    display:block;
+    border:0 !important;
+    border-top:1px solid #c8ccd2 !important;
+    border-radius:0 !important;
+    background:none !important;
+    padding:8pt 0 0;
+    margin-bottom:10pt;
+    break-inside:avoid;
+    page-break-inside:avoid;
+  }
+  .proj-body{ display:block; padding:0 !important; }
+  .proj-head{ display:block; }
+  .proj-title{ font-size:11.5pt !important; margin-bottom:2pt; }
+  /* An outlined capsule at 9pt is an empty shape; it reads as a suffix. */
+  .proj-status{
+    border:0 !important;
+    background:none !important;
+    padding:0 !important;
+    color:#4a4f57 !important;
+    font-size:8.5pt;
+  }
+  .proj-status::before{ content:"· "; }
+  .proj-kind,
+  .proj-role{ color:#4a4f57 !important; margin-bottom:3pt; }
+  .proj-stat{ color:#000 !important; font-weight:600; margin-bottom:3pt; }
+  .proj-desc{ color:#1a1d22 !important; margin-bottom:4pt; }
+
+  /* Same reasoning as the pills above: outlines print as empty capsules, so
+     the chips become a comma-separated run. */
+  .proj-chips{ display:block; margin-bottom:4pt; }
+  .proj-chip{
+    display:inline !important;
+    border:0 !important;
+    background:none !important;
+    padding:0 !important;
+    font-size:9pt;
+    color:#4a4f57 !important;
+  }
+  .proj-chip:not(:last-child)::after{ content:" · "; }
+
+  /* Outlined pills print as empty capsules at this size, and the URL is
+     appended after each link anyway (see the link rule above) — so they
+     become a plain run of references under the entry. */
+  /* On screen these sit over the cover and appear on hover. The cover is gone
+     here and paper has no pointer, so they are put back into the flow — and
+     their opacity reset, or the links would print as blank space. Not left to
+     the `hover` media feature to sort out: whether it evaluates to none while
+     printing is a browser's own business, and this is one of the few places
+     where getting it wrong loses content rather than styling. */
+  .proj-actions{
+    position:static !important;
+    display:block;
+    opacity:1 !important;
+    background:none !important;
+    padding:0 !important;
+    margin-top:4pt;
+  }
+  .proj-links{ display:block; margin-top:4pt; }
+  .proj-link{
+    display:inline !important;
+    border:0 !important;
+    padding:0 !important;
+    font-size:9pt;
+    color:#000 !important;
+  }
+  /* The separator goes on ::before rather than ::after because the link rule
+     above already owns ::after — that is where the URL is spelled out, and a
+     separator here would win on specificity and take the address with it. */
+  .proj-link + .proj-link::before{ content:" · "; }
+  /* The arrow is a direction to click in, which paper has no use for. */
+  .proj-link-arrow{ display:none !important; }
+}
