@@ -1,0 +1,66 @@
+/* ============================================================
+   Scroll reveal — the one entrance animation on the site.
+
+   The page had no arrival. Every section was simply already there
+   when you got to it, which is correct and also inert: a list of
+   things that never had a moment of appearing reads as a document
+   rather than as an interface. This gives each block one short
+   move into place, once, the first time it comes into view.
+
+   Three rules keep it from becoming decoration:
+
+     1. It happens once per element per page load. Nothing replays
+        on the way back up — motion that repeats every time you
+        scroll past stops meaning "this is new" and starts meaning
+        "this page fidgets".
+     2. The travel is 10px. Enough to read as a movement at the
+        edge of vision, small enough that a page of them is not a
+        wave. Anything larger and the reader waits for the layout
+        to settle before starting to read.
+     3. It is an animation, not a transition. Reveal is one-shot
+        and never reverses, which is exactly the case keyframes
+        are for — and a `transition` here would overwrite the
+        transitions components declare for themselves, since this
+        selector out-specifies a plain class.
+
+   The elements that get it are chosen in scripts/reveal.js, which
+   is also what sets the attribute below. That direction matters:
+   the thing that hides an element is the thing that can un-hide
+   it, so a script that fails to load leaves a page with everything
+   visible rather than a page that is permanently blank.
+   ============================================================ */
+
+/* Scoped to .has-js on <html> — set by site-header.js — for the same reason
+   .has-cursor is: a starting state of "invisible" is only ever safe when
+   something is definitely present to end it. */
+.has-js [data-reveal]{ opacity:0; }
+
+/* `both` rather than `forwards`: the delay is part of the stagger, and without
+   a backwards fill the element would sit at full opacity for the length of its
+   own delay and then jump to zero to start moving. */
+.has-js [data-reveal].is-revealed{
+  animation:reveal-rise var(--dur-3) var(--ease-out) var(--reveal-delay, 0ms) both;
+}
+@keyframes reveal-rise{
+  from{ opacity:0; transform:translateY(10px); }
+  to  { opacity:1; transform:none; }
+}
+
+/* The attribute is removed by reveal.js once the animation ends, which detaches
+   both rules above and returns the element to ordinary styling. That is not
+   tidiness for its own sake: a finished animation with a forwards fill keeps
+   winning over every normal declaration on the element, so a hover transform
+   added to one of these blocks later would silently do nothing. */
+
+/* ---------- the two places it must not run ----------
+   Both are the same judgement: when the reveal cannot be seen doing its job,
+   the safe state is not "a faster reveal", it is no reveal at all. A print
+   sheet has no viewport to scroll and no way to trigger an observer, and a
+   reader who has asked for reduced motion should not have their page depend
+   on a 1ms animation firing to become legible. */
+@media print{
+  [data-reveal]{ opacity:1 !important; animation:none !important; }
+}
+@media (prefers-reduced-motion: reduce){
+  [data-reveal]{ opacity:1 !important; animation:none !important; }
+}

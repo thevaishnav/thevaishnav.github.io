@@ -25,7 +25,7 @@
 .pv-intro p{ color:var(--muted); max-width:56ch; margin:0 0 6px; }
 .pv-scrollhint{
   display:inline-flex; align-items:center; gap:9px;
-  margin-top:22px; font-size:13px; letter-spacing:0.04em;
+  margin-top:22px; font-size:var(--t-small); letter-spacing:0.04em;
   color:var(--muted);
 }
 .pv-scrollhint .dot{
@@ -81,9 +81,23 @@
   border-radius:14px;
   padding:26px 28px;
   max-width:520px;
+  transition:opacity .45s ease, transform .45s ease, border-color .45s ease;
+}
+/* Eight of the nine steps are dimmed at any moment, and the dimming is the
+   whole device: it is what makes the sticky panel on the left read as
+   answering the one step you are level with. Measured, a resting card's body
+   text lands at 3.8:1 — deliberately below the reading floor, because a
+   resting card is not being read.
+
+   Scoped to .has-js on <html> — set by scripts/site-header.js — for exactly
+   the reason reveal.css is: a starting state this far below legible is only
+   safe when something is definitely present to lift it. pivot-showcase.js is
+   what adds .is-active, and if it never runs, this page is nine paragraphs of
+   explanation at a third of their contrast with nothing coming to fix them.
+   Without the class they simply start where they end up. */
+.has-js .pv-card{
   opacity:.32;
   transform:translateY(14px);
-  transition:opacity .45s ease, transform .45s ease, border-color .45s ease;
 }
 .pv-step.is-active .pv-card{
   opacity:1;
@@ -91,10 +105,10 @@
   border-color:var(--pv-line);
 }
 .pv-card h3{
-  font-family:'Space Grotesk', sans-serif;
-  font-size:21px; line-height:1.25; margin:0 0 10px; color:var(--text);
+  font-family:var(--font-display);
+  font-size:var(--t-h4); line-height:1.25; margin:0 0 10px; color:var(--text);
 }
-.pv-card p{ color:#c2c6cd; font-size:15px; line-height:1.6; margin:0; }
+.pv-card p{ color:#c2c6cd; font-size:var(--t-base); line-height:1.6; margin:0; }
 .pv-card p + p{ margin-top:10px; }
 .pv-card .mono{ color:var(--text); }
 
@@ -109,7 +123,7 @@
   border-radius:9px;
   padding:12px;
   box-shadow:0 24px 60px -18px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.02) inset;
-  font-family:'Inter', system-ui, sans-serif;
+  font-family:var(--font-sans);
   color:var(--pv-txt);
   user-select:none;
 }
@@ -123,8 +137,8 @@
     linear-gradient(var(--pv-mut),var(--pv-mut)) 0 7px/15px 1.5px no-repeat;
   opacity:.7;
 }
-.pv-caret{ color:var(--pv-mut); font-size:11px; }
-.pv-title{ font-size:15px; font-weight:600; color:#e7e9ec; letter-spacing:.01em; }
+.pv-caret{ color:var(--pv-mut); font-size:var(--t-micro); }
+.pv-title{ font-size:var(--t-base); font-weight:600; color:#e7e9ec; letter-spacing:.01em; }
 
 /* focus units */
 .pv-box{
@@ -151,18 +165,25 @@
 
 /* section labels */
 .pv-slabel{
-  font-size:11px; letter-spacing:.10em; font-weight:600;
+  font-size:var(--t-micro); letter-spacing:.10em; font-weight:600;
   color:var(--pv-mut); margin:0 0 10px;
 }
-.pv-sub{ font-size:12.5px; color:var(--pv-mut); margin:-4px 0 10px; }
+.pv-sub{ font-size:var(--t-mini); color:var(--pv-mut); margin:-4px 0 10px; }
 
-/* Enabled toggle */
+/* Enabled toggle.
+   The label is the site's accent ink rather than white. White on this green
+   measures 2.6:1 — the panel is a recreation of Unity's overlay, but "Enabled"
+   is still a word a reader reads, and fidelity to a screenshot is not a reason
+   to ship text below the floor. #0B0D10 on the same green is 7.6:1, and it is
+   the value .btn-primary already uses for type on a saturated accent fill, so
+   the page is not inventing a colour to solve this.
+   The LED beside it stays white: it is a lit indicator, not a label. */
 .pv-enabled{
   width:100%; border:0; cursor:default;
   display:flex; align-items:center; gap:10px;
   padding:10px 14px; border-radius:6px;
-  background:var(--ui-green); color:#fff;
-  font-size:15px; font-weight:600; font-family:inherit;
+  background:var(--ui-green); color:#0B0D10;
+  font-size:var(--t-base); font-weight:600; font-family:inherit;
 }
 .pv-led{ width:11px; height:11px; border-radius:50%; background:#fff; box-shadow:0 0 6px rgba(255,255,255,.7); }
 
@@ -173,7 +194,7 @@
 }
 .pv-seg-btn{
   text-align:center; padding:8px 6px; border-radius:5px;
-  font-size:13.5px; font-weight:600; color:var(--pv-mut);
+  font-size:var(--t-small); font-weight:600; color:var(--pv-mut);
   transition:background .3s ease, color .3s ease;
 }
 /* shared-pivot mode reflects the panel's current mode */
@@ -191,7 +212,10 @@
 .pv-vals{ margin:12px 0 4px; }
 .pv-row{ display:flex; align-items:center; gap:12px; height:30px; }
 .pv-row + .pv-row{ margin-top:8px; }
-.pv-ax{ width:12px; font-size:13px; font-weight:700; text-align:center; flex:none; }
+/* 600, not 700: this resolves to Inter, and Inter 700 is not one of the
+   weights the pages load — the browser was synthesising it by smearing the
+   600. 600 is the site's emphasis weight and it is a real file. */
+.pv-ax{ width:12px; font-size:var(--t-small); font-weight:600; text-align:center; flex:none; }
 .pv-ax.x{ color:var(--axis-x); } .pv-ax.y{ color:var(--axis-y); } .pv-ax.z{ color:var(--axis-z); }
 
 /* bounded: slider + readout */
@@ -213,8 +237,8 @@
   flex:none; width:58px; height:26px; border-radius:5px;
   background:var(--pv-inset); border:1px solid var(--pv-line);
   display:flex; align-items:center; padding:0 9px;
-  font-size:13px; color:var(--pv-txt);
-  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-size:var(--t-small); color:var(--pv-txt);
+  font-family:var(--font-mono);
 }
 
 /* unbounded: full-width field */
@@ -222,8 +246,8 @@
   flex:1; height:28px; border-radius:5px;
   background:var(--pv-inset); border:1px solid var(--pv-line);
   display:flex; align-items:center; padding:0 10px;
-  font-size:13px; color:var(--pv-txt);
-  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-size:var(--t-small); color:var(--pv-txt);
+  font-family:var(--font-mono);
 }
 
 /* mode-driven visibility */
@@ -234,7 +258,7 @@
 /* Use Object Scale */
 .pv-scale{
   display:flex; align-items:center; justify-content:space-between;
-  margin-top:12px; padding:2px; font-size:13.5px; color:var(--pv-mut);
+  margin-top:12px; padding:2px; font-size:var(--t-small); color:var(--pv-mut);
 }
 .pv-check{
   width:16px; height:16px; border-radius:4px;
@@ -246,7 +270,7 @@
   width:100%; margin-top:10px; border:0; cursor:default;
   padding:10px; border-radius:6px;
   background:var(--ui-blue); color:#fff;
-  font-size:14px; font-weight:700; font-family:inherit;
+  font-size:var(--t-control); font-weight:600; font-family:inherit;
 }
 
 /* ============================================================

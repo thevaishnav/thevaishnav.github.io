@@ -30,8 +30,8 @@
   padding:0;
   margin:0 0 32px;
 }
-.doc-rail .page-hero h1{ font-size:clamp(30px, 3vw, 40px); }
-.doc-rail .page-hero .lead{ font-size:15px; max-width:none; margin:0 0 20px; }
+.doc-rail .page-hero h1{ font-size:clamp(1.875rem, 3vw, 2.5rem); }
+.doc-rail .page-hero .lead{ font-size:var(--t-base); max-width:none; margin:0 0 20px; }
 .doc-rail .page-hero .actions{ flex-wrap:wrap; }
 /* Prose has a ceiling that the container does not — past roughly 1500px the
    text column stops growing and the leftover would all pile up on the right.
@@ -46,7 +46,7 @@
   }
 }
 .toc .toc-title{
-  font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+  font-size:var(--t-mini); letter-spacing:0.14em; text-transform:uppercase;
   color:var(--muted); margin:0 0 14px;
 }
 .toc ol{ list-style:none; margin:0; padding:0; }
@@ -54,7 +54,7 @@
 .toc a{
   display:block;
   padding:6px 0;
-  font-size:14px;
+  font-size:var(--t-control);
   color:var(--muted);
   text-decoration:none;
   border-left:2px solid transparent;
@@ -62,8 +62,8 @@
   margin-left:-12px;
   transition:color .15s ease, border-color .15s ease;
 }
-.toc a:hover{ color:var(--text); border-left-color:var(--axis-z); }
-.toc a.active{ color:var(--text); border-left-color:var(--axis-z); }
+.toc a:hover{ color:var(--text); border-left-color:var(--role-nav); }
+.toc a.active{ color:var(--text); border-left-color:var(--role-nav); }
 
 .doc-content{ min-width:0; }
 .doc-content section{ padding-top:12px; margin-bottom:44px; scroll-margin-top:24px; }
@@ -71,8 +71,8 @@
 .doc-content h3{ margin-top:32px; }
 /* The content column is now wide enough that unconstrained prose would run
    past a comfortable line length — cap the measure, not the column. */
-.doc-content p{ color:#c9ccd1; max-width:74ch; }
-.doc-content ul, .doc-content ol{ color:#c9ccd1; padding-left:20px; max-width:74ch; }
+.doc-content p{ color:var(--ink-2); max-width:74ch; }
+.doc-content ul, .doc-content ol{ color:var(--ink-2); padding-left:20px; max-width:74ch; }
 .doc-content li{ margin:6px 0; }
 .doc-content strong{ color:var(--text); }
 
@@ -86,12 +86,23 @@
     max-height:none;
     overflow:visible;
   }
-  .doc-rail .page-hero h1{ font-size:clamp(32px, 8vw, 44px); }
+  .doc-rail .page-hero h1{ font-size:clamp(2rem, 8vw, 2.75rem); }
   .toc{
     position:static;
     border:1px solid var(--line);
     border-radius:10px;
-    padding:18px 20px;
+    padding:12px 20px;
     background:var(--surface);
+  }
+  /* On desktop these are 34px rows aimed at with a pointer; here they are the
+     one route into a six-section manual and they are hit with a thumb. The
+     text stays where it is — the row grows around it, and the entries touch
+     each other, so the whole list is live rather than a set of small strips
+     with dead gaps between them. */
+  .toc a{
+    display:flex;
+    align-items:center;
+    min-height:44px;
+    padding:4px 0 4px 12px;
   }
 }

@@ -2,15 +2,75 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vaishnav Chincholkar · Unity Editor Tools</title>
-<meta name="description" content="Small, focused editor tools for Unity, each built to fix one specific workflow problem. Pivot++ and unity-cli.">
+<!-- viewport-fit=cover: without it a notched phone reports every safe-area
+     inset as zero, and the gutters and the tab bar have nothing to move out
+     of the way of. See .wrap in base.css and .tabbar in nav.css. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vaishnav Chincholkar · Senior Unity Developer</title>
+<meta name="description" content="Senior Unity developer. A 20-player Battle Royale shipped end to end, 81,521 physics props held in one multiplayer scene, and a 6-person team led across four client projects.">
+<!-- The page is drawn dark and only dark. Without this the browser still
+     believes it is on a light page and draws its own half of the interface to
+     match: the scrollbar, form controls, the caret, and the autofill wash all
+     arrive in the light palette against a near-black ground. It is the one
+     part of the design nothing in these stylesheets can reach. -->
+<meta name="color-scheme" content="dark">
 <link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+<link rel="canonical" href="https://thevaishnav.github.io/">
+
+<!-- The dominant arrival is a tap on a LinkedIn profile link, which means the
+     share card is seen by more people than the page is. Without these the card
+     falls back to a bare URL, and a bare URL in a feed reads as a dead link.
+
+     Absolute URLs are not a style choice: a scraper resolves these from its own
+     context, not from the page's, so a relative path silently yields no image.
+
+     Same reasoning, and the same shape, as /experience/ and /contributions/. -->
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Vaishnav Chincholkar · Senior Unity Developer">
+<meta property="og:description" content="A 20-player Battle Royale shipped end to end, 81,521 physics props in one multiplayer scene, and a 6-person team led across four client projects.">
+<meta property="og:url" content="https://thevaishnav.github.io/">
+<meta property="og:image" content="https://thevaishnav.github.io/assets/img/logo-256.png">
+<!-- `summary`, not `summary_large_image`: the share image is a 256px square
+     mark. Asking for the wide card with a square file gets it letterboxed or
+     dropped, and a small correct card beats a large broken one. -->
+<meta name="twitter:card" content="summary">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- The stylesheet, in cascade order — a later file may override an earlier one
+     at equal specificity, so the order is deliberate rather than alphabetical.
+     The parts are linked directly rather than pulled in by one @import file:
+     an @import is only discovered once the file holding it has arrived, so
+     every part below used to wait on a second round trip before it could even
+     start. A new part is added here, in every page.
+
+     Order note: print.css is last so it can override anything above it. -->
+<link rel="stylesheet" href="/assets/css/tokens.css">        <!-- colours + the two layout measurements   -->
+<link rel="stylesheet" href="/assets/css/base.css">          <!-- reset, page shell, type, container      -->
+<link rel="stylesheet" href="/assets/css/nav.css">           <!-- the sticky site header                  -->
+<link rel="stylesheet" href="/assets/css/buttons.css">       <!-- .btn and the action rows                -->
+<link rel="stylesheet" href="/assets/css/cards.css">         <!-- tool cards, ghost card, featured card   -->
+<link rel="stylesheet" href="/assets/css/intro.css">         <!-- landing: the full-height opening screen -->
+<link rel="stylesheet" href="/assets/css/hero.css">          <!-- landing hero, gizmo, subpage intros     -->
+<link rel="stylesheet" href="/assets/css/content.css">       <!-- figures, splits, meta, CTA, code, tables -->
+<link rel="stylesheet" href="/assets/css/timeline.css">      <!-- experience: the dated career rail       -->
+<link rel="stylesheet" href="/assets/css/contributions.css"> <!-- contributions: the grouped work list    -->
+<link rel="stylesheet" href="/assets/css/doc.css">           <!-- manual: sticky TOC + prose column       -->
+<link rel="stylesheet" href="/assets/css/contact.css">       <!-- the contact dialog                      -->
+<link rel="stylesheet" href="/assets/css/cursor.css">        <!-- the custom pointer (fine pointers only) -->
+<link rel="stylesheet" href="/assets/css/reveal.css">        <!-- the one-shot entrance for blocks in view -->
+<link rel="stylesheet" href="/assets/css/motion.css">        <!-- press feedback + the a11y preference set -->
+<link rel="stylesheet" href="/assets/css/print.css">         <!-- the site on paper                       -->
+
+<!-- Loaded here, ahead of the body, because this is the one site script whose
+     timing is load-bearing. The render scripts at the foot of the page call
+     window.reveal.scan() in the same task in which they append their cards, so
+     that a card is marked for its entrance before it has ever been painted.
+     Injected alongside the other site scripts it arrived after those calls had
+     already run, and the cards appeared at full opacity and then faded in a
+     second time. -->
+<script src="/scripts/reveal.js"></script>
 <script src="/scripts/tools.js"></script>
 <!-- Only for the count in the intro's third figure; the list itself lives at
      /contributions/. Loaded here rather than at the foot with its renderer so
@@ -42,7 +102,7 @@
              but the thing that says so is the last line, not the hover. A
              recruiter reading ten of these a day does not explore a page to
              find out what is clickable, so each one ends in a plainly worded,
-             underlined, blue link: "See the timeline", "Read the post", "See
+             underlined, green link: "See the timeline", "Read the post", "See
              the list". The arrow says which kind of trip it is — → stays on
              the site, ↗ leaves it — so the row reads as three offers rather
              than as three panels that happen to respond to a pointer. -->
@@ -52,9 +112,9 @@
               <span class="c-pre">More than</span>
               <!-- Counted from 2022 by scripts/experience.js. The number written
                    here is correct as it stands and is what shows without JS. -->
-              <span class="c-key"><span data-years-since="2022">4</span> years</span>
+              <span class="c-key"><span class="fig" data-years-since="2022">4</span> years</span>
               <span class="c-post">of working experience</span>
-              <span class="c-cta">See<span class="c-cta-opt"> the</span> timeline <span class="c-cta-arrow" aria-hidden="true">→</span></span>
+              <span class="link c-cta">See<span class="c-cta-opt"> the</span> timeline <span class="c-cta-arrow" aria-hidden="true">→</span></span>
             </a>
           </li>
           <li class="intro-card">
@@ -62,9 +122,9 @@
                href="https://www.linkedin.com/posts/vaishnav-chincholkar_how-did-we-handle-81521-props-in-one-scene-ugcPost-7489218603838406657-QGoz/"
                target="_blank" rel="noopener">
               <span class="c-pre">Handled</span>
-              <span class="c-key">81,521 props</span>
+              <span class="c-key"><span class="fig">81,521</span> props</span>
               <span class="c-post">in a single scene</span>
-              <span class="c-cta">Read<span class="c-cta-opt"> the</span> post <span class="c-cta-arrow" aria-hidden="true">↗</span></span>
+              <span class="link c-cta">Read<span class="c-cta-opt"> the</span> post <span class="c-cta-arrow" aria-hidden="true">↗</span></span>
             </a>
           </li>
           <li class="intro-card">
@@ -75,9 +135,9 @@
                    correct as it stands and is what shows without JS. It is a
                    floor, like the years figure above: the list holds the work
                    worth linking to, not everything ever shipped. -->
-              <span class="c-key"><span data-contributions-count>7</span> contributions</span>
+              <span class="c-key"><span class="fig" data-contributions-count>7</span> contributions</span>
               <span class="c-post">to games and tools</span>
-              <span class="c-cta">See<span class="c-cta-opt"> the</span> list <span class="c-cta-arrow" aria-hidden="true">→</span></span>
+              <span class="link c-cta">See<span class="c-cta-opt"> the</span> list <span class="c-cta-arrow" aria-hidden="true">→</span></span>
             </a>
           </li>
         </ul>
@@ -85,7 +145,12 @@
 
       <div class="intro-mark">
         <span class="gizmo" aria-hidden="true">
-          <img src="/assets/img/logo-256.png" width="512" height="512" alt="">
+          <!-- The one image on the opening screen, and the only one on the site
+               that is neither lazy nor below the fold. Marked high so it is not
+               queued behind the tool-card covers further down, which the browser
+               otherwise treats as equally urgent until it has done the layout. -->
+          <img src="/assets/img/logo-256.png" width="512" height="512" alt=""
+               fetchpriority="high" decoding="async">
         </span>
       </div>
     </div>
@@ -116,6 +181,29 @@
   <section class="wrap wrap-wide tools" id="tools">
     <p class="section-label">Tools</p>
     <!-- Cards are rendered from scripts/tools.js — see TOOLS_DATA.tools. -->
+  </section>
+
+  <!-- The ask. Without it the page argued for two thousand pixels and then
+       ended on a dashed box reading "TBA" — the last thing a convinced reader
+       saw was a placeholder for something that does not exist yet, and the only
+       route to acting was a 13px nav link back at the top of the document.
+       The same band closes /experience/ and /contributions/, so a reader who
+       arrives on any of the three finds the same offer in the same place.
+       The address is written out beside the buttons rather than living only
+       inside the dialog: it is the one thing on the page someone may want to
+       copy, paste into their own mail client, and act on later. -->
+  <section class="wrap wrap-wide">
+    <div class="cta-band">
+      <h2>That's the work. Here's how to reach me.</h2>
+      <p>The tools above are the public half. The multiplayer systems, the shipped titles and the team I led are on the experience page, each with the thing that proves it.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#contact">Get in touch</a>
+        <a class="btn btn-secondary" href="/experience/">See the timeline</a>
+      </div>
+      <p class="cta-direct">
+        or write to <a class="link is-address" href="mailto:thevaishnavchincholkar@gmail.com">thevaishnavchincholkar@gmail.com</a>
+      </p>
+    </div>
   </section>
 </main>
 

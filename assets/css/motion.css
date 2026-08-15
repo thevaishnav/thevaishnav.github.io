@@ -35,6 +35,40 @@
   opacity:0.62;
 }
 
+/* ---------- moving between pages ----------
+   The site is four real pages plus the tool pages, and every one of them is a
+   full document load. That is the right architecture for what this is — no
+   router, no bundle, a page that works with the network off halfway through —
+   but the seam shows: the screen goes white for a frame, the header redraws,
+   and two pages that share a header and a background read as two websites.
+
+   A cross-document view transition closes the seam without changing any of
+   that. The browser snapshots the old page, loads the new one normally, and
+   cross-fades between the two; nothing about how the pages are built or served
+   changes, and a browser that does not implement it simply navigates the way
+   it always did. There is no polyfill and none is wanted.
+
+   180ms, against the 250ms default. The default is tuned for a transition you
+   are meant to notice; this one is meant to make a navigation stop being
+   noticeable, and by the rule the rest of the site follows — anything the user
+   does often stays under 300ms — a link click is about as often as it gets. */
+@view-transition{ navigation:auto; }
+::view-transition-old(root),
+::view-transition-new(root){
+  animation-duration:180ms;
+  animation-timing-function:var(--ease-out);
+}
+
+/* Named groups are excluded from the root snapshot and animate on their own,
+   which here means "held still" rather than "animated": the header is the same
+   header on both pages, so cross-fading it with itself is 180ms of a bar
+   flickering for no reason. The pointer is named for a different reason — an
+   unnamed fixed element gets baked into the old page's snapshot, so the cursor
+   would leave a copy of itself sitting on screen while the real one moved. */
+.nav{ view-transition-name:site-header; }
+.cursor-dot{ view-transition-name:pointer-dot; }
+.cursor-ring{ view-transition-name:pointer-ring; }
+
 /* ---------- reduced motion ----------
    Not "no feedback" — a gentler feedback. What triggers vestibular
    discomfort is large positional change, parallax and overshoot, not the
@@ -80,6 +114,19 @@
      the 1ms flicker the blanket rule above would otherwise leave */
   .btn:active{ transition-duration:1ms !important; filter:brightness(0.88); }
 
+  /* The page transition survives, shortened. The blanket rule above does not
+     reach it — `*` does not match a ::view-transition pseudo-element — so this
+     is a decision rather than an oversight, and it is the same decision as the
+     modal below: what the setting exists to remove is travel and overshoot,
+     and a page cross-fade has neither. It is opacity only, on two things that
+     occupy the same rectangle. Cutting it outright would put back the white
+     flash it was added to remove, which is itself an abrupt visual change. */
+  ::view-transition-old(root),
+  ::view-transition-new(root){
+    animation-duration:120ms !important;
+    animation-timing-function:linear !important;
+  }
+
   /* The one deliberate exemption. A modal is a layer arriving in front of the
      page, and a hard cut gives no cue that it did — the user is left to work
      out that the screen changed. So the popup keeps a short cross-fade in both
@@ -116,6 +163,15 @@
     -webkit-backdrop-filter:none;
   }
   .nav::after{ opacity:1; }
+  /* The tab bar is the same material as the header and makes the same trade —
+     content scrolls under it and stays half-readable. Declined, it goes solid
+     too; its top hairline is already a real edge, so unlike the header it
+     needs nothing put back. */
+  .tabbar{
+    background:var(--bg);
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+  }
   .contact-modal::backdrop{
     background:rgba(8,9,11,0.92);
     backdrop-filter:none;
@@ -132,16 +188,27 @@
 @media (prefers-contrast: more){
   :root{
     --line:#4A525E;
+    --line-hover:#67707F;
     --muted:#B4BAC3;
     --surface:#111419;
+    /* The reading ramp lifts with everything else. This used to be a list of
+       selectors — .doc-content's paragraphs and lists, named one by one —
+       which reached the manual's prose and nothing else: a project card's
+       description, a timeline bullet and a table cell all stayed in the muted
+       range for the reader who had just asked for the opposite. Remapping the
+       two tokens covers every one of them, including whatever gets written
+       next, and is the reason the ramp was worth naming. */
+    --ink-2:#E8EAED;
+    --ink-3:#D3D7DE;
   }
   .card, .proj, .meta-cell, .contact-card, .table-scroll, pre.code, .code-block{
     border-width:1px;
     border-color:var(--line);
   }
-  .doc-content p,
-  .doc-content ul,
-  .doc-content ol{ color:#E2E4E7; }
+  /* Still by hand: the callout body is one of the greys deliberately outside
+     the ramp (tokens.css), because it sits on a tinted panel rather than on a
+     surface. A single override is the price of that, and a smaller price than
+     a ramp step that means something different on every background. */
   .callout p{ color:#E8EAED; }
   a:focus-visible, button:focus-visible{ outline-width:3px; }
 }

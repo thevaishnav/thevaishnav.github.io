@@ -127,7 +127,7 @@
 }
 
 .card-tag{
-  font-size:12px;
+  font-size:var(--t-mini);
   letter-spacing:0.06em;
   color:var(--muted);
   margin:0 0 14px;
@@ -136,12 +136,34 @@
   flex-wrap:wrap;
   gap:8px;
 }
+/* Not a separator: a state light. The tools in this list are all real and all
+   installable today, which is what green says here — and it is why the ghost
+   card at the foot of the list gets the same dot in amber instead of no dot
+   at all. Read down the page the two are one control panel. */
 .card-tag .dot{
   width:6px; height:6px; border-radius:50%;
-  background:var(--axis-y);
+  background:var(--role-proof);
   display:inline-block;
 }
-.card h3{ font-size:24px; margin:0 0 12px; }
+/* The card is not a link — the buttons inside it are — so it must not lift, or
+   scale, or do any of the things a pressable surface does. What it may do is
+   acknowledge that the pointer is inside it, and the edge coming up out of the
+   background is the smallest way to say so. It is also what the project cards
+   at /contributions/ already do, so the two lists answer a pointer the same
+   way instead of one of them being inert.
+   Gated on a real pointer: on a touch screen this fires on tap and then sticks
+   until something else is tapped, which is a card that looks stuck rather than
+   a card that responded. */
+@media (hover: hover) and (pointer: fine){
+  .card{ transition:border-color var(--dur-1) var(--ease-out); }
+  .card:hover{ border-color:var(--line-hover); }
+  /* The featured card starts from a lighter edge than the rest, so it needs its
+     own step up — the shared rule would otherwise pull it *down* to the plain
+     card's hover colour and read as the highlight switching off. */
+  .card-featured:hover{ border-color:#3D4A61; }
+}
+
+.card h3{ font-size:var(--t-h3); margin:0 0 12px; }
 .card p.desc{
   white-space: pre-line;
   color:var(--muted);
@@ -156,13 +178,17 @@
   border-radius:10px;
   padding:28px 32px;
   color:var(--muted);
-  font-size:14px;
+  font-size:var(--t-control);
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:20px;
 }
-.card-ghost .mono{ color:var(--muted); font-size:12px; letter-spacing:0.06em; }
+/* The one place on the site where something is genuinely unsettled, and so the
+   only place the fourth axis has a job. Amber on the note alone: the label
+   beside it is a sentence and stays neutral, because two coloured halves would
+   make the row an alert rather than a placeholder. */
+.card-ghost .mono{ color:var(--role-pending); font-size:var(--t-mini); letter-spacing:0.06em; }
 
 /* ---------- highlight band (one featured tool) ----------
    Must come after .card so the featured overrides win on equal specificity. */
@@ -174,16 +200,19 @@
   gap:16px;
   margin-bottom:20px;
 }
-.highlight-head .section-label{ margin:0; color:var(--axis-z); }
+.highlight-head .section-label{ margin:0; color:var(--role-nav); }
 .highlight-note{
-  font-size:12px;
+  font-size:var(--t-mini);
   letter-spacing:0.06em;
   color:var(--muted);
   margin:0;
 }
 /* Rotating glow: a blurred conic ramp of the axis colours, muted and darkened,
    sits behind the card and turns slowly — a coloured shadow rather than a border.
-   Browsers without @property just get the same halo, held still. */
+   Browsers without @property just get the same halo, held still.
+   The ramp is X, Y, Z, W in order and back to X — the gizmo itself, turning.
+   Its fourth stop used to be a purple that is in no token on the site; the
+   halo was one colour short of meaning anything and made up the difference. */
 @property --glow-angle{
   syntax:'<angle>';
   initial-value:0deg;
@@ -213,7 +242,7 @@
   border-radius:20px;
   background:conic-gradient(
     from var(--glow-angle),
-    #8C3438, #2F6B3B, #2F5C87, #6B3F7A, #8C3438
+    #8C3438, #2F6B3B, #2F5C87, #8A6224, #8C3438
   );
   filter:blur(var(--glow-blur));
   opacity:var(--glow-strength);
@@ -223,21 +252,30 @@
 @media (prefers-reduced-motion: reduce){
   .card-featured::before{ animation:none; }
 }
-.card-featured h3{ font-size:30px; }
-.card-featured p.desc{ font-size:17px; }
+.card-featured h3{ font-size:var(--t-feature); }
+.card-featured p.desc{ font-size:var(--t-lead); }
 .highlight-badge{
   position:absolute;
   top:18px;
   right:18px;
   z-index:1;
-  font-size:11px;
+  font-size:var(--t-micro);
   letter-spacing:0.12em;
   text-transform:uppercase;
-  color:var(--axis-z);
-  background:rgba(90,169,255,0.10);
-  border:1px solid rgba(90,169,255,0.35);
+  /* "Free & open source" is not a label on the card, it is a claim about the
+     thing — and one the GitHub button directly below it proves. It belongs to
+     the evidence colour with the button, not to the section label above it. */
+  color:var(--role-proof);
+  /* Derived rather than written out, so retuning the evidence colour reaches
+     the fill and the ring with it — the badge is bound to the role now, not
+     to a green that happens to be this green. */
+  background:color-mix(in srgb, var(--role-proof) 10%, transparent);
+  border:1px solid color-mix(in srgb, var(--role-proof) 35%, transparent);
   border-radius:999px;
   padding:4px 12px;
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .highlight-badge{ background:rgba(70,167,88,0.10); border-color:rgba(70,167,88,0.35); }
 }
 
 /* ---------- responsive ---------- */

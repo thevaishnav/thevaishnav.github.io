@@ -2,15 +2,65 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- viewport-fit=cover: without it a notched phone reports every safe-area
+     inset as zero, and the gutters and the tab bar have nothing to move out
+     of the way of. See .wrap in base.css and .tabbar in nav.css. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pivot++ · Pivot editor for Unity</title>
 <meta name="description" content="Move, rotate and scale any Unity object around any point you choose, right in the Scene view. The corner of a door, the base of a lamp post, the hinge of a lid. Editor only and non-destructive.">
+<!-- The page is drawn dark and only dark; without this the browser draws its
+     own half of the interface — scrollbar, caret, form controls — light. -->
+<meta name="color-scheme" content="dark">
 <link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+<link rel="canonical" href="https://thevaishnav.github.io/tools/pivot/">
+
+<!-- A tool page is linked to directly far more often than it is arrived at by
+     scrolling: from the Asset Store listing, a forum reply, a chat window. A
+     bare URL in any of those reads as a dead link. Absolute URLs because a
+     scraper resolves these from its own context, not from the page's. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pivot++ · Pivot editor for Unity">
+<meta property="og:description" content="Rotate a door from its hinge, scale a lamp post from its base. Move any Unity object's pivot in the Scene view — editor only, non-destructive, meshes never touched.">
+<meta property="og:url" content="https://thevaishnav.github.io/tools/pivot/">
+<meta property="og:image" content="https://thevaishnav.github.io/assets/img/pivot/cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- The stylesheet, in cascade order — a later file may override an earlier one
+     at equal specificity, so the order is deliberate rather than alphabetical.
+     The parts are linked directly rather than pulled in by one @import file:
+     an @import is only discovered once the file holding it has arrived, so
+     every part below used to wait on a second round trip before it could even
+     start. A new part is added here, in every page.
+
+     Order note: print.css is last so it can override anything above it. -->
+<link rel="stylesheet" href="/assets/css/tokens.css">        <!-- colours + the two layout measurements   -->
+<link rel="stylesheet" href="/assets/css/base.css">          <!-- reset, page shell, type, container      -->
+<link rel="stylesheet" href="/assets/css/nav.css">           <!-- the sticky site header                  -->
+<link rel="stylesheet" href="/assets/css/buttons.css">       <!-- .btn and the action rows                -->
+<link rel="stylesheet" href="/assets/css/cards.css">         <!-- tool cards, ghost card, featured card   -->
+<link rel="stylesheet" href="/assets/css/intro.css">         <!-- landing: the full-height opening screen -->
+<link rel="stylesheet" href="/assets/css/hero.css">          <!-- landing hero, gizmo, subpage intros     -->
+<link rel="stylesheet" href="/assets/css/content.css">       <!-- figures, splits, meta, CTA, code, tables -->
+<link rel="stylesheet" href="/assets/css/timeline.css">      <!-- experience: the dated career rail       -->
+<link rel="stylesheet" href="/assets/css/contributions.css"> <!-- contributions: the grouped work list    -->
+<link rel="stylesheet" href="/assets/css/doc.css">           <!-- manual: sticky TOC + prose column       -->
+<link rel="stylesheet" href="/assets/css/contact.css">       <!-- the contact dialog                      -->
+<link rel="stylesheet" href="/assets/css/cursor.css">        <!-- the custom pointer (fine pointers only) -->
+<link rel="stylesheet" href="/assets/css/reveal.css">        <!-- the one-shot entrance for blocks in view -->
+<link rel="stylesheet" href="/assets/css/motion.css">        <!-- press feedback + the a11y preference set -->
+<link rel="stylesheet" href="/assets/css/print.css">         <!-- the site on paper                       -->
+
+<!-- Loaded here, ahead of the body, because this is the one site script whose
+     timing is load-bearing. The render scripts at the foot of the page call
+     window.reveal.scan() in the same task in which they append their cards, so
+     that a card is marked for its entrance before it has ever been painted.
+     Injected alongside the other site scripts it arrived after those calls had
+     already run, and the cards appeared at full opacity and then faded in a
+     second time. -->
+<script src="/scripts/reveal.js"></script>
 <link rel="stylesheet" href="pivot-showcase.css">
 </head>
 <body>

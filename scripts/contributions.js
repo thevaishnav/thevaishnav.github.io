@@ -20,6 +20,11 @@
                   or { src: "/assets/img/…" }. `position` is the CSS
                   object-position used when the cover is cropped to the card's
                   2:1 box — "left" keeps a banner's logo end in frame.
+                  `width`/`height` are the file's real pixel dimensions and are
+                  what reserves the card's space before the image arrives, so
+                  they have to be measured rather than guessed. `small` is
+                  optional and names an 800px-wide copy of the same picture;
+                  give it and a phone downloads that instead of the full file.
      stat         the one figure worth reading from across the room. Left out
                   rather than padded when a project has no honest number.
      role         what I did on it, and where.
@@ -156,6 +161,7 @@ window.CONTRIBUTIONS_DATA = {
       status: "open-source",
       media: {
         src: "/assets/img/QuickAccessBanner.jpg",
+        small: "/assets/img/QuickAccessBanner-800.jpg",
         width: 1737,
         height: 905,
         alt: "The Quick Access editor window, annotated: ping an asset, open a scene, unpin, and the Scene Objects list."
@@ -177,6 +183,7 @@ window.CONTRIBUTIONS_DATA = {
       status: "open-source",
       media: {
         src: "/assets/img/unity-cli-cover.jpg",
+        small: "/assets/img/unity-cli-cover-800.jpg",
         width: 1509,
         height: 704,
         alt: "Diagram: Claude and a shared command library feed the Unity CLI, which drives the Unity Editor, with a return arrow labelled \"gets better with use\"."

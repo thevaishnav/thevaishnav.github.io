@@ -90,6 +90,22 @@
     return img;
   }
 
+  /* The card's cover box, described for the browser's own picking.
+
+     The cards sit in `repeat(auto-fill, minmax(min(100%, 300px), 1fr))`, so
+     below the one-column breakpoint the cover is the viewport less its gutters,
+     and above it the column never grows past about 580px however wide the
+     screen gets. That is the whole of the layout this needs to describe, and
+     describing it is what lets a phone take the 800px file instead of the
+     1737px one — the same picture at a third of the bytes, on the connection
+     least able to spare them. */
+  var COVER_SIZES = '(max-width: 719px) calc(100vw - 40px), 580px';
+
+  /* Every `small` variant on this site is generated at 800px wide, so the
+     descriptor is a constant rather than another field to keep in step. If a
+     second size is ever wanted, it becomes a list here and in the data. */
+  var SMALL_W = 800;
+
   function imageCover(media) {
     var img = el('img', 'proj-cover');
     img.src = media.src;
@@ -98,6 +114,13 @@
     if (media.width && media.height) {
       img.width = media.width;
       img.height = media.height;
+    }
+    // Only offered when both ends are known: without the full file's real width
+    // there is no honest descriptor to give it, and a wrong one is worse than
+    // no srcset at all.
+    if (media.small && media.width) {
+      img.srcset = media.small + ' ' + SMALL_W + 'w, ' + media.src + ' ' + media.width + 'w';
+      img.sizes = COVER_SIZES;
     }
     // Covers are cropped to the card's 2:1 box. Centre is right for a frame of
     // gameplay; a banner with its logo at one end needs to be held to that end.
@@ -458,13 +481,102 @@
     return cardTags.indexOf(active) !== -1;
   }
 
+  /* Filtering used to be a hard cut: the hidden cards left, everything below
+     them jumped up to fill the space, and the reader had to re-find the two
+     cards that were still on screen. The list is the same list before and
+     after — only the question changed — so the cards that survive a filter
+     move to their new places instead of teleporting to them.
+
+     This is FLIP, which is the only way to animate a grid reflow: measure
+     where everything is, make the change, measure again, then put each card
+     back where it started with a transform and let it travel to zero. The
+     browser lays out once and the animation is pure transform on the
+     compositor, so a fourteen-card grid costs the same as a two-card one.
+
+     What does *not* animate is the leaving. A card that has been filtered
+     out is the system responding to a decision the reader has already made,
+     and making them watch it go is making them wait to see the answer. The
+     reflow underneath is the part worth showing. */
+  var EASE = getComputedStyle(document.documentElement)
+    .getPropertyValue('--ease-out').trim() || 'cubic-bezier(.22,.68,.28,1)';
+  var reducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The first call draws the page rather than changing it; there is nothing to
+  // move from. The cards' arrival is scroll reveal's job, not this one's.
+  var settled = false;
+
   function apply() {
+    var flip = settled && !reducedMotion && typeof Element.prototype.animate === 'function';
+
+    var before = null;
+    if (flip) {
+      before = cards.map(function (card) {
+        return card.node.hidden ? null : card.node.getBoundingClientRect();
+      });
+    }
+
     var shown = 0;
     cards.forEach(function (card) {
       var visible = matches(card.tags);
       if (visible) shown++;
       card.node.hidden = !visible;
     });
+
+    if (flip) {
+      /* A slide is only honest when the reader can see both ends of it.
+
+         That is not a performance rule, though it happens to be one too. Clearing
+         a filter pushes the surviving cards down past everything readmitted above
+         them — measured on this page, around a thousand pixels. Whether the card
+         slides that distance or flies in from below the fold, the reader cannot
+         follow it: a card crossing the whole window in 260ms is a streak, and a
+         streak says nothing about where the card went. So there are three cases,
+         and only the first is a movement:
+
+           both ends on screen  — the card visibly changed places; show it moving
+           only the new end     — it came from somewhere unseen, so it did not
+                                  travel, it arrived; fade it up in place
+           new end off screen   — nobody is looking; it is simply already there
+
+         The bound falls out of the test rather than being a number picked by
+         hand: if both ends are on screen, the travel cannot exceed the window. */
+      var fold = window.innerHeight || document.documentElement.clientHeight;
+      var inView = function (rect) {
+        return !!rect && rect.bottom > 0 && rect.top < fold;
+      };
+
+      var entering = 0;
+      cards.forEach(function (card, i) {
+        if (card.node.hidden) return;
+        var was = before[i];
+        var now = card.node.getBoundingClientRect();
+        if (!inView(now)) return;
+
+        if (inView(was)) {
+          var dx = was.left - now.left;
+          var dy = was.top - now.top;
+          // Sub-pixel drift is not a movement; animating it is a wasted layer.
+          if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+          card.node.animate([
+            { transform: 'translate(' + dx + 'px,' + dy + 'px)' },
+            { transform: 'none' }
+          ], { duration: 260, easing: EASE });
+        } else {
+          // `backwards` holds it hidden through its delay instead of showing it,
+          // blanking it, and showing it again.
+          card.node.animate([
+            { opacity: 0, transform: 'translateY(8px)' },
+            { opacity: 1, transform: 'none' }
+          ], {
+            duration: 220,
+            easing: EASE,
+            delay: Math.min(entering++, 4) * 40,
+            fill: 'backwards'
+          });
+        }
+      });
+    }
+    settled = true;
 
     allButton.setAttribute('aria-pressed', active ? 'false' : 'true');
     buttons.forEach(function (button) {
@@ -487,4 +599,7 @@
   container.appendChild(grid);
 
   apply();
+
+  // Same task as the appends above — see the note in render-tools.js.
+  if (window.reveal) window.reveal.scan();
 })();

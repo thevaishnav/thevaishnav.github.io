@@ -43,6 +43,37 @@
     wrap.appendChild(pre);
   });
 
+  // ---------- which blocks actually scroll ----------
+  // On a touch screen there is no scrollbar at rest, so a block wider than its
+  // column looks like a line that has been cut off rather than one that can be
+  // dragged. content.css answers that with a fade at the trailing edge — but a
+  // fade drawn on a block that fits is dimming the last few characters of a
+  // line for no reason, and CSS has no way to ask whether an element overflows.
+  // So the fact is published here as an attribute and the fade hangs off it.
+  //
+  // It is re-measured on resize because the answer changes with the column: the
+  // same block scrolls on a phone and fits on a laptop, and a rotation crosses
+  // that line in one frame.
+  function syncOverflow() {
+    Array.prototype.forEach.call(blocks, function (pre) {
+      // 1px of slack: sub-pixel column widths otherwise report a block as
+      // scrollable by a fraction of a character nobody can see or reach.
+      if (pre.scrollWidth - pre.clientWidth > 1) {
+        pre.setAttribute('data-overflows', '');
+      } else {
+        pre.removeAttribute('data-overflows');
+      }
+    });
+  }
+  syncOverflow();
+  // Fonts arrive after this script runs and change every measurement with them.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncOverflow);
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(syncOverflow, 120);
+  });
+
   function makeCopyButton(pre) {
     var btn = document.createElement('button');
     btn.type = 'button';

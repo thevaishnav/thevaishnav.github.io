@@ -14,7 +14,7 @@ figure.figure{ margin:0 0 8px; }
 }
 .figure img.shot{ display:block; width:100%; height:auto; }
 .figure figcaption{
-  font-size:13px;
+  font-size:var(--t-small);
   color:var(--muted);
   margin-top:10px;
   line-height:1.45;
@@ -39,7 +39,7 @@ figure.figure{ margin:0 0 8px; }
 
 .pill-row{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 8px; }
 .pill{
-  font-size:12px;
+  font-size:var(--t-mini);
   letter-spacing:0.04em;
   color:var(--muted);
   border:1px solid var(--line);
@@ -61,8 +61,8 @@ figure.figure{ margin:0 0 8px; }
   border-radius:10px;
   padding:20px;
 }
-.meta-cell .k{ font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
-.meta-cell .v{ font-size:15px; color:var(--text); margin:0; }
+.meta-cell .k{ font-size:var(--t-mini); letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
+.meta-cell .v{ font-size:var(--t-base); color:var(--text); margin:0; }
 
 /* ---------- CTA band ---------- */
 .cta-band{
@@ -76,6 +76,24 @@ figure.figure{ margin:0 0 8px; }
 .cta-band h2{ margin:0 0 10px; }
 .cta-band p{ color:var(--muted); max-width:62ch; margin:0 auto 24px; }
 .cta-band .actions{ justify-content:center; }
+/* The address under the buttons, for the reader who would rather have the
+   string than the dialog. It is set a step down and sits under the actions
+   rather than beside them: it is the same offer as "Get in touch", not a
+   third choice, and two equally weighted routes to one destination is how a
+   band this short turns into a decision. The margin cancels the 24px the
+   paragraph rule above puts under every .cta-band <p>. */
+.cta-band .cta-direct{
+  margin:12px auto 0;
+  font-size:var(--t-small);
+}
+/* The address is a 16px line of text sitting directly under two 46px buttons,
+   and on a phone it is the last thing on the page anyone is asked to act on.
+   Padding lifts its box to 28px without moving the text or its underline —
+   the same treatment .site-footer-mail gets, for the same reason. */
+.cta-band .cta-direct a{
+  display:inline-block;
+  padding:6px 2px;
+}
 
 /* ---------- callouts (manual) ----------
    One shape, recoloured per type. Each callout is a tinted panel with a
@@ -110,8 +128,8 @@ figure.figure{ margin:0 0 8px; }
   border-radius:50%;
   display:grid;
   place-items:center;
-  font-family:'Space Grotesk', sans-serif;
-  font-size:14px;
+  font-family:var(--font-display);
+  font-size:var(--t-control);
   font-weight:700;
   line-height:1;
   color:var(--accent);
@@ -121,8 +139,8 @@ figure.figure{ margin:0 0 8px; }
   margin-top:-1px;
 }
 .callout .label{
-  font-family:'Space Grotesk', sans-serif;
-  font-size:14px;
+  font-family:var(--font-display);
+  font-size:var(--t-control);
   font-weight:600;
   letter-spacing:0;
   text-transform:none;
@@ -133,7 +151,10 @@ figure.figure{ margin:0 0 8px; }
 /* every real child sits in the text column — the badge is the only thing
    in column 1, so content never wraps under it however many blocks it has */
 .callout > *{ grid-column:2; }
-.callout p{ margin:0; color:#d6d8db; font-size:15px; max-width:66ch; }
+/* Off the reading ramp on purpose (tokens.css). A callout body sits on a
+   panel tinted with its own accent, not on a surface, and --ink-2 was picked
+   against the surface — used here it reads a shade flat against the wash. */
+.callout p{ margin:0; color:#d6d8db; font-size:var(--t-base); max-width:66ch; }
 .callout p + p{ margin-top:9px; }
 
 .callout.tip{       --accent:var(--axis-y); --glyph:"\2726"; } /* ✦ */
@@ -154,12 +175,15 @@ figure.figure{ margin:0 0 8px; }
    that; a full-contrast border made every path in a paragraph read as
    a separate object and broke the line up. */
 code{
-  font-family:'JetBrains Mono', ui-monospace, monospace;
+  font-family:var(--font-mono);
   font-size:0.86em;
   background:color-mix(in srgb, var(--axis-z) 8%, var(--surface-2));
   box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--line) 80%, transparent);
   border-radius:5px;
   padding:1.5px 6px;
+  /* Also off the ramp, and for the same reason as the callout body above: this
+     sits on a tinted chip inside a line of prose and has to stay legible
+     against it without outshouting the sentence it is in. */
   color:#dfe2e6;
   /* a long path or flag in inline code must not widen the page */
   overflow-wrap:anywhere;
@@ -234,10 +258,52 @@ code{
 
 @supports not (background: color-mix(in srgb, red 10%, blue)){
   pre.code, .table-scroll, .contact-modal-body, .doc-rail{
-    scrollbar-color:#4a505a transparent;
+    scrollbar-color:var(--thumb) transparent;
   }
   :is(pre.code, .table-scroll, .contact-modal-body, .doc-rail)::-webkit-scrollbar-thumb{
-    background:#4a505a; background-clip:padding-box;
+    background:var(--thumb); background-clip:padding-box;
+  }
+}
+
+/* ---------- a code block that scrolls, on a touch screen ----------
+   The block above styles a scrollbar, and a touch screen does not draw one at
+   rest. So on a phone a code block wider than its column (465px inside 333)
+   looks exactly like a line that has been cut off: nothing on screen suggests
+   it moves, so nobody drags it.
+
+   A fade at the trailing edge is what suggests it. Scoped to the wrapped
+   block — the wrapper is the card and owns the border, radius and shadow, so
+   masking the <pre> inside it fades only the code. A bare, unwrapped <pre>
+   (the no-JS fallback) is itself the card, and a mask there would clip its
+   own shadow away.
+
+   `[data-overflows]` is set by code-blocks.js on the blocks that are actually
+   wider than their column, and re-checked on resize. CSS has no way to ask
+   that question, and a fade drawn on a block that fits is dimming the end of
+   a line with nothing behind it.
+
+   Coarse pointers only: where there is a real pointer the styled scrollbar is
+   already saying this, and two affordances for one fact is one too many. */
+@media (pointer: coarse){
+  .code-block > pre.code[data-overflows]{
+    -webkit-mask-image:linear-gradient(90deg, #000 0, #000 calc(100% - 44px), transparent 100%);
+    mask-image:linear-gradient(90deg, #000 0, #000 calc(100% - 44px), transparent 100%);
+  }
+  /* Scrolled to the end there is nothing left to hint at, and a fade still
+     sitting on the last characters of the last line is dimming content for
+     no reason. The scroll timeline turns it off exactly then. */
+  @supports (animation-timeline: scroll(self inline)){
+    @keyframes code-edge-clear{
+      to{
+        -webkit-mask-image:linear-gradient(90deg, #000 0, #000 100%, #000 100%);
+        mask-image:linear-gradient(90deg, #000 0, #000 100%, #000 100%);
+      }
+    }
+    .code-block > pre.code[data-overflows]{
+      animation:code-edge-clear linear both;
+      animation-timeline:scroll(self inline);
+      animation-range:contain 82% contain 100%;
+    }
   }
 }
 
@@ -280,15 +346,15 @@ pre.code{
   border-bottom:1px solid var(--line);
 }
 .code-block .code-lang{
-  font-family:'JetBrains Mono', ui-monospace, monospace;
-  font-size:11px;
+  font-family:var(--font-mono);
+  font-size:var(--t-micro);
   letter-spacing:0.1em;
   text-transform:uppercase;
   color:var(--muted);
 }
 .code-block .code-copy{
-  font-family:'JetBrains Mono', ui-monospace, monospace;
-  font-size:11px;
+  font-family:var(--font-mono);
+  font-size:var(--t-micro);
   letter-spacing:0.06em;
   color:var(--muted);
   background:transparent;
@@ -300,36 +366,66 @@ pre.code{
 }
 .code-block .code-copy:hover{
   color:var(--text);
-  border-color:color-mix(in srgb, var(--axis-z) 45%, var(--line));
+  border-color:color-mix(in srgb, var(--role-nav) 45%, var(--line));
   background:rgba(255,255,255,0.04);
 }
 .code-block .code-copy[data-state="done"]{
-  color:var(--axis-y);
-  border-color:color-mix(in srgb, var(--axis-y) 45%, var(--line));
+  color:var(--role-proof);
+  border-color:color-mix(in srgb, var(--role-proof) 45%, var(--line));
 }
+/* Amber, not red. Red on this site means a claim being made, and there is
+   exactly one thing a failed copy is: unfinished. The command is still on
+   screen and still selectable, so this is a state that did not settle rather
+   than an error with nothing behind it — which is the fourth axis's job. */
 .code-block .code-copy[data-state="fail"]{
-  color:var(--axis-x);
-  border-color:color-mix(in srgb, var(--axis-x) 45%, var(--line));
+  color:var(--role-pending);
+  border-color:color-mix(in srgb, var(--role-pending) 45%, var(--line));
+}
+/* A 24px button is a comfortable click and an awkward tap, and on these pages
+   copying the command is the thing the reader came to do. The reach grows
+   without the button doing: the pseudo-element extends the hit area past the
+   drawn edge to a 44px square, so the bar keeps its height and the target
+   stops being the visual size of the pill. */
+@media (pointer: coarse){
+  .code-block .code-copy{
+    position:relative;
+    padding:6px 12px;
+    touch-action:manipulation;
+  }
+  .code-block .code-copy::after{
+    content:"";
+    position:absolute;
+    top:50%;
+    left:50%;
+    translate:-50% -50%;
+    width:max(100%, 44px);
+    height:44px;
+  }
 }
 
 pre.code code{
   background:none;
   box-shadow:none;
   padding:0;
-  font-size:13px;
+  font-size:var(--t-small);
   line-height:1.65;
-  color:#c9ccd1;
+  color:var(--ink-2);
   white-space:pre;
 }
 pre.code .cmt{ color:var(--muted); }
 /* these blocks exist to be selected and pasted — make the selection legible
    against the dark fill rather than leaving it to the browser default */
-pre.code code::selection{ background:color-mix(in srgb, var(--axis-z) 35%, transparent); }
+pre.code code::selection{ background:color-mix(in srgb, var(--role-nav) 35%, transparent); }
 
-/* ---------- keys and axis-coloured inline text ---------- */
+/* ---------- keys and axis-coloured inline text ----------
+   These three are for a literal axis: the X, Y and Z of a Unity gizmo named in
+   a sentence, coloured the way the Editor colours them. They are not a palette
+   to reach into for emphasis — a run-in heading that reads "Delete." is not
+   the Z axis, and colouring it as though it were is how the manual ended up
+   with a three-colour list whose colours meant nothing. */
 .kbd{
-  font-family:'JetBrains Mono', ui-monospace, monospace;
-  font-size:12px;
+  font-family:var(--font-mono);
+  font-size:var(--t-mini);
   background:var(--surface-2);
   border:1px solid var(--line);
   border-radius:5px;
@@ -357,7 +453,7 @@ pre.code code::selection{ background:color-mix(in srgb, var(--axis-z) 35%, trans
 .control-table{
   width:100%;
   border-collapse:collapse;
-  font-size:14px;
+  font-size:var(--t-control);
   min-width:520px;
 }
 .control-table th, .control-table td{
@@ -366,7 +462,7 @@ pre.code code::selection{ background:color-mix(in srgb, var(--axis-z) 35%, trans
   padding:13px 18px;
 }
 .control-table thead th{
-  font-size:11px;
+  font-size:var(--t-micro);
   letter-spacing:0.1em;
   text-transform:uppercase;
   color:var(--muted);
@@ -384,19 +480,19 @@ pre.code code::selection{ background:color-mix(in srgb, var(--axis-z) 35%, trans
 .control-table tbody tr:hover{ background:rgba(255,255,255,0.035); }
 
 .control-table td.num{
-  font-family:'JetBrains Mono', ui-monospace, monospace;
-  font-size:12px;
-  color:var(--axis-z);
+  font-family:var(--font-mono);
+  font-size:var(--t-mini);
+  color:var(--role-nav);
   width:56px;
   white-space:nowrap;
   text-align:center;
   padding-inline:12px;
   /* a faint tinted rail down the index column, tying it to the numbered
      callouts on the screenshot above it */
-  background:color-mix(in srgb, var(--axis-z) 7%, transparent);
+  background:color-mix(in srgb, var(--role-nav) 7%, transparent);
 }
 .control-table td.name{ color:var(--text); font-weight:600; white-space:nowrap; }
-.control-table td.desc{ color:#a9aeb6; }
+.control-table td.desc{ color:var(--ink-3); }
 .control-table td.desc code{ font-size:0.85em; }
 
 /* ---------- responsive ---------- */
@@ -413,6 +509,64 @@ pre.code code::selection{ background:color-mix(in srgb, var(--axis-z) 35%, trans
   .meta-grid{ grid-template-columns:1fr 1fr; }
   .callout{ padding:14px 16px 15px; gap:11px; }
   .control-table th, .control-table td{ padding:11px 14px; }
+}
+
+/* ---------- the control reference, on a phone ----------
+   A three-column table with a 520px floor inside a 333px column is a table
+   that has to be dragged sideways to be read — one column at a time, with the
+   number that ties each row to the screenshot scrolled off the moment the
+   description is in view. That is not a narrow table; it is a table that does
+   not work here.
+
+   So the row stops being a row. The index and the control's name pair up on
+   one line — they are what the reader is matching against the numbered
+   callouts above — and the description sits under them, at full width, where
+   it has room to be a sentence. Same information, same order, no scrolling.
+   The header disappears with the columns: with each row shaped like this,
+   "#", "Control" and "Description" are labelling things that are already
+   obvious from position. */
+@media (max-width: 620px){
+  /* nothing left to scroll, so the card stops being a scroller and goes back
+     to being a plain panel */
+  .table-scroll{ overflow-x:visible; }
+  .control-table{ display:block; min-width:0; font-size:var(--t-base); }
+  .control-table thead{ display:none; }
+  .control-table tbody{ display:block; }
+
+  .control-table tbody tr{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:baseline;
+    gap:2px 10px;
+    padding:13px 16px 15px;
+  }
+  /* The generic rule puts this border on every td, which as blocks would draw
+     three lines per row. It belongs to the row now. */
+  .control-table tbody tr + tr td{ border-top:0; }
+  .control-table tbody tr + tr{
+    border-top:1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  }
+  @supports not (border-top-color: color-mix(in srgb, red 10%, blue)){
+    .control-table tbody tr + tr{ border-top-color:var(--line); }
+  }
+
+  .control-table td{ display:block; padding:0; }
+  /* Still the tinted index from the screenshot's callouts, now a badge beside
+     the name it belongs to rather than a rail down a column that is gone. */
+  .control-table td.num{
+    width:auto;
+    min-width:1.5rem;
+    padding:1px 6px;
+    border-radius:5px;
+    text-align:center;
+  }
+  .control-table td.name{ white-space:normal; }
+  .control-table td.desc{
+    grid-column:2;
+    margin-top:5px;
+    font-size:var(--t-control);
+    line-height:1.55;
+  }
 }
 
 @media (max-width: 460px){

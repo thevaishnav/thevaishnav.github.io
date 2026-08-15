@@ -16,7 +16,11 @@
      intro's own bottom edge — and with it the scroll cue — exactly --nav-h
      below the fold, which is the one place a "there is more down here" hint
      must never be. */
-  min-height:calc(100vh - var(--nav-h));
+  /* --bar-h is the phone tab bar, and 0px everywhere there isn't one, so this
+     one expression covers both. Without it the section would be exactly one
+     bar too tall on a phone and the scroll cue at its foot — the whole reason
+     the section is allowed to claim a screen — would sit behind the bar. */
+  min-height:calc(100vh - var(--nav-h) - var(--bar-h));
   /* svh is the *small* viewport height: the height with the mobile browser's
      address bar showing. vh on a phone is the large height, so a vh-sized
      section is taller than the visible screen until the user scrolls and the
@@ -24,7 +28,7 @@
      to the small height means the section always fits, and the extra space
      when the bar retracts is just breathing room. Declared second so engines
      that know svh take it and the rest keep the line above. */
-  min-height:calc(100svh - var(--nav-h));
+  min-height:calc(100svh - var(--nav-h) - var(--bar-h));
 
   /* Two rows: the copy takes the free space and centres in it, the cue sits on
      the bottom edge. Centring the copy in a *row* rather than in the section
@@ -73,7 +77,7 @@
   aspect-ratio:1;
   border-radius:50%;
   background:radial-gradient(circle,
-    color-mix(in srgb, var(--axis-z) 22%, transparent) 0%,
+    color-mix(in srgb, var(--role-nav) 22%, transparent) 0%,
     transparent 66%);
   filter:blur(34px);
   pointer-events:none;
@@ -111,7 +115,7 @@
    just to fit, which is the wrong way round: the size should follow from how
    much there is to say, not the other way about. */
 .intro-title{
-  font-size:clamp(2.125rem, 4.4vw, 3.5rem);
+  font-size:var(--t-display);
   line-height:1.05;
   letter-spacing:-0.024em;
   margin:0 0 16px;
@@ -126,7 +130,14 @@
    lines rather than one long ribbon on a wide screen. */
 .intro-lead{
   color:var(--muted);
-  font-size:clamp(1.0625rem, 1.5vw, 1.1875rem);
+  /* The middle term carries a rem as well as a vw, and that is the whole
+     point of it. Written as a bare `1.5vw` this line was pinned to the
+     viewport: a reader who had raised their browser's default text size got a
+     lead paragraph that did not move, while the eyebrow above it and the
+     figures below it both grew. Adding the rem term puts the reader's own
+     setting back into the sum without changing what the line does across
+     widths. Display type below stays viewport-driven on purpose — see the h1. */
+  font-size:clamp(1.0625rem, 0.95rem + 0.35vw, 1.1875rem);
   line-height:1.5;
   max-width:52ch;
   margin:0;
@@ -150,7 +161,11 @@
 .intro-cards{
   display:grid;
   grid-template-columns:repeat(3, minmax(0,1fr));
-  gap:20px clamp(24px, 3.2vw, 52px);
+  /* Four rows, shared by all three entries — see the subgrid block below.
+     The row gap is 0 because the spacing between the four lines is set by
+     their own margins, which is where it was before this became a grid. */
+  grid-template-rows:repeat(4, auto);
+  gap:0 clamp(24px, 3.2vw, 52px);
   list-style:none;
   margin:30px 0 0;
   /* --hit-y is added back on top of the 24px the rule actually wants. Each
@@ -189,6 +204,53 @@
 }
 .intro-card-link:hover{ background:rgba(255,255,255,0.04); }
 
+/* ---------- one baseline across three columns ----------
+   The rail's whole claim is that these are three readings of one record rather
+   than three panels, and the thing that says so is that the four lines line up
+   across all three. They did not. Each entry was an independent block, so the
+   moment one column's figure wrapped to two lines and its neighbour's did not,
+   every line below it in that column dropped by the difference: measured at
+   375px the three link lines sat at 576, 580 and 596, and at 1280px the third
+   sat 29px below the other two. Read across, the row came apart into three
+   fragments — which is the one thing this arrangement cannot afford, because
+   the fragments are all it has instead of borders.
+
+   Subgrid is the fix rather than fixed heights: the four rows are declared once
+   on .intro-cards and each entry adopts them, so a row is exactly as tall as
+   the tallest thing in it across all three columns, and the copy can change
+   length without anyone re-measuring anything. Two levels of it, because the
+   <a> that carries the hit area sits between the <li> and the four lines and
+   has to pass the tracks through rather than start its own.
+
+   It sits below .intro-card-inner rather than beside .intro-card above,
+   because `display:grid` here and `display:block` there are the same
+   specificity and the last one written wins.
+
+   Guarded, because a browser without subgrid would read `span 4` against the
+   four declared rows and distribute each entry across them evenly — four equal
+   tracks regardless of what is in them, which is worse than what it replaced.
+   Without support the rule does not apply at all and the entries go back to
+   being independent blocks, which is where they started. */
+@supports (grid-template-rows: subgrid){
+  .intro-card,
+  .intro-card-inner{
+    display:grid;
+    grid-row:span 4;
+    grid-template-rows:subgrid;
+    /* One column, and it may not exceed its share. Without the minmax the
+       single implicit track is `auto`, which sizes to max-content and lets the
+       longest line set the entry's width — the third entry came out 15px wider
+       than its column and broke the very alignment the rows had just fixed. */
+    grid-template-columns:minmax(0,1fr);
+  }
+  /* Each line sits at the top of its own row rather than stretching to fill
+     it. It only shows on the row the figure owns — where "4 years" is one line
+     in a track sized for the two "81,521 props" needs — and top is the correct
+     edge there: the number hangs from the line above it, which is the first
+     half of the sentence it finishes. */
+  .intro-card-inner > span{ align-self:start; }
+}
+
 /* Direct children only. The figure line wraps its own <span> around the counted
    year, and a blanket `.intro-card span` turned that inline number into a block
    — which broke "4 years" onto two lines while the other two entries stayed on
@@ -199,7 +261,7 @@
    them. */
 .intro-card .c-pre,
 .intro-card .c-post{
-  font-size:0.8125rem;
+  font-size:var(--t-small);
   line-height:1.4;
   color:var(--muted);
 }
@@ -212,8 +274,8 @@
    Tightened tracking because it is set large — the same size-specific rule the
    headings follow. */
 .intro-card .c-key{
-  font-family:'Space Grotesk', sans-serif;
-  font-size:clamp(1.25rem, 1.9vw, 1.625rem);
+  font-family:var(--font-display);
+  font-size:clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
   font-weight:600;
   line-height:1.1;
   letter-spacing:-0.018em;
@@ -222,6 +284,12 @@
   /* "81,521 props" must not split its number from its unit across a line */
   text-wrap:balance;
 }
+/* The figure inside the figure line carries .fig (base.css) like every other
+   claimed number on the site — the number in the claim colour, the unit beside
+   it in the text colour. Nothing is needed here: the shared rule already sets
+   both the colour and the weight, and this line's own 600 was going to be
+   there regardless. It is noted rather than styled so the next person looking
+   for where "81,521" gets its red does not go hunting in this file. */
 
 /* ---------- the link line ----------
    The affordance, and the reason the entries are not merely "clickable if you
@@ -229,21 +297,34 @@
    — accent colour, underlined, with the direction it goes in — because the
    audience for this page is someone skimming candidates, not someone learning
    an interface. The arrow distinguishes the two destinations: → stays on the
-   site, ↗ leaves it. */
+   site, ↗ leaves it.
+
+   The colour is the same on all three: green, the page's proof colour. This
+   rail is the one place on the site where every line is an offer of evidence —
+   a timeline, a write-up, a list — and the row reads as one set when it is one
+   colour, rather than as two internal links and an odd one out. Which trip it
+   is, is still said: → stays on the site, ↗ leaves it.
+
+   The line carries `.link` (base.css) and takes the underline recipe from
+   there. What it cannot take is the colour, because `.link` reads `target` off
+   the element and here the element is a <span> — the anchor is the whole
+   entry, three levels up, since the target is the size of the block you were
+   already reading rather than the size of one sentence. So the rule below sets
+   the same two custom properties itself, and the recipe follows. That
+   indirection is the reason `--link-ink` exists rather than the rule simply
+   hard-coding two colours. */
 .intro-card .c-cta{
+  --link-ink:var(--role-proof-hi);
+  --link-ink-hi:#96E0A4;
   margin-top:10px;
-  font-size:0.8125rem;
+  font-size:var(--t-small);
   line-height:1.4;
-  color:var(--axis-z);
-  text-decoration:underline;
-  text-decoration-thickness:1px;
-  text-underline-offset:3px;
-  text-decoration-color:color-mix(in srgb, var(--axis-z) 45%, transparent);
-  transition:color var(--dur-1) var(--ease-out),
-             text-decoration-color var(--dur-1) var(--ease-out);
 }
+/* `.link`'s own fallback keys off `[target]`, which only one of the three
+   anchors carries and which is on the ancestor besides, so it would leave two
+   of these underlined in blue on an engine without color-mix. */
 @supports not (background: color-mix(in srgb, red 10%, blue)){
-  .intro-card .c-cta{ text-decoration-color:rgba(90,169,255,0.45); }
+  .intro-card .c-cta{ text-decoration-color:rgba(110,208,127,0.45); }
 }
 /* The arrow moves the way the link goes — one step, on the hover of the whole
    entry, so the movement confirms that the block and not just the words is the
@@ -252,8 +333,12 @@
   display:inline-block;
   transition:transform var(--dur-1) var(--ease-out);
 }
+/* The hover belongs to the whole entry, not to the words — the block is the
+   target, so the block's hover is what lights the link. `.link:hover` would
+   only fire on the span itself, which is the thing this rail deliberately is
+   not. Same two properties, driven from one level up. */
 .intro-card-link:hover .c-cta{
-  color:#79bcff;
+  color:var(--link-ink-hi);
   text-decoration-color:currentColor;
 }
 .intro-card-link:hover .c-cta-arrow{ transform:translateX(3px); }
@@ -280,7 +365,7 @@
   border-radius:10px;
   text-decoration:none;
   color:var(--muted);
-  font-size:0.6875rem;
+  font-size:var(--t-micro);
   letter-spacing:0.16em;
   text-transform:uppercase;
   -webkit-tap-highlight-color:transparent;
@@ -382,31 +467,71 @@
     margin:22px auto 0;
     /* the same "+ inset" the desktop rule makes, against a smaller base */
     padding-top:calc(18px + var(--hit-y));
-    gap:14px clamp(10px, 3vw, 20px);
-    /* The columns are ~100px wide here and the gap can be as little as 10px,
-       so the hit area has to give most of its horizontal reach back or two
-       neighbouring entries would overlap each other's fill. */
-    --hit-x:5px;
+    gap:0 clamp(16px, 4.5vw, 22px);
+    /* The columns are ~100px wide here, so the hit area gives back most of its
+       horizontal reach. The gap floor is what the reach is set against: at
+       10px of gap and 5px of inset either side, two neighbouring targets ended
+       up 1px apart — three destinations touching each other on the screen this
+       page is mostly read on, two of which leave the site. A thumb landing
+       near a boundary opened whichever it happened to graze.
+       16px of gap against 4px of inset leaves 8px of dead space between them,
+       which costs each column three pixels of width and is worth it. */
+    --hit-x:4px;
     --hit-y:8px;
   }
   .intro-card .c-pre,
-  .intro-card .c-post{ font-size:0.75rem; line-height:1.35; }
-  .intro-card .c-key{ font-size:1.125rem; }
+  .intro-card .c-post{ font-size:var(--t-mini); line-height:1.35; }
+  .intro-card .c-key{ font-size:var(--t-h4); }
   /* "See the timeline" wraps to two lines in a 100px column and costs the
      scroll cue the height it needs, so the article drops out and the line
      reads "See timeline" / "Read post" — same promise, one line. */
-  .intro-card .c-cta{ margin-top:8px; font-size:0.6875rem; }
+  .intro-card .c-cta{ margin-top:8px; font-size:var(--t-micro); }
   .intro-card .c-cta-opt{ display:none; }
 }
 
-/* A short landscape phone has no room for a full screen of copy plus a cue —
-   let the section be as tall as its contents rather than squeezing them. */
-@media (max-height: 560px){
+/* ---------- when the screen is short ----------
+   The section's whole bargain is: take a full screen, and pay for it with a
+   cue that proves there is more below. On a short screen the bargain cannot
+   be kept — the copy alone is taller than the screen, so the cue ends up
+   under the fold, or under the tab bar, which is worse than not promising
+   anything. Stacked, this content wants about 560px; with the header above
+   it and the tab bar below, a phone needs roughly 680px of height before the
+   promise is affordable.
+
+   There are two short screens and they want opposite things, so they are two
+   rules. This first one is the part they share: give up the full-height claim
+   and drop the cue rather than squeeze both. */
+@media (max-height: 600px){
   .intro{ min-height:0; padding-top:32px; padding-bottom:32px; }
   .scroll-cue{ display:none; }
-  /* A stacked mark on a 400px-tall screen would push the copy off the bottom
-     on its own — put it back beside the text and shrink it. */
+}
+
+/* Short because it is a phone on its side. Here the width is the resource
+   there is plenty of, so the mark goes back beside the copy — stacked, it
+   would push the text off the bottom on its own.
+   Keyed to the orientation rather than to a width: a 320px-wide phone held
+   upright is also under 600px tall, and the last thing it needs is a
+   two-column layout. */
+@media (max-height: 600px) and (orientation: landscape){
   .intro-body{ grid-template-columns:minmax(0,1fr) auto; align-items:center; }
   .intro-mark{ order:0; }
   .gizmo{ width:clamp(110px, 16vw, 150px); }
+}
+
+/* Tall enough to keep the bargain, but only just — the common 640px and
+   667px phones, where the stack fits and the cue lands with nothing to
+   spare. Everything here is a small subtraction rather than a change of
+   layout: the mark loses a quarter of its diameter and each gap gives back a
+   few pixels, which together is about sixty — the difference between a cue
+   sitting behind the tab bar and a cue sitting clear above it. */
+@media (max-width: 620px) and (min-height: 601px) and (max-height: 720px){
+  .intro{ padding-top:14px; padding-bottom:14px; }
+  .intro-body{ gap:14px; }
+  .gizmo{ width:clamp(84px, 22vw, 110px); }
+  .intro-title{ margin-bottom:10px; }
+  .intro-cards{
+    margin-top:16px;
+    padding-top:calc(14px + var(--hit-y));
+  }
+  .scroll-cue{ gap:6px; padding:4px 14px; }
 }

@@ -21,7 +21,7 @@
    element that looks like one, so the demotion changed the document outline
    and nothing else. */
 .hero .hero-title{
-  font-size:clamp(2rem, 4.4vw, 3.375rem);
+  font-size:var(--t-h1);
   line-height:1.08;
   letter-spacing:-0.022em;
   margin:0 0 18px;
@@ -37,7 +37,7 @@
 }
 .hero p.lead{
   color:var(--muted);
-  font-size:17px;
+  font-size:var(--t-lead);
   max-width:46ch;
   margin:0;
 }
@@ -46,9 +46,50 @@
    only used by the intro section now, and a shape's styles should live where
    the shape does. */
 
-/* ---------- page intro (subpages) ---------- */
-.page-hero{ padding-top:56px; padding-bottom:8px; }
-.page-hero .lead{ color:var(--muted); font-size:17px; max-width:56ch; margin:0 0 26px; }
+/* ---------- page intro (subpages) ----------
+   The landing page opens onto a lit field — the wash behind the brand mark
+   (intro.css) — and the subpages opened onto flat black, which read less like
+   a quieter page than like the same page with something failing to load. This
+   is the same light, without the mark: one very wide, very faint ellipse of
+   the orientation blue behind the heading, falling off well before the first
+   row of content.
+
+   It is painted as the section's own background rather than as a pseudo-
+   element, which is the difference between a light and a shape. A blurred
+   ellipse sized to sit inside the viewport has two visible side edges, and a
+   faint oval floating behind a heading looks worse than the flat black it
+   replaced; the only way to hide those edges is to run the gradient past the
+   viewport, and an absolutely positioned box that does that widens the
+   document and hands a phone a sideways scroll. A background never overflows.
+   `.page-hero` is a `.wrap`, so it is already the full width of the page —
+   the gradient's horizontal falloff lands exactly on the screen edges and
+   what is left to read is the vertical one: light arriving from above left.
+
+   Three stops, not two. Two stops across a range this dark band visibly on an
+   8-bit panel; the middle one shortens each transition enough to hide it.
+   The whole thing tops out at 9% of a colour on a near-black ground — the job
+   is to give the page somewhere to be lit from, not to tint it. */
+.page-hero{
+  padding-top:56px;
+  padding-bottom:8px;
+  background:radial-gradient(ellipse 62% 130% at 30% -10%,
+    color-mix(in srgb, var(--role-nav) 9%, transparent) 0%,
+    color-mix(in srgb, var(--role-nav) 3%, transparent) 46%,
+    transparent 78%);
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .page-hero{
+    background:radial-gradient(ellipse 62% 130% at 30% -10%,
+      rgba(90,169,255,0.09), rgba(90,169,255,0.03) 46%, transparent 78%);
+  }
+}
+/* Atmosphere is exactly what a printer turns into a grey smear across the top
+   of page one. The print sheet already declines to paint backgrounds, but this
+   one is worth naming rather than relying on a default. */
+@media print{
+  .page-hero{ background:none; }
+}
+.page-hero .lead{ color:var(--muted); font-size:var(--t-lead); max-width:56ch; margin:0 0 26px; }
 
 .product-hero{
   display:grid;

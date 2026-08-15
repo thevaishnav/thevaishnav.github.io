@@ -45,13 +45,32 @@
     --surface:   #ffffff;
     --surface-2: #ffffff;
     --line:      #c8ccd2;
+    --line-hover:#c8ccd2;
     --text:      #000000;
+    /* The reading ramp, flattened. Not optional: both values are light greys
+       chosen to sit on a near-black canvas, and left alone they would print
+       body copy at roughly 20% ink on white — legible on nobody's printer.
+       Black, like --text, rather than a grey of their own: the ramp's job is
+       to separate levels of prose against a dark ground, and on paper that
+       separation is carried by size and weight instead. */
+    --ink-2:     #000000;
+    --ink-3:     #000000;
     --muted:     #4a4f57;
     --axis-x:    #000000;
     --axis-y:    #000000;
     --axis-z:    #000000;
     --axis-w:    #000000;
+    /* The four roles resolve through the axes above and flatten with them.
+       These three do not — they are literal values, lifted off the axes for
+       contrast on a dark screen — so they have to be listed by name. A claimed
+       figure on paper is still bold, which is the non-colour half of how it
+       was marked on screen; nothing is lost by taking the colour away. */
+    --role-claim-ink: #000000;
+    --role-nav-hi:    #000000;
+    --role-proof-hi:  #000000;
     --nav-h:     0px;
+    /* the tab bar is cut below, so nothing may reserve space for it */
+    --bar-h:     0px;
   }
 
   html, body{
@@ -65,12 +84,28 @@
 
   /* Anything whose only job is to be clicked or scrolled. */
   .nav,
+  .tabbar,
+  .skip-link,
   .scroll-cue,
   .cta-band,
   .contact-modal,
   .video-modal,
   .cursor-ring,
-  .cursor-dot{ display:none !important; }
+  .cursor-dot,
+  /* The footer's four site links go with the rest of the navigation. What is
+     left of the footer does not: on paper this document is read away from the
+     browser that knows whose page it is, and the name, the role and the
+     address are the one place that says so. It becomes a colophon. */
+  .site-footer-links{ display:none !important; }
+
+  .site-footer{
+    margin-top:18pt !important;
+    padding:8pt 0 0 !important;
+    border-top:0.5pt solid #b9bcc2 !important;
+  }
+  .site-footer-name{ font-size:10.5pt !important; color:#000 !important; }
+  .site-footer-role,
+  .site-footer-mail{ font-size:9pt !important; color:#4a4f57 !important; }
 
   .wrap{ padding:0 !important; }
 

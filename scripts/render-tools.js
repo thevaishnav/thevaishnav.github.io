@@ -3,6 +3,10 @@
   var highlightSection = document.getElementById('highlight');
   if (!container) return;
 
+  // See the note beside its use in renderCard. Kept here rather than inline so
+  // the card's media column is described in one place if the grid ever changes.
+  var MEDIA_SIZES = '(max-width: 1079px) calc(100vw - 40px), 42vw';
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) node.className = className;
@@ -25,6 +29,14 @@
         img.width = tool.image.width;
         img.height = tool.image.height;
       }
+      /* The media column is the full card below 1080px and roughly its left
+         two fifths above that, which is what SIZES describes. Offered only when
+         the full file's real width is known — that width is the descriptor, and
+         a wrong one sends the browser after the wrong file. */
+      if (tool.image.small && tool.image.width) {
+        img.srcset = tool.image.small + ' 800w, ' + tool.image.src + ' ' + tool.image.width + 'w';
+        img.sizes = MEDIA_SIZES;
+      }
       // Wide cinematic covers bleed edge to edge. Small UI screenshots would go
       // soft and blow the card's height doing that, so they sit contained on the
       // media backdrop instead — see .card-media-contain.
@@ -35,7 +47,10 @@
         // rather than a background on the media box: it stacks predictably and
         // the browser can lazy-load and decode it like any other image.
         var bg = el('img', 'card-media-bg');
-        bg.src = tool.image.src;
+        // The small copy whenever there is one: this element is blown up and
+        // blurred past the point where any of the full file's detail survives,
+        // so fetching it would be paying for pixels that get destroyed.
+        bg.src = tool.image.small || tool.image.src;
         bg.alt = '';
         bg.setAttribute('aria-hidden', 'true');
         bg.loading = 'lazy';
@@ -128,4 +143,10 @@
     container.appendChild(renderCard(tool));
   });
   if (data.ghost) container.appendChild(renderGhost(data.ghost));
+
+  // In the same task as the appends above, so the cards are marked for their
+  // entrance before the browser has had a chance to paint them at full opacity.
+  // Guarded because scroll reveal is optional — it bows out entirely on a
+  // reduced-motion setting, and this file must not care either way.
+  if (window.reveal) window.reveal.scan();
 })();

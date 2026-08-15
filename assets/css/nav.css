@@ -61,8 +61,15 @@
   display:flex;
   align-items:center;
   gap:10px;
+  /* The bar is pinned to --nav-h, so the brand has to be able to lose width
+     rather than wrap: min-width:0 lets it shrink below its content inside the
+     flex row, and .brand-name below turns that loss into a shortened line
+     instead of a second one. A header that wraps is a header that lies about
+     its own height, and --nav-h is what every anchor offset on the site is
+     measured against. */
+  min-width:0;
   text-decoration:none;
-  font-size:15px;
+  font-size:var(--t-base);
   /* fixed line-height: fallback and webfont metrics differ, and without this
      the swap changes the text's box and nudges the header contents */
   line-height:1;
@@ -91,6 +98,15 @@
   height:auto;
   transform:translate(-50%, -50%);
 }
+/* The name is its own box so it can be the thing that clips. Ellipsis needs a
+   block container with overflow of its own; on the flex row above, the name is
+   an anonymous item that nothing can address. */
+.brand .brand-name{
+  min-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
 
 .nav-links{
   display:flex;
@@ -98,7 +114,8 @@
   gap:22px;
 }
 .nav-link{
-  font-size:13px;
+  position:relative;
+  font-size:var(--t-small);
   line-height:1;
   letter-spacing:0.02em;
   color:var(--muted);
@@ -109,23 +126,279 @@
              border-color var(--dur-1) var(--ease-out),
              opacity var(--dur-1) var(--ease-out);
 }
-.nav-link:hover{ color:var(--text); border-color:var(--axis-z); }
+/* The link's text box is 13px tall, and it is the whole of what a pointer could
+   hit — four targets 14px high in a row, which is a third of what WCAG 2.5.8
+   asks for and well under what any hand is accurate to. The fix cannot be
+   padding: the underline below is drawn on this element's own border, so
+   padding would push the mark away from the words it is marking.
+   So the target is drawn instead — an invisible box, centred on the text,
+   inset outward far enough to reach 40px in the 48px band. The 12px it takes
+   from the 22px gap leaves 10px of dead space between neighbours, which is
+   enough that a near miss lands on nothing rather than on the wrong page. */
+.nav-link::after{
+  content:"";
+  position:absolute;
+  inset:-13px -6px;
+}
+.nav-link:hover{ color:var(--text); border-color:var(--role-nav); }
 /* the page you are on stays in the nav, just marked rather than removed */
-.nav-link.is-current{ color:var(--text); border-color:var(--axis-z); }
+.nav-link.is-current{ color:var(--text); border-color:var(--role-nav); }
 
 /* ---------- responsive ---------- */
+/* The band between a phone and a laptop: the links still fit on the header's
+   one line, they just stop needing desktop spacing to do it. */
 @media (max-width: 720px){
   .nav-links{ gap:16px; }
 }
 
-@media (max-width: 460px){
-  /* Brand + link list stop fitting on one line around 340px — let them stack
-     rather than push the page wider than the viewport. Stacking needs the
-     height back off the pin, so the header grows instead of clipping. */
-  /* --nav-h drives every anchor and sticky offset, so it has to follow the
-     wrapped header rather than keep claiming the one-line height. */
-  :root{ --nav-h:89px; }
-  .nav{ height:auto; }
-  .nav-inner{ height:auto; padding-bottom:16px; flex-wrap:wrap; row-gap:12px; }
-  .nav-links{ flex-wrap:wrap; gap:14px; }
+/* ============================================================
+   The skip link — the first thing in the tab order on every page.
+
+   Off-screen rather than `display:none`, because a hidden element is not
+   focusable and an unfocusable skip link is no skip link at all. It comes back
+   to the top-left corner the moment it takes focus, over everything including
+   the sticky header, and looks like what it is: a control.
+   ============================================================ */
+.skip-link{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:100; /* above the header's 50 and the tab bar's 60 */
+  /* Moved out of view by its own height plus the offset that holds it away
+     from the viewport edge, so the slide back in is short and the element
+     never travels across the page. The offset has to be part of the shift:
+     without it the link's bottom edge stays on screen as a stray sliver. */
+  transform:translateY(calc(-100% - 10px));
+  margin:10px;
+  padding:11px 18px;
+  border-radius:7px;
+  background:var(--role-nav);
+  color:#0B0D10;
+  font-size:var(--t-control);
+  font-weight:500;
+  text-decoration:none;
+  transition:transform var(--dur-2) var(--ease-out);
+}
+.skip-link:focus-visible{
+  transform:translateY(0);
+  /* The shared ring is drawn in the same blue this sits on and would vanish
+     into it; against the button's own fill the page background is the
+     contrasting colour. */
+  outline-color:var(--bg);
+}
+
+/* ============================================================
+   The site footer — the page's bottom edge, on every page.
+
+   The site had none: each page stopped on whatever its last section was, which
+   on the landing page was a dashed "next tool — TBA" placeholder. A reader who
+   had gone all the way down was left with a page that had simply run out.
+   Written by scripts/site-header.js from the same LINKS the header and the tab
+   bar are built from.
+   ============================================================ */
+.site-footer{
+  margin-top:80px;
+  border-top:1px solid var(--line);
+  /* Not a filled band. The site draws separation with hairlines rather than
+     with panels — the figure rail, the header, the timeline all do — and a
+     footer on its own darker surface would be the one place that argues
+     otherwise. The rule is the whole device. */
+  padding:36px 0 44px;
+}
+.site-footer-inner{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:28px 40px;
+}
+.site-footer-name{
+  margin:0;
+  font-family:var(--font-mono);
+  font-size:var(--t-base);
+  letter-spacing:0.02em;
+  color:var(--text);
+}
+.site-footer-role{
+  margin:4px 0 0;
+  font-size:var(--t-small);
+  color:var(--muted);
+}
+.site-footer-mail{
+  display:inline-block;
+  /* Padding rather than more margin, because the two are not the same thing
+     here: the address is a 20px line of text and on a phone it is the last
+     actionable thing on the page, so its box has to be reachable. Padding
+     lifts it to 32px without moving the text or the underline; the margin is
+     trimmed by the same amount so the gap above it does not grow. */
+  margin-top:6px;
+  padding:6px 0;
+  font-size:var(--t-small);
+}
+
+.site-footer-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 26px;
+}
+.site-footer-link{
+  position:relative;
+  font-size:var(--t-small);
+  color:var(--muted);
+  text-decoration:none;
+  /* The padding the header's links cannot have — nothing is drawn on this
+     element's border, so the target can simply be the box. It reaches 33px
+     without a pseudo-element and without moving the text. */
+  padding:10px 0;
+  transition:color var(--dur-1) var(--ease-out);
+}
+.site-footer-link:hover{ color:var(--text); }
+.site-footer-link.is-current{ color:var(--text); }
+/* The same mark the header and the tab bar use for the page you are on, drawn
+   here under the word rather than over it. Three renderings of one navigation,
+   one way of saying "you are here". */
+.site-footer-link.is-current::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:6px;
+  height:1px;
+  background:var(--role-nav);
+}
+
+/* ============================================================
+   The tab bar — the same navigation, on a phone.
+
+   Written by scripts/site-header.js from the same LINKS list the header
+   above is built from, so the site still has one navigation with one
+   source of truth; what changes below 620px is only where it sits.
+
+   It sits at the bottom because that is where a thumb is. This site's
+   dominant arrival is a phone, held one-handed, from a profile link —
+   and the four destinations were previously four 14px-tall text links
+   in a wrapped row at the very top of the screen, which is both the
+   smallest thing on the page to hit and the furthest from the hand
+   holding it. Contact, the one link that is the point of the visit,
+   was the last item in that row.
+
+   Moving them also repays the header. Brand-only, the bar stops
+   wrapping — and a header that does not wrap is a header whose pinned
+   height is actually true. --nav-h is what every anchor offset, sticky
+   top and full-height section on the site subtracts; while the header
+   wrapped, that number was wrong by 10px at 375 and by 38px at 320,
+   which is how the landing page's scroll cue — the one element that
+   must be visible — ended up below the fold on a small phone.
+   ============================================================ */
+
+.tabbar{ display:none; }
+
+@media (max-width: 620px){
+  /* Nothing left in the header but the brand, so it fits on one line at any
+     phone width and the pinned height below is the real height. Shorter than
+     the desktop bar, too: a 28px mark in a 76px band was padding for a row of
+     links that is no longer there. */
+  :root{
+    --nav-h:60px;
+    /* One number, used twice: the bar's own height, and the space every page
+       reserves at its foot so the bar never covers the end of the content.
+       The inset is the phone's home indicator — on a device without one it
+       resolves to 0 and this is a flat 56px. */
+    --bar-h:calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+  .nav{ padding-top:16px; }
+  .nav-inner{ height:calc(var(--nav-h) - 16px); }
+  .nav-links{ display:none; }
+  /* With the links gone the brand is the only thing left in the header, and
+     it is still a link home. It takes the whole 44px band as its target
+     rather than the 28px the mark happens to be tall. */
+  .brand{ min-height:44px; }
+
+  /* The footer's link row goes for the same reason the header's did: the tab
+     bar is fixed to the bottom of this screen carrying those four links, and
+     the footer sits directly above it. Printing them twice, forty pixels
+     apart, is a column of eight links where there are four destinations.
+     What is left is the part the bar does not carry — the name, the role and
+     the address — which is what a footer is for once it is not navigation. */
+  .site-footer-links{ display:none; }
+  .site-footer{ margin-top:56px; padding:28px 0 32px; }
+
+  .tabbar{
+    position:fixed;
+    z-index:60; /* above the header's 50: it is the layer nearest the reader */
+    inset:auto 0 0 0;
+    display:grid;
+    grid-auto-flow:column;
+    /* minmax(0,1fr), not 1fr: a bare 1fr is floored at the cell's own
+       min-content, so "Contributions" would claim a wider cell than the other
+       three and the bar would lose the one thing that makes a row of tabs
+       read as a row — equal shares. The labels are sized below to fit that
+       share rather than to set it. */
+    grid-auto-columns:minmax(0, 1fr);
+    height:var(--bar-h);
+    /* The safe-area inset is padding rather than height so the labels stay in
+       the reachable 56px and the home indicator gets its own clear strip
+       underneath them, instead of the whole bar drifting upward. */
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+    /* and the rounded corners / notch on the sides, for a short phone held
+       in landscape — the outermost tab would otherwise start under them */
+    padding-inline:env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
+    /* Same material as the header — translucent over a blur — so the page
+       reads as one surface with a bar at each end rather than a bar borrowed
+       from somewhere else. Content scrolling under it stays legible. */
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(12px) saturate(160%);
+    -webkit-backdrop-filter:blur(12px) saturate(160%);
+    border-top:1px solid var(--line);
+  }
+  @supports not (background: color-mix(in srgb, red 10%, blue)){
+    .tabbar{ background:rgba(13,15,18,0.94); }
+  }
+
+  .tab{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 4px;
+    /* The header link's own setting, one step down — these are the same four
+       links, so they are set in the same voice. Uppercase was tried and is
+       wrong twice over: on this site capitals are the language of section
+       labels rather than of navigation, and "Contributions" set in them does
+       not fit a quarter of a 375px screen at any size worth reading.
+       No icons either. There is no icon vocabulary in this site's navigation,
+       and drawing four glyphs so that four short words could be replaced by
+       four ambiguous pictures would be decoration standing in for the words. */
+    font-size:var(--t-mini);
+    line-height:1.2;
+    letter-spacing:0.01em;
+    color:var(--muted);
+    text-decoration:none;
+    text-align:center;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+    transition:color var(--dur-1) var(--ease-out);
+  }
+  /* The mark for the page you are on, drawn on the edge the bar is attached
+     to — the header's `is-current` underline, mirrored. Same accent, same
+     1px, read from the other side. */
+  .tab::before{
+    content:"";
+    position:absolute;
+    top:-1px; /* sits on the bar's own top hairline rather than under it */
+    left:14%;
+    right:14%;
+    height:2px;
+    border-radius:0 0 2px 2px;
+    background:var(--role-nav);
+    opacity:0;
+    transition:opacity var(--dur-1) var(--ease-out);
+  }
+  .tab.is-current{ color:var(--text); }
+  .tab.is-current::before{ opacity:1; }
+  .tab:active{ color:var(--text); background:rgba(255,255,255,0.05); }
+
+  /* The header's focus ring is drawn outside the element; inside a 56px bar
+     that would be clipped by the bar's own edge, so it comes inward. */
+  .tab:focus-visible{ outline-offset:-3px; }
 }

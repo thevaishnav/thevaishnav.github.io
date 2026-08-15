@@ -2,22 +2,71 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- viewport-fit=cover: without it a notched phone reports every safe-area
+     inset as zero, and the gutters and the tab bar have nothing to move out
+     of the way of. See .wrap in base.css and .tabbar in nav.css. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pivot++ · User Manual</title>
 <meta name="description" content="The complete Pivot++ user manual: getting started, interface reference, the Shared Pivot, Object Pivots, Edit Pivots mode, and troubleshooting.">
+<!-- The page is drawn dark and only dark; without this the browser draws its
+     own half of the interface — scrollbar, caret, form controls — light. -->
+<meta name="color-scheme" content="dark">
 <link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+<link rel="canonical" href="https://thevaishnav.github.io/tools/pivot/user-manual/">
+
+<!-- A manual is linked to from support replies and from inside the tool itself,
+     so it is shared as a URL more often than most pages here. Absolute URLs
+     because a scraper resolves these from its own context, not the page's. -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pivot++ · User Manual">
+<meta property="og:description" content="Getting started, the interface, the Shared Pivot, Object Pivots, Edit Pivots mode, and troubleshooting.">
+<meta property="og:url" content="https://thevaishnav.github.io/tools/pivot/user-manual/">
+<meta property="og:image" content="https://thevaishnav.github.io/assets/img/pivot/cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- The stylesheet, in cascade order — a later file may override an earlier one
+     at equal specificity, so the order is deliberate rather than alphabetical.
+     The parts are linked directly rather than pulled in by one @import file:
+     an @import is only discovered once the file holding it has arrived, so
+     every part below used to wait on a second round trip before it could even
+     start. A new part is added here, in every page.
+
+     Order note: print.css is last so it can override anything above it. -->
+<link rel="stylesheet" href="/assets/css/tokens.css">        <!-- colours + the two layout measurements   -->
+<link rel="stylesheet" href="/assets/css/base.css">          <!-- reset, page shell, type, container      -->
+<link rel="stylesheet" href="/assets/css/nav.css">           <!-- the sticky site header                  -->
+<link rel="stylesheet" href="/assets/css/buttons.css">       <!-- .btn and the action rows                -->
+<link rel="stylesheet" href="/assets/css/cards.css">         <!-- tool cards, ghost card, featured card   -->
+<link rel="stylesheet" href="/assets/css/intro.css">         <!-- landing: the full-height opening screen -->
+<link rel="stylesheet" href="/assets/css/hero.css">          <!-- landing hero, gizmo, subpage intros     -->
+<link rel="stylesheet" href="/assets/css/content.css">       <!-- figures, splits, meta, CTA, code, tables -->
+<link rel="stylesheet" href="/assets/css/timeline.css">      <!-- experience: the dated career rail       -->
+<link rel="stylesheet" href="/assets/css/contributions.css"> <!-- contributions: the grouped work list    -->
+<link rel="stylesheet" href="/assets/css/doc.css">           <!-- manual: sticky TOC + prose column       -->
+<link rel="stylesheet" href="/assets/css/contact.css">       <!-- the contact dialog                      -->
+<link rel="stylesheet" href="/assets/css/cursor.css">        <!-- the custom pointer (fine pointers only) -->
+<link rel="stylesheet" href="/assets/css/reveal.css">        <!-- the one-shot entrance for blocks in view -->
+<link rel="stylesheet" href="/assets/css/motion.css">        <!-- press feedback + the a11y preference set -->
+<link rel="stylesheet" href="/assets/css/print.css">         <!-- the site on paper                       -->
+
+<!-- Loaded here, ahead of the body, because this is the one site script whose
+     timing is load-bearing. The render scripts at the foot of the page call
+     window.reveal.scan() in the same task in which they append their cards, so
+     that a card is marked for its entrance before it has ever been painted.
+     Injected alongside the other site scripts it arrived after those calls had
+     already run, and the cards appeared at full opacity and then faded in a
+     second time. -->
+<script src="/scripts/reveal.js"></script>
 </head>
 <body>
 
 <div id="site-header"></div>
 <script src="/scripts/site-header.js"></script>
 
-<div class="wrap wrap-wide">
+<main class="wrap wrap-wide">
   <div class="doc" id="top">
 
     <!-- ---------- sticky rail: title + TOC ---------- -->
@@ -91,7 +140,12 @@
         <h3>2.2 · First steps</h3>
         <figure class="figure panel">
           <div class="frame">
-            <img class="shot" src="/assets/img/pivot/overlay-bounded.png" width="259" height="93" loading="lazy"
+            <!-- 257x286 is this file's real size. It was declared 259x93 — the
+                 size of overlay-default.png, which the alt text below still
+                 describes — so the browser reserved a strip a third of the
+                 height the picture needed and the rest of the page jumped down
+                 when it decoded. -->
+            <img class="shot" src="/assets/img/pivot/overlay-bounded.png" width="257" height="286" loading="lazy"
                  alt="The Pivot++ overlay header with the Enabled toggle switched on.">
           </div>
           <figcaption>The Pivot++ overlay in Bounded mode.</figcaption>
@@ -116,7 +170,21 @@
 
         <figure class="figure">
           <div class="frame">
-            <img class="shot" src="/assets/img/pivot/overlay-numbered.png" width="4452" height="2500" loading="lazy"
+            <!-- The master is 4452px wide and 335KB, for a figure never drawn
+                 wider than about 800. The 1600px JPEG beside it is 110KB and
+                 covers a 2x display at that size; the master stays in the list
+                 for anything wider, and stays in the repo either way.
+
+                 No 800px candidate on purpose. This is the figure whose eleven
+                 callout numbers the table below refers to, so it is the one a
+                 reader on a phone will pinch into — and a browser does not
+                 fetch a larger candidate when they do. 1600 is the floor that
+                 survives being zoomed. -->
+            <img class="shot" src="/assets/img/pivot/overlay-numbered-1600.jpg"
+                 srcset="/assets/img/pivot/overlay-numbered-1600.jpg 1600w,
+                         /assets/img/pivot/overlay-numbered.png 4452w"
+                 sizes="(max-width: 900px) calc(100vw - 40px), 800px"
+                 width="4452" height="2500" loading="lazy"
                  alt="The Pivot++ overlay shown twice with every control numbered from 1 to 11. Left: Bounded mode. Right: Unbounded mode.">
           </div>
           <figcaption>Left: Bounded mode. Right: Unbounded mode. Numbers match the table below.</figcaption>
@@ -235,9 +303,9 @@
         </figure>
         <p>Click the <strong>Edit Pivots</strong> button to enter editing mode. Every saved pivot on the object is drawn in the Scene view with its own gizmo:</p>
         <ul>
-          <li><strong class="axis-x">Move.</strong> Drag a pivot's position arrows to relocate it.</li>
-          <li><strong class="axis-y">Rotate.</strong> Drag the rotation rings to orient the pivot.</li>
-          <li><strong class="axis-z">Delete.</strong> Click the red ✕ button next to a pivot to remove it from the object.</li>
+          <li><strong>Move.</strong> Drag a pivot's position arrows to relocate it.</li>
+          <li><strong>Rotate.</strong> Drag the rotation rings to orient the pivot.</li>
+          <li><strong>Delete.</strong> Click the red ✕ button next to a pivot to remove it from the object.</li>
         </ul>
         <p>When you are done, click <strong>Default</strong> to leave editing mode and return to normal handle control.</p>
         <div class="callout pro">
@@ -286,7 +354,7 @@
         <p>If you run into a problem, have a feature request, or just want to share what you have built with it, we would love to hear from you.</p>
         <div class="callout note">
           <span class="label">Contact</span>
-          <p>Email: <a class="axis-z" href="mailto:itsdevlogger@gmail.com" style="text-decoration:none;">itsdevlogger@gmail.com</a></p>
+          <p>Email: <a class="link is-address" href="mailto:itsdevlogger@gmail.com">itsdevlogger@gmail.com</a></p>
         </div>
         <p>When reporting an issue, please include your <strong>Unity version</strong> and the <strong>plugin version</strong>. If you can, add a screenshot or short clip of the problem. It helps us get you a fix much faster.</p>
         <p class="mono" style="color:var(--muted);margin-top:28px;">Happy pivoting!</p>
@@ -294,67 +362,9 @@
 
     </div>
   </div>
-</div>
+</main>
 
-<script>
-(function () {
-  var links = Array.prototype.slice.call(
-    document.querySelectorAll('.toc a[href^="#"]')
-  );
-  if (!links.length) return;
-
-  // Map each section id to its TOC link.
-  var linkById = {};
-  var sections = [];
-  links.forEach(function (link) {
-    var id = link.getAttribute('href').slice(1);
-    var section = document.getElementById(id);
-    if (section) {
-      linkById[id] = link;
-      sections.push(section);
-    }
-  });
-
-  function setActive(id) {
-    links.forEach(function (link) {
-      link.classList.toggle('active', link === linkById[id]);
-    });
-  }
-
-  // Pick the section whose top is closest to (but not far below) the
-  // scroll offset — the last one that has passed the highlight line.
-  function update() {
-    var offset = 100; // px from top where a section counts as "current"
-    var current = sections[0];
-    for (var i = 0; i < sections.length; i++) {
-      if (sections[i].getBoundingClientRect().top - offset <= 0) {
-        current = sections[i];
-      } else {
-        break;
-      }
-    }
-    // At the very bottom of the page, force-select the last section.
-    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
-      current = sections[sections.length - 1];
-    }
-    if (current) setActive(current.id);
-  }
-
-  var ticking = false;
-  function onScroll() {
-    if (ticking) return;
-    ticking = true;
-    window.requestAnimationFrame(function () {
-      update();
-      ticking = false;
-    });
-  }
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-  update();
-})();
-</script>
+<script src="/scripts/doc-toc.js"></script>
 
 </body>
 </html>

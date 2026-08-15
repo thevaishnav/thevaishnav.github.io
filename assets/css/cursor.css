@@ -53,9 +53,16 @@
 }
 
 /* ---------- the ring ----------
-   The trailing part. Its size and radius are animated (it grows to fit a
-   card), but its *position* is not — position is set every frame by script,
-   and a transition on transform would fight that and smear.  */
+   The trailing part. Nothing geometric is transitioned here. Script sets the
+   position, the size and the radius every frame from one eased value, because
+   travelling onto a target and growing into its outline are a single movement
+   and splitting it between script and CSS gives it two curves and two
+   durations — the ring lands, then finishes reshaping. A transition on any of
+   these would fight the per-frame write and smear.
+
+   Colour is the exception, and stays in CSS: it is a state change rather than
+   a movement, it has nothing to stay in sync with, and the compositor can
+   carry it for free. */
 .cursor-ring{
   width:30px; height:30px;
   /* Not var(--line). That token is for hairlines drawn *on* a surface, and it
@@ -69,16 +76,14 @@
   border:1px solid rgba(232,233,234,0.55);
   border-radius:50%;
   background:rgba(232,233,234,0.07);
-  /* --dur-snap, not --dur-2. The shape change is the one piece of motion here
-     that is meant to be *watched* rather than merely felt — at the 220ms of a
-     normal UI transition it is over before the eye finds it. Three times that
-     is long enough to read as the ring travelling and reshaping onto the
-     target, and it is still shorter than the pointer usually dwells. */
-  transition:width var(--dur-snap) var(--ease-out),
-             height var(--dur-snap) var(--ease-out),
-             border-radius var(--dur-snap) var(--ease-out),
-             border-color var(--dur-snap) var(--ease-out),
-             background-color var(--dur-snap) var(--ease-out),
+  /* --dur-1, the press/hover tier, because that is what this is: the tint is
+     the ring answering "yes, this is pressable", and an answer that takes
+     longer than the glance that asked for it has failed. It used to run at
+     --dur-snap alongside the geometry; the visible result was a ring that had
+     already wrapped the button while still turning blue, and a press whose
+     feedback arrived after the click. */
+  transition:border-color var(--dur-1) var(--ease-out),
+             background-color var(--dur-1) var(--ease-out),
              opacity 160ms linear;
 }
 /* The ring's own centering. Script writes translate(x,y) in px; this keeps
@@ -96,10 +101,10 @@
    writes its width, height and radius from the element's own box, so the ring
    is literally the shape of the thing you are about to press. */
 .cursor-ring.is-snapped{
-  border-color:var(--axis-z);
+  border-color:var(--role-nav);
   background:rgba(90,169,255,0.06);
 }
-.cursor-dot.is-snapped{ background:var(--axis-z); }
+.cursor-dot.is-snapped{ background:var(--role-nav); }
 
 /* A target too large to outline — the featured card is wider than the
    viewport's snap ceiling. Outlining it would draw a border around most of
@@ -107,7 +112,7 @@
    keeps following the pointer; only the colour changes, which is enough to
    say "this whole area is pressable" without the geometry. */
 .cursor-ring.is-over{
-  border-color:var(--axis-z);
+  border-color:var(--role-nav);
   background:rgba(90,169,255,0.06);
 }
 
@@ -123,7 +128,7 @@
 
 /* ---------- pressed ---------- */
 .cursor-ring.is-down{ background:rgba(90,169,255,0.14); }
-.cursor-dot.is-down{ background:var(--axis-w); }
+.cursor-dot.is-down{ background:var(--role-pending); }
 
 /* ---------- hiding the real one ----------
    Only once the replacement is on screen. If the script fails between setting
@@ -144,7 +149,10 @@
 .has-cursor.cursor-ready select{ cursor:none; }
 
 /* ---------- reduced motion ----------
-   The lag is the part this setting is about, and script drops it (the ring
-   snaps to the pointer with no easing). What is left — a dot and a ring that
-   outlines what you are over — carries no travel of its own, so it stays.
-   The size transitions are already clamped to 1ms by motion.css. */
+   The lag is the part this setting is about, and script drops it: the ease
+   constant becomes 1, so the ring arrives at the pointer and at its target's
+   shape in the same frame it learns about them. Since script now owns the
+   geometry, that one constant covers the travel and the reshape together —
+   there is nothing left here for motion.css to clamp. What remains — a dot,
+   and a ring that outlines what you are over — carries no travel of its own,
+   so it stays. */

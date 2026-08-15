@@ -13,6 +13,13 @@
    what is under it, which is allowed to arrive a few frames late and
    reads better when it does.
 
+   The ring's *shape* is eased here too, not in CSS. Travelling onto a
+   target and growing into its outline are one movement, and a movement
+   split across two engines is a movement with two curves and two
+   durations — the ring lands and then squares up, which is the exact
+   thing that reads as jerky. One loop, one easing constant, one
+   arrival.
+
    The whole thing is opt-in per device. It only runs where there is a
    real pointer to replace — a touch screen keeps its native behaviour
    and never loads a frame of this.
@@ -54,28 +61,54 @@
   var px = -100, py = -100;
   var rx = px, ry = py;
   var seen = false;      // has the pointer moved at least once
+  var out = false;       // is the pointer currently off the window
   var snap = null;       // the element the ring is currently wrapped around
   var frame = 0;
+  var last = 0;          // timestamp of the previous frame
 
-  // The ring's target box. When free it is the base 30px circle; when snapped
-  // it is the target's own box, so the ring *is* the outline of what you are
-  // about to press.
+  // The ring's box, in three copies: where it is going, where it currently is,
+  // and what was last written to the DOM. The third exists so a settled ring
+  // costs nothing — no style writes, no layout, no paint.
   var BASE = 30;
-  var w = BASE, h = BASE, r = BASE / 2;
+  var PAD = 6;           // the ring sits this far outside a target's own box
+  var tw = BASE, th = BASE, tr = BASE / 2;   // target
+  var cw = BASE, ch = BASE, cr = BASE / 2;   // current
+  var ww = 0, wh = 0, wr = 0;                // written
+  var wdot = '', wring = '';                 // last transforms written
 
-  function setRingBox(nw, nh, nr) {
-    if (nw === w && nh === h && nr === r) return;   // don't touch style every frame
-    w = nw; h = nh; r = nr;
-    ring.style.width = w + 'px';
-    ring.style.height = h + 'px';
-    ring.style.borderRadius = r + 'px';
+  /* The two time constants, in milliseconds to cover 63% of the remaining
+     distance — so roughly 3x these numbers is the movement you actually see.
+
+     They are time, not per-frame fractions, which is the other half of the
+     jerk fix: a fixed fraction per frame means the ring moves at one speed on
+     a 60Hz panel and nearly twice that on a 120Hz one, and stutters visibly
+     whenever a frame is dropped. Expressed against elapsed time, a dropped
+     frame costs a larger step rather than a pause.
+
+     Free flight is the faster of the two. Its lag is felt rather than watched,
+     and too much of it makes the pointer feel broken. The glide onto a target
+     is the part meant to be seen, so it is slower — but only slightly. The old
+     pairing (a ~180ms position ease against a 660ms CSS reshape) spent most of
+     its length finishing a movement the eye had already stopped following. */
+  var TAU_FREE = 38;
+  var TAU_SNAP = 65;
+
+  // Hit testing is owed once per frame at most, not once per pointer event.
+  // `hover` is the element the last move reported; null means "ask the page
+  // where the pointer is", which is how a scroll under a still pointer gets
+  // noticed at all.
+  var pending = false;
+  var hover = null;
+
+  function setTargetBox(nw, nh, nr) {
+    tw = nw; th = nh; tr = nr;
   }
 
   function unsnap() {
     snap = null;
     ring.classList.remove('is-snapped');
     dot.classList.remove('is-snapped');
-    setRingBox(BASE, BASE, BASE / 2);
+    setTargetBox(BASE, BASE, BASE / 2);
   }
 
   function clear() {
@@ -96,29 +129,32 @@
     var radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 6;
     ring.classList.add('is-snapped');
     dot.classList.add('is-snapped');
-    // +6px so the ring reads as an outline around the target rather than a
+    // +PAD so the ring reads as an outline around the target rather than a
     // second border sitting exactly on its own.
-    setRingBox(box.width + 6, box.height + 6, radius + 3);
+    setTargetBox(box.width + PAD, box.height + PAD, radius + PAD / 2);
     return true;
   }
 
-  function onMove(e) {
-    px = e.clientX;
-    py = e.clientY;
-    if (!seen) {
-      seen = true;
-      rx = px; ry = py;          // first frame: no flight in from off-screen
-      root.classList.add('cursor-ready');
-    }
-    root.classList.remove('cursor-out');
+  // What is under the pointer, and what that makes the cursor. Runs inside the
+  // frame rather than inside the event, so every read it does (a rect, a
+  // computed style) happens alongside the loop's own reads and before any of
+  // the loop's writes — one layout pass per frame instead of a read/write
+  // interleave across two callbacks.
+  function hitTest() {
+    pending = false;
 
-    var el = e.target;
-    var hit = el && el.closest ? el.closest(HIT) : null;
+    var el = hover;
+    // No element from a move, or one that has since been removed: ask the page
+    // directly. This is the scroll case — the pointer never moved, but what is
+    // beneath it did.
+    if (!el || !el.isConnected) el = document.elementFromPoint(px, py);
 
-    if (hit) {
+    var target = el && el.closest ? el.closest(HIT) : null;
+
+    if (target) {
       dot.classList.remove('is-text');
       ring.classList.remove('is-text');
-      if (hit !== snap) snapTo(hit);
+      if (target !== snap) snapTo(target);
       // After snapTo, not before: an oversized target unsnaps, and unsnap
       // clears the dot's tint. The tint applies either way — the target is
       // pressable whether or not the ring could wrap it.
@@ -126,14 +162,41 @@
       dot.classList.add('is-snapped');
       return;
     }
+
     clear();
     var text = el && el.closest ? el.closest(TEXT) : null;
     dot.classList.toggle('is-text', !!text);
     ring.classList.toggle('is-text', !!text);
   }
 
-  function tick() {
+  function onMove(e) {
+    px = e.clientX;
+    py = e.clientY;
+    hover = e.target;
+    pending = true;
+    if (!seen) {
+      seen = true;
+      rx = px; ry = py;          // first frame: no flight in from off-screen
+      root.classList.add('cursor-ready');
+    }
+    if (out) {
+      out = false;
+      root.classList.remove('cursor-out');
+    }
+  }
+
+  function tick(now) {
     frame = requestAnimationFrame(tick);
+
+    // Elapsed time drives the easing. Clamped because a backgrounded tab or a
+    // long main-thread stall hands back a gap of seconds, and the ring should
+    // simply be where it belongs by then rather than sail across the screen.
+    var dt = last ? now - last : 16.7;
+    last = now;
+    if (dt > 100) dt = 100;
+
+    // ---- reads ----
+    if (pending) hitTest();
 
     // The ring's target is the pointer, unless it is snapped — then it is the
     // centre of the thing it is wrapped around, which is what lets it sit
@@ -149,26 +212,50 @@
         ty = box.top + box.height / 2;
         // Re-read the size too: a card that grows on hover should take the
         // ring with it rather than leave it outlining the old box.
-        setRingBox(box.width + 6, box.height + 6, r);
+        tw = box.width + PAD;
+        th = box.height + PAD;
       }
     }
 
-    // Exponential ease toward the target. 1 means "arrive this frame", which
-    // is what reduced motion asks for; 0.18 is roughly a 5-frame settle, slow
-    // enough to be visible as weight and fast enough never to feel detached.
-    //
-    // The snapped constant is deliberately the slower of the two, and much
-    // slower than the free one. Free-flight lag is felt, not watched — too much
-    // of it and the pointer feels broken. The glide onto a target is the part
-    // meant to be seen, and it is paced to match the ring's reshape (--dur-snap
-    // in tokens.css) so the travel and the change of shape finish together
-    // rather than the ring arriving and then squaring up.
-    var k = calm.matches ? 1 : (snap ? 0.09 : 0.18);
+    // ---- ease ----
+    // One constant for the whole ring. Position and shape are the same
+    // movement, so they share a curve and land on the same frame.
+    var k = calm.matches ? 1 : 1 - Math.exp(-dt / (snap ? TAU_SNAP : TAU_FREE));
+
     rx += (tx - rx) * k;
     ry += (ty - ry) * k;
+    cw += (tw - cw) * k;
+    ch += (th - ch) * k;
+    cr += (tr - cr) * k;
 
-    dot.style.transform = 'translate(' + px + 'px,' + py + 'px)';
-    ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
+    // An exponential ease approaches forever. Half a pixel out is close enough
+    // to call arrived, and calling it lets the writes below go quiet. Position
+    // gets a finer threshold than the box because it is written at tenths and
+    // the box at whole pixels — each stops at the point its own output can no
+    // longer show the difference.
+    if (Math.abs(tx - rx) < 0.05) rx = tx;
+    if (Math.abs(ty - ry) < 0.05) ry = ty;
+    if (Math.abs(tw - cw) < 0.5) cw = tw;
+    if (Math.abs(th - ch) < 0.5) ch = th;
+    if (Math.abs(tr - cr) < 0.5) cr = tr;
+
+    // ---- writes ----
+    // Guarded, all of them. A still pointer over nothing should not be
+    // laying out and painting sixty times a second.
+    var s = 'translate3d(' + px + 'px,' + py + 'px,0)';
+    if (s !== wdot) { dot.style.transform = wdot = s; }
+    s = 'translate3d(' + Math.round(rx * 10) / 10 + 'px,' + Math.round(ry * 10) / 10 + 'px,0)';
+    if (s !== wring) { ring.style.transform = wring = s; }
+
+    // Whole pixels for the box. A 1px border on a fractional width is a
+    // blurred border, and at this size the rounding is invisible as movement
+    // but very visible as sharpness.
+    var n = Math.round(cw);
+    if (n !== ww) { ring.style.width = (ww = n) + 'px'; }
+    n = Math.round(ch);
+    if (n !== wh) { ring.style.height = (wh = n) + 'px'; }
+    n = Math.round(cr);
+    if (n !== wr) { ring.style.borderRadius = (wr = n) + 'px'; }
   }
 
   // ---------- the top layer ----------
@@ -189,6 +276,8 @@
     // The dialog's own box was never a snap target and the element the ring was
     // wrapped around is now behind a modal. Start clean in the new layer.
     clear();
+    hover = null;
+    pending = true;
   }
   // `open` is a real attribute on <dialog>, so opening and closing are both
   // observable without the popup having to announce anything — this stays
@@ -201,8 +290,11 @@
   });
 
   function leave() {
+    out = true;
     root.classList.add('cursor-out');
     clear();
+    hover = null;
+    pending = false;
   }
 
   document.addEventListener('pointermove', onMove, { passive: true });
@@ -221,13 +313,16 @@
   // dialog or a tab switch taking the pointer away without a leave event.
   document.addEventListener('pointerleave', leave);
   window.addEventListener('blur', leave);
-  // A snapped ring is anchored to a box that scrolling moves. The rAF loop
-  // re-reads that box anyway, so scrolling needs no handler — but a scroll
-  // that moves the *page* under a still pointer does change what is under it,
-  // and only a move event would notice. Cheap correction: on scroll end, drop
-  // the snap and let the next move re-establish it.
+
+  // A scroll under a still pointer changes what is beneath it without any
+  // move event to say so — the ring would stay wrapped around a card that has
+  // since slid away. Clearing `hover` makes the next frame's hit test ask the
+  // page where the pointer actually is, which costs one elementFromPoint per
+  // frame and only while the page is moving.
   window.addEventListener('scroll', function () {
-    if (snap && !snap.isConnected) unsnap();
+    if (!seen || out) return;
+    hover = null;
+    pending = true;
   }, { passive: true });
 
   // A device can gain or lose a fine pointer mid-session (a tablet docking to

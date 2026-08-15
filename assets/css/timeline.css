@@ -42,7 +42,7 @@
   border-bottom:1px solid var(--line);
 }
 .tl-glance .k{
-  font-size:0.6875rem;
+  font-size:var(--t-micro);
   letter-spacing:0.12em;
   text-transform:uppercase;
   color:var(--muted);
@@ -50,7 +50,7 @@
   padding-top:0.2em;
 }
 .tl-glance .v{
-  font-size:0.9375rem;
+  font-size:var(--t-base);
   line-height:1.5;
   color:var(--text);
 }
@@ -113,13 +113,13 @@
    wants before any other — "is he available, and what is he doing now" — so
    it is the only filled node, and it carries a halo the others do not. */
 .tl-item.is-current::after{
-  background:var(--axis-z);
-  box-shadow:0 0 0 2px var(--axis-z),
-             0 0 0 7px color-mix(in srgb, var(--axis-z) 14%, transparent);
+  background:var(--role-nav);
+  box-shadow:0 0 0 2px var(--role-nav),
+             0 0 0 7px color-mix(in srgb, var(--role-nav) 14%, transparent);
 }
 @supports not (background: color-mix(in srgb, red 10%, blue)){
   .tl-item.is-current::after{
-    box-shadow:0 0 0 2px var(--axis-z), 0 0 0 7px rgba(90,169,255,0.14);
+    box-shadow:0 0 0 2px var(--role-nav), 0 0 0 7px rgba(90,169,255,0.14);
   }
 }
 
@@ -132,20 +132,20 @@
   grid-column:1;
   margin:0;
   text-align:right;
-  font-size:0.75rem;
+  font-size:var(--t-mini);
   line-height:1.5;
   letter-spacing:0.02em;
   color:var(--muted);
   /* fixed-width figures so the years stack in columns rather than shimmying */
   font-variant-numeric:tabular-nums;
 }
-.tl-when .tl-now{ color:var(--axis-z); }
+.tl-when .tl-now{ color:var(--role-nav); }
 /* The length of the stint, under the dates. It is the arithmetic the reader
    would otherwise be doing themselves. */
 .tl-len{
   display:block;
   margin-top:3px;
-  font-size:0.6875rem;
+  font-size:var(--t-micro);
   color:color-mix(in srgb, var(--muted) 75%, transparent);
 }
 @supports not (color: color-mix(in srgb, red 10%, blue)){
@@ -156,13 +156,16 @@
 .tl-body{ grid-column:2; min-width:0; }
 
 .tl-role{
-  font-size:1.25rem;
+  font-size:var(--t-h4);
   line-height:1.25;
+  /* an h2 element, so it would inherit the h2 tracking; that value is set
+     for 30px and is too tight at 18 */
+  letter-spacing:-0.008em;
   margin:0 0 4px;
 }
 .tl-where{
   margin:0 0 14px;
-  font-size:0.9375rem;
+  font-size:var(--t-base);
   color:var(--muted);
 }
 .tl-where strong{ color:var(--text); font-weight:600; }
@@ -178,13 +181,18 @@
    larger and a shade brighter, and everything below it recedes slightly. It
    costs no words and states the right thing — this is what he does; that is
    what he did. Deliberately small amounts. A current entry that shouted would
-   just move the imbalance to the other end. */
-.tl-item.is-current .tl-role{ font-size:1.4375rem; }
+   just move the imbalance to the other end.
+
+   Both colours here are one step up from what the entry would otherwise take
+   — --muted for the org line, --ink-3 for the bullets. They are deliberately
+   not on the reading ramp (tokens.css): what matters is the *gap* between
+   this entry and the ones below it, and a ramp step is a level rather than a
+   relationship. Naming them as levels would say the current role's bullets
+   are a different kind of prose, which is exactly wrong — they are the same
+   prose, lifted. If --ink-3 is ever retuned, this pair moves with it by hand. */
+.tl-item.is-current .tl-role{ font-size:var(--t-h3); }
 .tl-item.is-current .tl-where{ color:#9aa0a9; }
-.tl-item.is-current .tl-points li{
-  color:#c3c8d0;
-  font-size:0.96875rem;
-}
+.tl-item.is-current .tl-points li{ color:#c3c8d0; }
 
 .tl-points{
   margin:0;
@@ -196,8 +204,8 @@
   position:relative;
   padding-left:18px;
   margin-bottom:9px;
-  color:#a9aeb6;
-  font-size:0.9375rem;
+  color:var(--ink-3);
+  font-size:var(--t-base);
   line-height:1.55;
 }
 /* A dash rather than a disc: at this size a bullet next to a rail full of
@@ -212,20 +220,24 @@
   background:var(--muted);
 }
 .tl-points strong{ color:var(--text); font-weight:600; }
+/* A bolded proper noun ("HustleVerse") and a bolded figure ("81,521") are both
+   inside <strong> and are not the same kind of thing: one names, the other
+   measures. The .fig span sits inside the strong rather than on it, so the
+   rule above styles the phrase and .fig styles the number within it — a
+   direct rule on the child, which beats the colour it would otherwise
+   inherit without needing to out-specify anything. */
 
 /* An inline link out of a bullet — the LinkedIn write-up on the 81,521 props,
-   reached from the sentence that makes the claim. Underlined at rest for the
-   same reason the landing page's figures are: the reader should not have to
-   hover to find out where the evidence is. */
-.tl-link{
-  color:var(--axis-z);
-  text-decoration:underline;
-  text-underline-offset:3px;
-  text-decoration-thickness:1px;
-  white-space:nowrap;
-  transition:color var(--dur-1) var(--ease-out);
-}
-.tl-link:hover{ color:#79bcff; }
+   reached from the sentence that makes the claim. It is a `.link` (base.css)
+   and takes the whole recipe from there, including the green it gets for
+   leaving the site: the sentence it sits in ends "…holding 81,521 physics
+   props in a single scene", with the figure two words earlier in red. Claim,
+   then the proof of it, in one line of running text.
+
+   All that is left here is the one thing that is true of this link and no
+   other: it ends in an arrow, and a wrap that leaves "↗" alone on the next
+   line reads as a stray glyph rather than as part of the label. */
+.tl-link{ white-space:nowrap; }
 
 .tl-points + .pill-row{ margin-top:14px; }
 
@@ -242,8 +254,8 @@
   border-top:1px solid var(--line);
 }
 .tl-aside h2{
-  font-size:0.75rem;
-  font-family:'Inter', system-ui, sans-serif;
+  font-size:var(--t-mini);
+  font-family:var(--font-sans);
   font-weight:600;
   letter-spacing:0.14em;
   text-transform:uppercase;
@@ -255,13 +267,13 @@
 .tl-aside li:last-child{ margin-bottom:0; }
 .tl-aside .k{
   display:block;
-  font-size:0.9375rem;
+  font-size:var(--t-base);
   color:var(--text);
   font-weight:600;
 }
 .tl-aside .v{
   display:block;
-  font-size:0.8125rem;
+  font-size:var(--t-small);
   color:var(--muted);
   margin-top:2px;
 }
@@ -278,7 +290,6 @@
      width where vertical space is scarcest — and the label column is what makes
      the four rows scannable in the first place. It narrows instead. */
   .tl-glance li{ grid-template-columns:4.5rem minmax(0,1fr); gap:12px; padding:10px 0; }
-  .tl-glance .v{ font-size:0.9rem; }
 
   .timeline{ --date-col:0px; --gutter-col:0px; --rail-x:4px; }
 
@@ -302,10 +313,11 @@
   .tl-len::before{ content:"· "; }
 
   .tl-body{ grid-column:1; }
-  .tl-role{ font-size:1.125rem; }
-  /* Same one-step lead over the entries below it as on desktop, rescaled — the
-     desktop value would be a third of the viewport width here. */
-  .tl-item.is-current .tl-role{ font-size:1.25rem; }
+  /* The role sizes are not rescaled here any more. They used to be, because the
+     desktop pair was 20px and 23px and the second of those is wide on a phone.
+     The scale replaced them with 18 and 22, which fit a 375px column as they
+     are — and rescaling them now would only close the one-step lead the
+     current role is meant to keep. */
 
   .tl-aside{ grid-template-columns:minmax(0,1fr); gap:26px; }
 }

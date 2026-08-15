@@ -9,7 +9,7 @@
   gap:8px;
   padding:11px 18px;
   border-radius:7px;
-  font-size:14px;
+  font-size:var(--t-control);
   font-weight:500;
   text-decoration:none;
   border:1px solid transparent;
@@ -37,9 +37,35 @@
   transition-duration:60ms;
 }
 
-.btn-primary{ background:var(--axis-z); color:#0B0D10; }
-.btn-primary:hover{ background:#79bcff; }
-.btn-primary:active{ background:#4b93e0; }
+/* Two primaries, and the difference is where the button goes rather than how
+   important it is. A button that stays on the site is orientation — it moves
+   you through the argument — so it takes the nav blue. A button that leaves
+   the site goes to the thing the page has been claiming exists: the repo, the
+   store listing, the write-up. That is evidence, and evidence is green here.
+
+   The split is driven off `target`, not off a class, because `target="_blank"`
+   is already on every one of them and is the fact itself. A link added
+   tomorrow is coloured correctly by virtue of where it points, with nothing
+   to remember. The `--btn-accent` indirection is what lets the hover and
+   press states below be written once instead of twice. */
+.btn-primary{
+  --btn-accent:var(--role-nav);
+  --btn-accent-hi:var(--role-nav-hi);
+  background:var(--btn-accent);
+  color:#0B0D10;
+}
+.btn-primary[target="_blank"]{
+  --btn-accent:var(--role-proof);
+  --btn-accent-hi:var(--role-proof-hi);
+}
+.btn-primary:hover{ background:var(--btn-accent-hi); }
+/* Press goes the other way from hover — down into the colour rather than up
+   out of it — so the two states are never mistaken for each other. */
+.btn-primary:active{ background:color-mix(in srgb, var(--btn-accent) 82%, #000); }
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .btn-primary:active{ background:#4b93e0; }
+  .btn-primary[target="_blank"]:active{ background:#3a8b48; }
+}
 .btn-secondary{ background:transparent; color:var(--text); border-color:var(--line); }
 .btn-secondary:hover{ border-color:var(--muted); }
 .btn-secondary:active{ background:rgba(255,255,255,0.05); border-color:var(--muted); }

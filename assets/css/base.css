@@ -24,19 +24,55 @@ html{
 }
 
 /* The root stays at the browser's own size — a user who has set their default
-   text to 20px gets 20px. A hard `font-size:16px` on <body> silently overrode
+   text to 20px gets 20px. A hard `font-size:var(--t-body)` on <body> silently overrode
    that setting, and every `rem` measured against it downstream inherited the
    override. Everything below is sized in rem/em from here, so the layout grows
    with the text instead of the text overflowing a fixed layout. */
 html{ font-size:100%; }
 
+/* ---------- the fallback, given Inter's metrics ----------
+   The webfonts load with `display=swap`, which is the right call — text that
+   is readable in a fallback beats text that is invisible while a font
+   downloads. Its cost is the swap itself: Arial and Inter have different
+   x-heights and different advance widths, so every line re-measures the
+   moment Inter arrives and the page jumps.
+
+   The site was already paying for this without naming it. nav.css pins its
+   brand line to `line-height:1` and says so — "fallback and webfont metrics
+   differ, and without this the swap changes the text's box and nudges the
+   header contents". That is a symptom being held down in one place while
+   every paragraph on the site keeps reflowing.
+
+   This is the fix rather than the workaround: a fallback declared as a real
+   face, scaled so its metrics match Inter's. Arial at 107% has close to
+   Inter's x-height, and the ascent/descent overrides give the line box the
+   same height, so the swap changes the shapes on screen and nothing else —
+   no reflow, no jump. It costs no bytes; there is nothing to download. */
+@font-face{
+  font-family:'Inter Fallback';
+  src:local('Arial'), local('Helvetica'), local('Liberation Sans');
+  size-adjust:107%;
+  ascent-override:90%;
+  descent-override:22.4%;
+  line-gap-override:0%;
+}
+
 body{
   margin:0;
+  /* Room at the foot for the phone tab bar, and nothing anywhere else —
+     --bar-h is 0px on every viewport that has no bar (tokens.css). Without
+     it the bar would sit on top of the last thing on the page, which on
+     /contributions/ is a project card's own links. */
+  padding-bottom:var(--bar-h);
   background:var(--bg);
   color:var(--text);
-  font-family:'Inter', system-ui, sans-serif;
-  font-size:1rem;
+  font-family:var(--font-sans);
+  font-size:var(--t-body);
   line-height:1.55;
+  /* The third axis of the light-on-dark compensation (tokens.css); the leading
+     above is the first. Set on body so every piece of running text inherits
+     it, and unset on display type below, which needs the opposite. */
+  letter-spacing:var(--track-dark);
   -webkit-font-smoothing:antialiased;
   /* faces that ship an optical size axis should use it rather than being
      scaled geometrically from one master */
@@ -47,13 +83,81 @@ a{ color:inherit; }
 
 img{ max-width:100%; }
 
-.mono{ font-family:'JetBrains Mono', ui-monospace, monospace; }
+/* ---------- the page's own scrollbar ----------
+   content.css treats every panel that scrolls its own contents; the page
+   itself was never in that list, because it is the root rather than an
+   element and cannot join the `:is()` there. So on Windows the site ended in
+   a bright grey channel down its right edge — the one piece of chrome the
+   design never drew, and the one always on screen.
 
-/* ---------- container ---------- */
+   Unscoped on purpose. Anything that scrolls and is not in content.css's list
+   now inherits this rather than the OS default, which is the same argument
+   that block makes for keeping its own list exhaustive: a scroller that misses
+   the treatment does not look unstyled, it looks like a different site.
+   The values match that block's so the two are the same bar, and the panels
+   still win where they set their own — they redeclare border and clipping, so
+   nothing here leaks into a 10px bar sized for a 11px one.
+
+   Same two exclusive branches as content.css, for the reason spelled out
+   there: setting scrollbar-width in Chrome opts the element out of the
+   pseudos and hands back stepper arrows nothing can remove. Pseudos are the
+   default path; the standard properties are quarantined to Firefox. */
+::-webkit-scrollbar{ width:11px; height:11px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{
+  background:color-mix(in srgb, var(--muted) 45%, transparent);
+  background-clip:padding-box;
+  border:3px solid transparent;
+  border-radius:999px;
+}
+::-webkit-scrollbar-thumb:hover{
+  background:color-mix(in srgb, var(--muted) 75%, transparent);
+  background-clip:padding-box;
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  ::-webkit-scrollbar-thumb{ background:var(--thumb); background-clip:padding-box; }
+}
+@supports not selector(::-webkit-scrollbar){
+  html{ scrollbar-width:thin; scrollbar-color:var(--thumb) transparent; }
+}
+
+/* ---------- selection ----------
+   Dragging across a paragraph is the one interaction available on every page,
+   and until now it answered in the browser's own blue — a colour from no
+   design system, and on this page a near miss against the site's own. It is
+   the site's orientation blue instead, kept translucent so the type under it
+   stays at full contrast rather than being repainted.
+   pre.code carries its own, stronger value (content.css): a code block exists
+   to be selected and pasted, so its selection is meant to be seen. */
+::selection{
+  background:color-mix(in srgb, var(--role-nav) 28%, transparent);
+}
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  ::selection{ background:rgba(90,169,255,0.28); }
+}
+
+.mono{ font-family:var(--font-mono); }
+
+/* ---------- container ----------
+   The gutter is the design's; the inset is the device's. A phone held in
+   landscape puts its notch and its rounded corner inside the viewport on one
+   side, and a fixed 20px gutter is not enough to clear either — the first
+   characters of every line end up under the hardware. max() takes whichever
+   is larger, so the layout is unchanged on a screen that is a rectangle and
+   moves out of the way on one that is not.
+   The pages carry `viewport-fit=cover`, which is what makes env() report a
+   real number rather than zero. */
 .wrap{
+  /* Published rather than inlined into the padding below, because anything
+     that wants to bleed out to the viewport edge — the filter rail on
+     /contributions/ is the one that does — has to cancel exactly this, and a
+     hand-copied `-1 * var(--gutter)` would be wrong by the inset on the one
+     device the inset exists for. */
+  --pad-l:max(var(--gutter), env(safe-area-inset-left, 0px));
+  --pad-r:max(var(--gutter), env(safe-area-inset-right, 0px));
   width:100%;
   margin:0 auto;
-  padding:0 var(--gutter);
+  padding-inline:var(--pad-l) var(--pad-r);
 }
 /* "wide" is now a narrower gutter rather than a bigger cap — same idea, but it
    scales with the viewport instead of stopping at a fixed pixel width. */
@@ -61,7 +165,7 @@ img{ max-width:100%; }
 
 /* ---------- focus visibility ---------- */
 a:focus-visible, button:focus-visible{
-  outline:2px solid var(--axis-z);
+  outline:2px solid var(--role-nav);
   outline-offset:3px;
   border-radius:4px;
 }
@@ -74,26 +178,26 @@ a:focus-visible, button:focus-visible{
    moves the opposite way — tight on the big sizes, open on the small ones —
    because a long line needs more room between rows than a three-word headline. */
 h1,h2,h3{
-  font-family:'Space Grotesk', sans-serif;
+  font-family:var(--font-display);
   font-weight:600;
   font-optical-sizing:auto;
   /* headings are short and deliberate; never let one break mid-word */
   text-wrap:balance;
 }
 h1{
-  font-size:clamp(2rem, 4.4vw, 3.375rem);
+  font-size:var(--t-h1);
   line-height:1.08;
   letter-spacing:-0.022em;
   margin:0 0 18px;
 }
 h2{
-  font-size:clamp(1.5rem, 3vw, 1.875rem);
+  font-size:var(--t-h2);
   line-height:1.18;
   letter-spacing:-0.014em;
   margin:0 0 16px;
 }
 h3{
-  font-size:1.375rem;
+  font-size:var(--t-h3);
   line-height:1.3;
   letter-spacing:-0.008em;
   margin:0 0 12px;
@@ -104,14 +208,82 @@ h3{
    rhythm to separate them, so at 12px they need the extra space to stay
    readable — the exact inverse of what the h1 above wants. */
 .eyebrow{
-  font-size:0.75rem;
+  font-size:var(--t-mini);
   letter-spacing:0.14em;
-  color:var(--axis-z);
+  color:var(--role-nav);
   text-transform:uppercase;
   margin:0 0 18px;
 }
+
+/* ---------- a claimed figure ----------
+   The measured part of a claim, and only that part: the "81,521" in "81,521
+   physics props", the "20-player" in "20-player multiplayer Battle Royale",
+   the "4" in "4 years". Not the noun after it.
+
+   The narrowness is the whole point. Marking the full phrase turned three
+   consecutive bullets on /experience/ into three red sentences and read as a
+   highlighter pass over the page; marking the figure alone leaves the prose
+   as prose with the numbers lit inside it, which is what a reader skimming
+   for scale is actually looking for. It also means one rule covers the
+   26px display figures on the landing page and the 15px ones in a timeline
+   bullet, instead of a size-dependent exception nobody would remember.
+
+   Green — the link that proves the figure — is usually within a line of it.
+   That pairing is the editorial rule the site runs on, drawn rather than
+   stated.
+
+   The weight is carried whether or not the mark sits inside a <strong>, so
+   the figure is still found with colour unavailable. */
+.fig{ color:var(--role-claim-ink); font-weight:600; }
+
+/* ---------- a link in running text ----------
+   One recipe, three consumers. The site had written this out three separate
+   times — the manual's prose links, the timeline's evidence link, and the
+   landing page's figure links — each with its own hand-typed thickness,
+   offset, 45% underline mix and hover colour, and each therefore free to
+   drift a pixel from the others. It lives here, in the file every page loads
+   second, so the two variants below it can set two custom properties and
+   inherit the rest.
+
+   Colour comes from where the link goes, not from what it is called: off-site
+   is evidence and reads green, on-site is orientation and reads blue. Both
+   are underlined at rest. That is not decoration — it is the non-colour half
+   of the cue, and the tool pages shipped without it (`text-decoration:none`
+   on a link whose only other signal was its colour).
+
+   The API is two properties:
+     --link-ink     the colour at rest, and the underline is mixed from it
+     --link-ink-hi  the colour on hover
+
+   Set those two and everything else follows. A consumer that cannot use the
+   attribute selectors below — because the anchor is an ancestor rather than
+   the element itself, which is the landing page's case — sets them from
+   wherever it does know, and takes the same recipe. */
+.link{
+  --link-ink:var(--role-nav);
+  --link-ink-hi:var(--role-nav-hi);
+  color:var(--link-ink);
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:3px;
+  text-decoration-color:color-mix(in srgb, var(--link-ink) 45%, transparent);
+  transition:color var(--dur-1) var(--ease-out),
+             text-decoration-color var(--dur-1) var(--ease-out);
+}
+.link[target="_blank"], .link[href^="mailto:"]{
+  --link-ink:var(--role-proof-hi);
+  --link-ink-hi:#96E0A4;
+}
+.link:hover{ color:var(--link-ink-hi); text-decoration-color:currentColor; }
+@supports not (background: color-mix(in srgb, red 10%, blue)){
+  .link{ text-decoration-color:rgba(90,169,255,0.45); }
+  .link[target="_blank"], .link[href^="mailto:"]{ text-decoration-color:rgba(110,208,127,0.45); }
+}
+/* A bare address or URL set as a link is already a long unbroken string; on a
+   phone it is the one thing on the page that can widen the document. */
+.link.is-address{ overflow-wrap:anywhere; }
 .section-label{
-  font-size:0.75rem;
+  font-size:var(--t-mini);
   letter-spacing:0.14em;
   text-transform:uppercase;
   color:var(--muted);

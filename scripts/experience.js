@@ -6,7 +6,7 @@
    nobody remembers to revisit. This counts it from a fixed start year
    held in the markup:
 
-     <span data-years-since="2022">4</span> years
+     <span class="fig" data-years-since="2022">4</span> years
 
    The element holds the bare count and nothing else — the word "years",
    and any lead-in like "More than", stay in the markup around it. That

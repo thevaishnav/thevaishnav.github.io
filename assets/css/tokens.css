@@ -9,8 +9,144 @@
   --surface:   #15181D;
   --surface-2: #1B1F26;
   --line:      #262B33;
+  /* One step up, for the edge of something the pointer is inside. Two
+     components had found this value independently — .card and .proj — and
+     written it out twice, in different casing, which is how two hover states
+     drift apart without anyone editing either of them. */
+  --line-hover:#39414F;
   --text:      #E8E9EA;
   --muted:     #8A8F98;
+
+  /* ---------- the reading ramp ----------
+     Between --text and --muted the site was running on six hand-picked greys.
+     Two of them carried real weight — one appeared five times, the other
+     three — and neither had a name, so the next block of prose was going to
+     get a seventh grey picked by eye against whichever of the six happened to
+     be on screen at the time.
+
+       --text   full contrast. Headings, names, a figure's unit, anything the
+                eye should land on first.
+       --ink-2  long-form reading. The manual's prose, the contact copy, the
+                body of a code block — text set in quantity, where full
+                contrast for paragraph after paragraph is fatiguing rather
+                than emphatic.
+       --ink-3  supporting body. A card's description, a timeline bullet, a
+                table cell — prose that is read after something else has
+                already been read.
+       --muted  labels and meta. Not prose at all.
+
+     Both clear AA comfortably on every surface they are used on: --ink-2 at
+     11.9:1 on the canvas and 11.1:1 on a card, --ink-3 at 8.6:1 and 8.0:1.
+     Neither is a value to nudge darker without re-measuring — --ink-3 is
+     already the floor of what "supporting" can mean here before it stops
+     being prose and starts being --muted.
+
+     Four greys stayed out of the ramp on purpose and are not oversights:
+     the callout body and inline code sit on tinted panels and are lifted to
+     match, and the timeline's current entry is deliberately one step brighter
+     than the entries below it — a relative step, not a level, so naming it
+     as a level would be a lie. Each is used exactly once and is documented
+     where it is used. */
+  --ink-2:     #C9CCD1;
+  --ink-3:     #A9AEB6;
+
+  /* The thumb on a scrollbar the browser would otherwise draw in the OS
+     palette. Only ever referenced from inside a @supports fallback — the
+     live rules mix it from --muted — but it is written down three times
+     across two files, which is two too many. */
+  --thumb:     #4A505A;
+
+  /* ---------- the three faces ----------
+     Written out at fourteen sites before this, stack and all. A face is
+     swapped by editing the <link> in every page's head and one line here,
+     not by finding fourteen font-family declarations and hoping.
+
+       --font-sans     Inter. Running text and UI.
+       --font-display  Space Grotesk. Headings, and figures set large enough
+                       that their shapes matter more than their legibility.
+       --font-mono     JetBrains Mono. Code, commands, dates, measurements —
+                       anything where the columns should line up or the
+                       reader should know a machine wrote it. */
+  --font-sans:    'Inter Fallback', 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* ---------- the type scale ----------
+     Forty-odd distinct font sizes lived across these sheets, and six of them
+     were declared twice — once in px and once in the rem that means the same
+     thing at a default root. That second half is the part that mattered:
+     base.css promises the layout grows with the reader's own text size, and
+     every px declaration was quietly opting out of it. At a 20px root the nav
+     stayed at 15 while the timeline beside it grew to 19, and the hierarchy
+     came apart for exactly the reader who had asked for help reading.
+
+     So: one scale, in rem, named by the job rather than by the number. A size
+     that is not on this list is a size nobody decided on.
+
+       --t-micro   11px  badges and chips — the smallest thing that is still
+                         a word rather than a mark
+       --t-mini    12px  uppercase tracked labels, eyebrows, dates
+       --t-small   13px  captions, code, dense meta
+       --t-control 14px  buttons, table of contents, callout labels — things
+                         you act on rather than read
+       --t-base    15px  supporting body: a card's description, a bullet
+       --t-body    16px  running prose, and the floor for anything read in
+                         quantity
+       --t-lead    17px  the sentence directly under a heading
+
+     --t-control and --t-base are one pixel apart and that is deliberate: a
+     control set a shade smaller than the prose around it is the convention,
+     and they never sit in the same column. Nothing else on the scale is
+     within 1px of its neighbour.
+
+     Headings, and the reason there are five and not the eight this site had
+     grown: "a heading" was rendering at 20, 22, 23, 24 and 30px depending on
+     which file drew it, and four of those are the same size wearing different
+     names. The steps below are far enough apart to read as different jobs.
+
+       --t-h4      18px  a heading inside a list — a past role on the timeline
+       --t-h3      22px  a card title, a subsection, the current role
+       --t-feature 28px  the one featured card, which has to outrank the rest
+       --t-h2            a section heading
+       --t-h1            a page heading
+       --t-display       the landing page's opening line, and only that
+
+     The three fluid values are deliberately viewport-driven rather than
+     root-driven: they are display type, they are already 32–56px, and a
+     headline that grows with a raised default text size on top of growing
+     with the viewport arrives at a line that does not fit. Browser zoom
+     scales them, which is what the resize requirement actually asks for.
+     Reading-size type is the opposite case and must follow the reader — so
+     the two fluid values that carry prose rather than display, the landing
+     lead and its figures, keep a rem term inside their clamp (intro.css). */
+  --t-micro:   0.6875rem;
+  --t-mini:    0.75rem;
+  --t-small:   0.8125rem;
+  --t-control: 0.875rem;
+  --t-base:    0.9375rem;
+  --t-body:    1rem;
+  --t-lead:    1.0625rem;
+  --t-h4:      1.125rem;
+  /* Fluid at the bottom only, and for a collision that is invisible on a
+     desktop: --t-h2's clamp bottoms out at 24px, so on a 375px screen a
+     section heading and a subsection heading were 24 and 22 — two pixels
+     apart, which is not a step, it is a wobble. The cap is unchanged, so
+     nothing above roughly 640px moves; below it h3 eases down to 20 and the
+     two levels separate again. The rem term is what keeps it answering to
+     the reader's own text size. */
+  --t-h3:      clamp(1.25rem, 1.1rem + 0.7vw, 1.375rem);
+  --t-feature: 1.75rem;
+  --t-h2:      clamp(1.5rem, 3vw, 1.875rem);
+  --t-h1:      clamp(2rem, 4.4vw, 3.375rem);
+  --t-display: clamp(2.125rem, 4.4vw, 3.5rem);
+
+  /* Light type on a near-black ground optically thins and tightens: the glare
+     of the letterform bleeds into the counters and the gaps between letters
+     close up. Leading is already opened for it (1.55 on body). This is the
+     second of the three axes — a touch of tracking, at reading sizes only.
+     Display type is set the other way, tighter as it grows (base.css), and
+     must not inherit this. */
+  --track-dark: 0.006em;
   --axis-x:    #E5484D; /* Unity X-axis red   */
   --axis-y:    #46A758; /* Unity Y-axis green */
   --axis-z:    #5AA9FF; /* Unity Z-axis blue  */
@@ -18,7 +154,51 @@
      W, as in the fourth component of a quaternion. Unity tints that one amber
      too, so it sits in the same family rather than looking borrowed. */
   --axis-w:    #E8A33D;
+
+  /* ---------- what the four colours mean ----------
+     The four above are Unity's gizmo. The four below are the only reasons
+     this site is allowed to use them, one job each, no hue doing two:
+
+       claim   — the assertion itself. A figure, a scale, a hard number:
+                 "81,521 physics props", "20-player Battle Royale". The thing
+                 a reader is being asked to believe.
+       proof   — what makes that claim checkable. A live store listing, a
+                 repository, a write-up, a shipped badge. Every link that
+                 leaves this site goes to evidence, so every one is green.
+       nav     — orientation. Where you are, where you can go, what has
+                 focus, what is now. Never a claim and never a destination
+                 off-site.
+       pending — not settled. The next tool, a TBA, a press still in flight.
+
+     A claim in red beside its proof in green is the site's first principle
+     drawn rather than written. Anything that cannot name which of the four
+     it is stays neutral — that is what keeps the four legible. */
+  --role-claim:   var(--axis-x);
+  --role-proof:   var(--axis-y);
+  --role-nav:     var(--axis-z);
+  --role-pending: var(--axis-w);
+
+  /* Unity's X red clears AA on a card by 0.05 — a margin, not a decision.
+     --role-claim-ink is the same hue lifted to ~6:1 for type; --role-claim
+     keeps the true axis value for fills, markers and rings, where the
+     threshold is 3:1 and the gizmo's own red is the point.
+     The two hover values below were hand-written in four places between
+     them, which is three places for them to drift. */
+  --role-claim-ink: #F26A6E;
+  --role-nav-hi:    #79bcff;
+  --role-proof-hi:  #6ED07F;
+
   --nav-h:     76px;    /* sticky nav height, used for scroll offsets */
+
+  /* The phone tab bar's height, and zero everywhere the bar does not exist.
+     Both numbers are load-bearing: anything that has to end above the bar —
+     the page's own bottom padding, the landing intro's full-height sum —
+     subtracts this, and subtracting a token that is 0px on a desktop is how
+     one rule covers both cases instead of two rules drifting apart.
+     The real value is set in nav.css alongside the bar itself, because the
+     bar's height and the space reserved for it are the same fact and must
+     never be written down twice. */
+  --bar-h:     0px;
 
   /* Containers have no px ceiling — they're viewport-relative, so the layout
      keeps growing on 1440, 1080p, 1440p and ultrawide instead of stopping at a
@@ -51,8 +231,10 @@
   --dur-1:       120ms;  /* press, hover, colour */
   --dur-2:       220ms;  /* small element entering or moving */
   --dur-3:       320ms;  /* a surface arriving */
-  /* The one deliberately slow tier. Reserved for motion whose whole purpose is
-     to be noticed — currently the cursor ring reshaping onto a target
-     (cursor.css). Anything reacting to input belongs in --dur-1. */
-  --dur-snap:    660ms;
+  /* There was a --dur-snap tier here, at 660ms, for the cursor ring reshaping
+     onto a target. It is gone: that motion is now eased frame by frame in
+     scripts/cursor.js so its travel and its reshape share one curve, and no
+     CSS transition anywhere else wanted a duration that long. If something
+     ever does, it is worth asking first whether it is really slow motion or
+     just a slow response — the ring turned out to be the second. */
 }

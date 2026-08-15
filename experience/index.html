@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- viewport-fit=cover: without it a notched phone reports every safe-area
+     inset as zero, and the gutters and the tab bar have nothing to move out
+     of the way of. See .wrap in base.css and .tabbar in nav.css. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Experience · Vaishnav Chincholkar — Senior Unity Developer</title>
 <meta name="description" content="The work history behind the numbers: senior Unity developer leading a 6-person team, multiplayer systems for a live PC title with 14,000+ players, and large-scale world optimization.">
+<!-- The page is drawn dark and only dark; without this the browser draws its
+     own half of the interface — scrollbar, caret, form controls — light. -->
+<meta name="color-scheme" content="dark">
 <link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
-<link rel="canonical" href="https://itsdevlogger.github.io/experience/">
+<link rel="canonical" href="https://thevaishnav.github.io/experience/">
 
 <!-- Most of this page's traffic arrives from a LinkedIn profile link, which
      means the share card is seen by more people than the page is: it is the
@@ -20,14 +26,46 @@
 <meta property="og:type" content="profile">
 <meta property="og:title" content="Experience · Vaishnav Chincholkar — Senior Unity Developer">
 <meta property="og:description" content="Four roles in four years: leading a 6-person team, a 20-player Battle Royale shipped end to end, and 81,521 physics props in one scene.">
-<meta property="og:url" content="https://itsdevlogger.github.io/experience/">
-<meta property="og:image" content="https://itsdevlogger.github.io/assets/img/logo-256.png">
+<meta property="og:url" content="https://thevaishnav.github.io/experience/">
+<meta property="og:image" content="https://thevaishnav.github.io/assets/img/logo-256.png">
 <meta name="twitter:card" content="summary">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- The stylesheet, in cascade order — a later file may override an earlier one
+     at equal specificity, so the order is deliberate rather than alphabetical.
+     The parts are linked directly rather than pulled in by one @import file:
+     an @import is only discovered once the file holding it has arrived, so
+     every part below used to wait on a second round trip before it could even
+     start. A new part is added here, in every page.
+
+     Order note: print.css is last so it can override anything above it. -->
+<link rel="stylesheet" href="/assets/css/tokens.css">        <!-- colours + the two layout measurements   -->
+<link rel="stylesheet" href="/assets/css/base.css">          <!-- reset, page shell, type, container      -->
+<link rel="stylesheet" href="/assets/css/nav.css">           <!-- the sticky site header                  -->
+<link rel="stylesheet" href="/assets/css/buttons.css">       <!-- .btn and the action rows                -->
+<link rel="stylesheet" href="/assets/css/cards.css">         <!-- tool cards, ghost card, featured card   -->
+<link rel="stylesheet" href="/assets/css/intro.css">         <!-- landing: the full-height opening screen -->
+<link rel="stylesheet" href="/assets/css/hero.css">          <!-- landing hero, gizmo, subpage intros     -->
+<link rel="stylesheet" href="/assets/css/content.css">       <!-- figures, splits, meta, CTA, code, tables -->
+<link rel="stylesheet" href="/assets/css/timeline.css">      <!-- experience: the dated career rail       -->
+<link rel="stylesheet" href="/assets/css/contributions.css"> <!-- contributions: the grouped work list    -->
+<link rel="stylesheet" href="/assets/css/doc.css">           <!-- manual: sticky TOC + prose column       -->
+<link rel="stylesheet" href="/assets/css/contact.css">       <!-- the contact dialog                      -->
+<link rel="stylesheet" href="/assets/css/cursor.css">        <!-- the custom pointer (fine pointers only) -->
+<link rel="stylesheet" href="/assets/css/reveal.css">        <!-- the one-shot entrance for blocks in view -->
+<link rel="stylesheet" href="/assets/css/motion.css">        <!-- press feedback + the a11y preference set -->
+<link rel="stylesheet" href="/assets/css/print.css">         <!-- the site on paper                       -->
+
+<!-- Loaded here, ahead of the body, because this is the one site script whose
+     timing is load-bearing. The render scripts at the foot of the page call
+     window.reveal.scan() in the same task in which they append their cards, so
+     that a card is marked for its entrance before it has ever been painted.
+     Injected alongside the other site scripts it arrived after those calls had
+     already run, and the cards appeared at full opacity and then faded in a
+     second time. -->
+<script src="/scripts/reveal.js"></script>
 </head>
 <body>
 
@@ -64,11 +102,11 @@
       </li>
       <li>
         <span class="k mono">Leading</span>
-        <span class="v">A 6-person team across 4 client projects</span>
+        <span class="v">A <span class="fig">6-person</span> team across 4 client projects</span>
       </li>
       <li>
         <span class="k mono">Shipped</span>
-        <span class="v">2 multiplayer PC titles, 2 mobile titles — 14,000+ players</span>
+        <span class="v">2 multiplayer PC titles, 2 mobile titles — <span class="fig">14,000+</span> players</span>
       </li>
       <li>
         <span class="k mono">Depth</span>
@@ -103,7 +141,7 @@
         <h2 class="tl-role">Senior Unity Developer</h2>
         <p class="tl-where"><strong>ForeExcel Pvt. Ltd.</strong> · Pune, India</p>
         <ul class="tl-points" role="list">
-          <li>Lead a <strong>6-member development team</strong> across 4 client projects, from ideation through delivery.</li>
+          <li>Lead a <strong><span class="fig">6-member</span> development team</strong> across 4 client projects, from ideation through delivery.</li>
           <li>Primary technical point of contact with clients — turning what they ask for into engineering scope, estimates and a delivery plan.</li>
           <li>Own gameplay systems and features end to end across multiple shipped titles.</li>
         </ul>
@@ -124,9 +162,9 @@
         <h2 class="tl-role">Unity 3D Developer</h2>
         <p class="tl-where"><strong>EDIIIE Pvt. Ltd.</strong> · Pune, India</p>
         <ul class="tl-points" role="list">
-          <li>Built two metaverse PC games, <strong>HustleVerse</strong> and <strong>Sinverse</strong>; Sinverse reached <strong>14,000+ registered players</strong>.</li>
-          <li>Designed and shipped a <strong>20-player multiplayer Battle Royale</strong> end to end — matchmaking, team formation, KDA tracking and disconnect recovery.</li>
-          <li>Built a virtual estate system (buy and sell land, construct buildings up to 14 stories) holding <strong>81,521 physics props</strong> in a single scene through object pooling and distance-based culling — <a class="tl-link" href="https://www.linkedin.com/posts/vaishnav-chincholkar_how-did-we-handle-81521-props-in-one-scene-ugcPost-7489218603838406657-QGoz/" target="_blank" rel="noopener">how we did it ↗</a></li>
+          <li>Built two metaverse PC games, <strong>HustleVerse</strong> and <strong>Sinverse</strong>; Sinverse reached <strong><span class="fig">14,000+</span> registered players</strong>.</li>
+          <li>Designed and shipped a <strong><span class="fig">20-player</span> multiplayer Battle Royale</strong> end to end — matchmaking, team formation, KDA tracking and disconnect recovery.</li>
+          <li>Built a virtual estate system (buy and sell land, construct buildings up to 14 stories) holding <strong><span class="fig">81,521</span> physics props</strong> in a single scene through object pooling and distance-based culling — <a class="link tl-link" href="https://www.linkedin.com/posts/vaishnav-chincholkar_how-did-we-handle-81521-props-in-one-scene-ugcPost-7489218603838406657-QGoz/" target="_blank" rel="noopener">how we did it ↗</a></li>
           <li>Implemented proximity-based server data streaming so a large, persistent world state could be kept in sync.</li>
           <li>Developed a full character customization system — DNA-based variation, clothing and accessories — with backend persistence.</li>
           <li>Designed the core game economy the estate and customization systems run on.</li>
@@ -150,9 +188,9 @@
         <h2 class="tl-role">Unity Developer Intern</h2>
         <p class="tl-where"><strong>Frolic Frog Pvt. Ltd.</strong></p>
         <ul class="tl-points" role="list">
-          <li>Shipped <strong>2 hyper-casual 3D mobile games</strong> to iOS and Android.</li>
+          <li>Shipped <strong><span class="fig">2</span> hyper-casual 3D mobile games</strong> to iOS and Android.</li>
           <li>Built a custom rope physics system from scratch.</li>
-          <li>Optimized real-time physics for <strong>1,500+ simultaneous objects</strong> on mobile hardware.</li>
+          <li>Optimized real-time physics for <strong><span class="fig">1,500+</span> simultaneous objects</strong> on mobile hardware.</li>
         </ul>
       </div>
     </li>

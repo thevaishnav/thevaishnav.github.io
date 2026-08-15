@@ -96,7 +96,7 @@ body.modal-open{ overflow:hidden; }
   overscroll-behavior:contain;
   padding:20px 28px 24px;
 }
-.contact-modal-body .lead{ color:var(--muted); font-size:16px; max-width:60ch; margin:0 0 14px; }
+.contact-modal-body .lead{ color:var(--muted); font-size:var(--t-body); max-width:60ch; margin:0 0 14px; }
 
 /* ---------- local time chip ----------
    Not decoration: three of the four channels reach a person in one timezone,
@@ -123,14 +123,14 @@ body.modal-open{ overflow:hidden; }
   background:var(--axis-y);
 }
 .contact-clock{
-  font-size:14px;
+  font-size:var(--t-control);
   color:var(--text);
   margin:0;
   /* tabular figures: without them the minute digits change width and the chip
      twitches once a minute */
   font-variant-numeric:tabular-nums;
 }
-.contact-status-note{ font-size:12.5px; color:var(--muted); margin:0; }
+.contact-status-note{ font-size:var(--t-mini); color:var(--muted); margin:0; }
 
 /* ---------- contact channels ---------- */
 /* One cell per channel, all the same size: `1fr` columns plus `1fr` rows, so a
@@ -220,7 +220,7 @@ body.modal-open{ overflow:hidden; }
 }
 .contact-icon svg{ display:block; width:19px; height:19px; }
 .contact-label{
-  font-size:11px;
+  font-size:var(--t-micro);
   letter-spacing:0.14em;
   text-transform:uppercase;
   color:var(--muted);
@@ -228,7 +228,7 @@ body.modal-open{ overflow:hidden; }
 }
 .contact-arrow{
   margin-left:auto;
-  font-size:15px;
+  font-size:var(--t-base);
   line-height:1;
   color:var(--muted);
   transition:transform .18s ease, color .18s ease;
@@ -240,13 +240,13 @@ body.modal-open{ overflow:hidden; }
 }
 
 .contact-value{
-  font-size:16px;
+  font-size:var(--t-body);
   color:var(--text);
   margin:0;
   /* addresses and handles are long and must not push the grid wider */
   overflow-wrap:anywhere;
 }
-.contact-note{ font-size:13.5px; line-height:1.5; color:var(--muted); margin:0; max-width:46ch; }
+.contact-note{ font-size:var(--t-small); line-height:1.5; color:var(--muted); margin:0; max-width:46ch; }
 
 /* ---------- contact popup: what to include ---------- */
 .contact-extra{
@@ -258,26 +258,26 @@ body.modal-open{ overflow:hidden; }
   border-top:1px solid var(--line);
 }
 .contact-extra-title{
-  font-size:11px;
+  font-size:var(--t-micro);
   letter-spacing:0.12em;
   text-transform:uppercase;
   color:var(--muted);
   margin:0 0 10px;
 }
-.contact-extra-cell p{ font-size:15px; color:#c9ccd1; margin:0; max-width:52ch; }
+.contact-extra-cell p{ font-size:var(--t-base); color:var(--ink-2); margin:0; max-width:52ch; }
 .contact-checklist{ list-style:none; margin:0; padding:0; }
 .contact-checklist li{
   position:relative;
   padding-left:20px;
-  font-size:15px;
-  color:#c9ccd1;
+  font-size:var(--t-base);
+  color:var(--ink-2);
   margin:0 0 6px;
 }
 .contact-checklist li::before{
   content:"›";
   position:absolute;
   left:0;
-  color:var(--axis-z);
+  color:var(--role-nav);
 }
 
 /* ---------- on phones: a bottom sheet ----------
@@ -321,8 +321,12 @@ body.modal-open{ overflow:hidden; }
     border-radius:999px;
     background:var(--line);
   }
-  .contact-modal-body{ padding:18px 20px 24px; }
-  .contact-modal-body .lead{ font-size:15px; }
+  /* The last channel card has to clear the home indicator, which sits inside
+     the sheet now that the sheet is flush to the bottom edge. It is added to
+     the body's own padding rather than to the sheet, so the scrollable area
+     still runs to the true bottom and only its contents stop short. */
+  .contact-modal-body{ padding:18px 20px calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .contact-modal-body .lead{ font-size:var(--t-base); }
   .contact-card{ padding:18px 20px 20px; }
   /* Equal-height rows are a desktop nicety; stacked on a phone they only pad
      the short cards out and make the sheet longer to scroll. */

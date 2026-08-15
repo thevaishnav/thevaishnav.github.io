@@ -2,22 +2,72 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- viewport-fit=cover: without it a notched phone reports every safe-area
+     inset as zero, and the gutters and the tab bar have nothing to move out
+     of the way of. See .wrap in base.css and .tabbar in nav.css. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>unity-cli · A Claude skill for driving the Unity Editor</title>
 <meta name="description" content="A free, open-source Claude skill that inspects and edits an existing Unity project by talking to your running Unity Editor over the official Unity CLI. Scenes, prefabs, materials, play mode, console errors, tests and builds.">
+<!-- The page is drawn dark and only dark; without this the browser draws its
+     own half of the interface — scrollbar, caret, form controls — light. -->
+<meta name="color-scheme" content="dark">
 <link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+<link rel="canonical" href="https://thevaishnav.github.io/tools/unity-cli/">
+
+<!-- A tool page is linked to directly far more often than it is arrived at by
+     scrolling: from a repository README, a forum reply, a chat window. A bare
+     URL in any of those reads as a dead link. Absolute URLs because a scraper
+     resolves these from its own context, not from the page's. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="unity-cli · A Claude skill for driving the Unity Editor">
+<meta property="og:description" content="A free, open-source Claude skill that drives your running Unity Editor over the official CLI — and builds a command library that gets better the more you use it.">
+<meta property="og:url" content="https://thevaishnav.github.io/tools/unity-cli/">
+<meta property="og:image" content="https://thevaishnav.github.io/assets/img/unity-cli-cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- The stylesheet, in cascade order — a later file may override an earlier one
+     at equal specificity, so the order is deliberate rather than alphabetical.
+     The parts are linked directly rather than pulled in by one @import file:
+     an @import is only discovered once the file holding it has arrived, so
+     every part below used to wait on a second round trip before it could even
+     start. A new part is added here, in every page.
+
+     Order note: print.css is last so it can override anything above it. -->
+<link rel="stylesheet" href="/assets/css/tokens.css">        <!-- colours + the two layout measurements   -->
+<link rel="stylesheet" href="/assets/css/base.css">          <!-- reset, page shell, type, container      -->
+<link rel="stylesheet" href="/assets/css/nav.css">           <!-- the sticky site header                  -->
+<link rel="stylesheet" href="/assets/css/buttons.css">       <!-- .btn and the action rows                -->
+<link rel="stylesheet" href="/assets/css/cards.css">         <!-- tool cards, ghost card, featured card   -->
+<link rel="stylesheet" href="/assets/css/intro.css">         <!-- landing: the full-height opening screen -->
+<link rel="stylesheet" href="/assets/css/hero.css">          <!-- landing hero, gizmo, subpage intros     -->
+<link rel="stylesheet" href="/assets/css/content.css">       <!-- figures, splits, meta, CTA, code, tables -->
+<link rel="stylesheet" href="/assets/css/timeline.css">      <!-- experience: the dated career rail       -->
+<link rel="stylesheet" href="/assets/css/contributions.css"> <!-- contributions: the grouped work list    -->
+<link rel="stylesheet" href="/assets/css/doc.css">           <!-- manual: sticky TOC + prose column       -->
+<link rel="stylesheet" href="/assets/css/contact.css">       <!-- the contact dialog                      -->
+<link rel="stylesheet" href="/assets/css/cursor.css">        <!-- the custom pointer (fine pointers only) -->
+<link rel="stylesheet" href="/assets/css/reveal.css">        <!-- the one-shot entrance for blocks in view -->
+<link rel="stylesheet" href="/assets/css/motion.css">        <!-- press feedback + the a11y preference set -->
+<link rel="stylesheet" href="/assets/css/print.css">         <!-- the site on paper                       -->
+
+<!-- Loaded here, ahead of the body, because this is the one site script whose
+     timing is load-bearing. The render scripts at the foot of the page call
+     window.reveal.scan() in the same task in which they append their cards, so
+     that a card is marked for its entrance before it has ever been painted.
+     Injected alongside the other site scripts it arrived after those calls had
+     already run, and the cards appeared at full opacity and then faded in a
+     second time. -->
+<script src="/scripts/reveal.js"></script>
 </head>
 <body>
 
 <div id="site-header"></div>
 <script src="/scripts/site-header.js"></script>
 
-<div class="wrap wrap-wide">
+<main class="wrap wrap-wide">
   <div class="doc" id="top">
 
     <!-- ---------- sticky rail: title + TOC ---------- -->
@@ -57,7 +107,7 @@
       <section id="what-it-does">
         <h2>1 · What it does</h2>
         <p><strong>unity-cli</strong> is a Claude skill. With it, Claude works on a Unity project the same way you would: through the Editor that is already open in front of you, over the official
-          <a class="axis-z" href="https://docs.unity.com/en-us/unity-cli" target="_blank" rel="noopener" style="text-decoration:none;">Unity CLI</a>.</p>
+          <a class="link" href="https://docs.unity.com/en-us/unity-cli" target="_blank" rel="noopener">Unity CLI</a>.</p>
         <p>That covers scenes, GameObjects, components, transforms, prefabs, materials, shaders, lighting, animation, Timeline, assets, UPM packages, project settings, play mode, console errors, screenshots, tests and builds.</p>
         <p>It does <strong>not</strong> create projects, install Editors, or handle licensing. That stays in Unity Hub.</p>
 
@@ -96,7 +146,7 @@
 
         <div class="callout tip">
           <span class="label">It asks two setup questions</span>
-          <p>On first run, once per machine. Both are explained in <a class="axis-y" href="#questions" style="text-decoration:none;">section 6</a>.</p>
+          <p>On first run, once per machine. Both are explained in <a class="link" href="#questions">section 6</a>.</p>
         </div>
       </section>
 
@@ -111,14 +161,14 @@
         <pre class="code" data-lang="powershell"><code>unity --version
 unity auth login</code></pre>
         <p>The CLI is Unity's own tool and is currently on the beta channel.
-          <a class="axis-z" href="https://docs.unity.com/en-us/unity-cli/use-unity-cli" target="_blank" rel="noopener" style="text-decoration:none;">Unity's install docs</a> are the authoritative source if that command changes.</p>
+          <a class="link" href="https://docs.unity.com/en-us/unity-cli/use-unity-cli" target="_blank" rel="noopener">Unity's install docs</a> are the authoritative source if that command changes.</p>
 
         <h3>3.2 · The Unity Pipeline package</h3>
         <p>Needed in the project you want to work on. Open the project in Unity, then from the project directory:</p>
         <pre class="code" data-lang="powershell"><code>unity pipeline install
 unity pipeline list</code></pre>
         <p><code>Pipeline: Installed</code> means you're set. Requires Unity 6.0+. The skill can do this step for you and will ask first, since it modifies your project. See the
-          <a class="axis-z" href="https://docs.unity.com/en-us/unity-production-pipeline/local-tools-cli/unity-pipeline-package" target="_blank" rel="noopener" style="text-decoration:none;">Unity Pipeline package docs</a>.</p>
+          <a class="link" href="https://docs.unity.com/en-us/unity-production-pipeline/local-tools-cli/unity-pipeline-package" target="_blank" rel="noopener">Unity Pipeline package docs</a>.</p>
 
         <h3>3.3 · Git</h3>
         <p>For the <code>C:/unity-cli-skill</code> clone and macro updates.</p>
@@ -242,8 +292,8 @@ unity pipeline list</code></pre>
         <p>Bugs, macro ideas and "this failed on my project" reports are all welcome. Issues and pull requests on GitHub are the fastest route; email works too.</p>
         <div class="callout note">
           <span class="label">Contact</span>
-          <p><a class="axis-z" href="https://github.com/itsdevlogger/unity-cli-skill/issues" target="_blank" rel="noopener" style="text-decoration:none;">github.com/itsdevlogger/unity-cli-skill/issues</a></p>
-          <p>Email: <a class="axis-z" href="mailto:itsdevlogger@gmail.com" style="text-decoration:none;">itsdevlogger@gmail.com</a></p>
+          <p><a class="link is-address" href="https://github.com/itsdevlogger/unity-cli-skill/issues" target="_blank" rel="noopener">github.com/itsdevlogger/unity-cli-skill/issues</a></p>
+          <p>Email: <a class="link is-address" href="mailto:itsdevlogger@gmail.com">itsdevlogger@gmail.com</a></p>
         </div>
         <p>When reporting an issue, please include your <strong>Unity version</strong>, your <strong>Unity CLI version</strong> (<code>unity --version</code>), and the command or request that failed.</p>
       </section>
@@ -260,67 +310,9 @@ unity pipeline list</code></pre>
 
     </div>
   </div>
-</div>
+</main>
 
-<script>
-(function () {
-  var links = Array.prototype.slice.call(
-    document.querySelectorAll('.toc a[href^="#"]')
-  );
-  if (!links.length) return;
-
-  // Map each section id to its TOC link.
-  var linkById = {};
-  var sections = [];
-  links.forEach(function (link) {
-    var id = link.getAttribute('href').slice(1);
-    var section = document.getElementById(id);
-    if (section) {
-      linkById[id] = link;
-      sections.push(section);
-    }
-  });
-
-  function setActive(id) {
-    links.forEach(function (link) {
-      link.classList.toggle('active', link === linkById[id]);
-    });
-  }
-
-  // Pick the section whose top is closest to (but not far below) the
-  // scroll offset — the last one that has passed the highlight line.
-  function update() {
-    var offset = 100; // px from top where a section counts as "current"
-    var current = sections[0];
-    for (var i = 0; i < sections.length; i++) {
-      if (sections[i].getBoundingClientRect().top - offset <= 0) {
-        current = sections[i];
-      } else {
-        break;
-      }
-    }
-    // At the very bottom of the page, force-select the last section.
-    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
-      current = sections[sections.length - 1];
-    }
-    if (current) setActive(current.id);
-  }
-
-  var ticking = false;
-  function onScroll() {
-    if (ticking) return;
-    ticking = true;
-    window.requestAnimationFrame(function () {
-      update();
-      ticking = false;
-    });
-  }
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-  update();
-})();
-</script>
+<script src="/scripts/doc-toc.js"></script>
 
 <script src="/scripts/code-blocks.js"></script>
 

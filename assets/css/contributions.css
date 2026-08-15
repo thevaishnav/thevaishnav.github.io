@@ -44,8 +44,8 @@
    the site's label language (mono, uppercase, widely tracked) so the row reads
    as controls rather than as a second navigation. */
 .proj-filter{
-  font-family:'JetBrains Mono', ui-monospace, monospace;
-  font-size:0.6875rem;
+  font-family:var(--font-mono);
+  font-size:var(--t-micro);
   letter-spacing:0.1em;
   text-transform:uppercase;
   color:var(--muted);
@@ -66,9 +66,9 @@
    one filter on at a time, that single lit button is the only thing on the
    page saying why five cards are missing. */
 .proj-filter[aria-pressed="true"]{
-  color:var(--axis-z);
-  border-color:color-mix(in srgb, var(--axis-z) 45%, var(--line));
-  background:color-mix(in srgb, var(--axis-z) 12%, transparent);
+  color:var(--role-nav);
+  border-color:color-mix(in srgb, var(--role-nav) 45%, var(--line));
+  background:color-mix(in srgb, var(--role-nav) 12%, transparent);
 }
 @supports not (background: color-mix(in srgb, red 10%, blue)){
   .proj-filter[aria-pressed="true"]{
@@ -79,7 +79,7 @@
 
 .proj-count{
   margin:0;
-  font-size:0.6875rem;
+  font-size:var(--t-micro);
   letter-spacing:0.1em;
   color:var(--muted);
   font-variant-numeric:tabular-nums;
@@ -107,7 +107,7 @@
   overflow:hidden;
   transition:border-color var(--dur-1) var(--ease-out);
 }
-.proj:hover{ border-color:#39414f; }
+.proj:hover{ border-color:var(--line-hover); }
 /* Filtering hides cards with the `hidden` attribute, whose display:none comes
    from the UA stylesheet — and the `display:flex` above, being an author rule,
    beats it. Without this line a filtered card keeps its place in the grid
@@ -243,7 +243,7 @@
 }
 .video-modal-title{
   margin:0;
-  font-size:0.75rem;
+  font-size:var(--t-mini);
   letter-spacing:0.08em;
   color:var(--muted);
   /* the title of a card, on one line, however long the card's title is */
@@ -329,10 +329,11 @@
   justify-content:center;
   border:0;
   border-radius:0;
-  /* 13px vertical puts the bar at ~44px, which is the size of a thumb. It has
-     no effect in the overlay below, where the panels are stretched to the full
-     height of the cover anyway. */
-  padding:13px 10px;
+  /* 14px vertical puts the bar at 45px — a thumb's width, measured rather
+     than assumed: at 13px the label's own 17px line box left it one pixel
+     short. It has no effect in the overlay below, where the panels are
+     stretched to the full height of the cover anyway. */
+  padding:14px 10px;
   background:var(--surface-2);
 }
 .proj-actions .proj-link + .proj-link{ border-left:1px solid var(--line); }
@@ -364,7 +365,7 @@
   .proj-actions .proj-link{
     background:rgba(0,0,0,0.55);
     color:#fff;
-    font-size:0.8125rem;
+    font-size:var(--t-small);
   }
   .proj-actions .proj-link + .proj-link{
     border-left:1px solid rgba(255,255,255,0.18);
@@ -395,20 +396,30 @@
   margin-bottom:5px;
 }
 .proj-title{
-  font-size:1.0625rem;
+  font-size:var(--t-h4);
   line-height:1.25;
+  letter-spacing:-0.008em;
   margin:0;
 }
 
 /* The badge says what state the thing is in, and every value is provable by a
    link on the same card — "Live" next to a store link, "Open source" next to
-   a repository. Colour carries the same split the rest of the site uses:
-   green for what is running, amber for what is readable, plain for what is
-   simply done. */
+   a repository. Both are the same kind of fact, which is why both are now
+   green: this thing exists and here is where to go and see it. They were two
+   colours, which said the two statuses differed in kind when they differ only
+   in wording — and it cost the amber its one real job elsewhere. The words
+   still carry the distinction, so nothing is lost by not repeating it in hue.
+   A status with no link to back it stays plain. */
+/* This was set at 9px — below the floor for anything meant to be read, and on
+   the surface that matters most, since a phone is where most of this audience
+   arrives. It is on the scale's smallest step now (11px), with the tracking
+   pulled back from 0.11em to 0.08em so the pill does not grow by the whole
+   difference and start crowding the title beside it. Wider tracking is what a
+   line of capitals needs at 9px; at 11px it needs less of it. */
 .proj-status{
   flex:none;
-  font-size:0.5625rem;
-  letter-spacing:0.11em;
+  font-size:var(--t-micro);
+  letter-spacing:0.08em;
   text-transform:uppercase;
   white-space:nowrap;
   border-radius:999px;
@@ -418,49 +429,54 @@
   /* the title beside it is a size larger; this sits on its cap height */
   margin-top:2px;
 }
-.proj-status.is-live{
-  color:var(--axis-y);
-  border-color:color-mix(in srgb, var(--axis-y) 45%, transparent);
-  background:color-mix(in srgb, var(--axis-y) 12%, transparent);
-}
+.proj-status.is-live,
 .proj-status.is-open{
-  color:var(--axis-w);
-  border-color:color-mix(in srgb, var(--axis-w) 45%, transparent);
-  background:color-mix(in srgb, var(--axis-w) 12%, transparent);
+  color:var(--role-proof);
+  border-color:color-mix(in srgb, var(--role-proof) 45%, transparent);
+  background:color-mix(in srgb, var(--role-proof) 12%, transparent);
 }
 @supports not (background: color-mix(in srgb, red 10%, blue)){
-  .proj-status.is-live{ border-color:rgba(70,167,88,0.45); background:rgba(70,167,88,0.12); }
-  .proj-status.is-open{ border-color:rgba(232,163,61,0.45); background:rgba(232,163,61,0.12); }
+  .proj-status.is-live,
+  .proj-status.is-open{ border-color:rgba(70,167,88,0.45); background:rgba(70,167,88,0.12); }
 }
 
 .proj-kind{
   margin:0 0 10px;
-  font-size:0.75rem;
+  font-size:var(--t-mini);
   line-height:1.45;
   color:var(--muted);
 }
 
 /* The one figure worth reading from across the room, and the only line in the
    card set in the accent. There is at most one per card on purpose: a card
-   with three highlighted numbers has highlighted none of them. */
+   with three highlighted numbers has highlighted none of them.
+
+   It is the claim colour, not the link colour it used to wear. This line is
+   the assertion the card exists to make — "81,521 physics props in one
+   scene" — and the badge above it and the links below it are in green
+   because they are what makes the assertion checkable. Scanned down the
+   grid, every card reads red claim, green proof, in that order, which is the
+   editorial rule the whole site is built on finally drawn rather than
+   described. Nothing on this site is an error state, so red is free to mean
+   the thing red should mean here. */
 .proj-stat{
   margin:0 0 10px;
-  font-family:'JetBrains Mono', ui-monospace, monospace;
-  font-size:0.75rem;
+  font-family:var(--font-mono);
+  font-size:var(--t-mini);
   line-height:1.45;
-  color:var(--axis-z);
+  color:var(--role-claim-ink);
   font-variant-numeric:tabular-nums;
 }
 
 .proj-desc{
   margin:0 0 12px;
-  font-size:0.8125rem;
+  font-size:var(--t-small);
   line-height:1.6;
-  color:#a9aeb6;
+  color:var(--ink-3);
 }
 .proj-role{
   margin:0 0 12px;
-  font-size:0.75rem;
+  font-size:var(--t-mini);
   line-height:1.45;
   color:var(--muted);
 }
@@ -479,7 +495,7 @@
   padding:0;
 }
 .proj-chip{
-  font-size:0.6875rem;
+  font-size:var(--t-micro);
   line-height:1.4;
   padding:3px 8px;
   border-radius:6px;
@@ -514,17 +530,21 @@
   margin-top:auto;
 }
 .proj-link{
-  /* Every link falls back to the site's link blue. The per-destination tints
-     below are a nicety; a link type the data invents tomorrow still gets a
-     colour that means "link" rather than no colour at all. */
-  --link-accent:var(--axis-z);
+  /* One accent, not four. Every link on this page leaves the site, and every
+     destination it leaves for — a store listing, a repository, a video, a
+     write-up — is the evidence behind the claim two lines above it. They were
+     tinted per destination, which turned a row of proofs into a row of brand
+     badges and spent three hues saying something the label already said.
+     The value is lifted off the token because these sit over a cover image at
+     0.75rem, where the true axis green is legible but not comfortable. */
+  --link-accent:var(--role-proof-hi);
   display:inline-flex;
   align-items:center;
   gap:6px;
   padding:6px 12px;
   border:1px solid var(--line);
   border-radius:999px;
-  font-size:0.75rem;
+  font-size:var(--t-mini);
   line-height:1.4;
   color:var(--text);
   text-decoration:none;
@@ -534,14 +554,9 @@
              background var(--dur-1) var(--ease-out);
 }
 
-/* Where the link goes, as colour, and only on hover — tinted at rest they
-   would be a row of brand badges rather than a place to go. Apple's is a pale
-   blue rather than the white it used to be: over the cover the label is
-   already white, so white-on-hover would have been no answer at all. The type
-   comes from the data — see CONTRIBUTIONS_DATA. */
-.proj-link[data-type="apple"]{  --link-accent:#9ad0ff; }
-.proj-link[data-type="github"]{ --link-accent:var(--axis-y); }
-
+/* The accent shows on hover only. Tinted at rest, a row of five pills reads as
+   a set of badges to look at rather than a set of places to go — and the cards
+   already carry the one coloured line each that they are allowed. */
 .proj-link:hover{
   color:var(--link-accent);
   border-color:color-mix(in srgb, var(--link-accent) 55%, var(--line));
@@ -572,11 +587,11 @@
 /* Only ever seen with scripts off, where the board itself is absent. */
 .proj-noscript{
   color:var(--muted);
-  font-size:0.9375rem;
+  font-size:var(--t-base);
   max-width:60ch;
   margin:0;
 }
-.proj-noscript a{ color:var(--axis-z); }
+.proj-noscript a{ color:var(--role-nav); }
 
 /* ---------- responsive ---------- */
 @media (max-width: 720px){
@@ -590,6 +605,70 @@
   .proj-grid{ gap:18px; }
   .proj-body{ padding:16px 16px 18px; }
 
+  /* ---------- the filters, as a rail ----------
+     Seven chips wrapped to three rows put 168px of controls between the page
+     heading and the first project — on the screen with the least height to
+     spare, the reader arrives at a filter panel rather than at the work. One
+     row that scrolls costs 44px and shows the same seven.
+
+     Bleeding to the viewport edges is what makes it read as a rail rather
+     than as a clipped row: chips run out of the screen on both sides instead
+     of stopping short of a margin, which is the thing that says "there is
+     more this way". The negative margin cancels .wrap's gutter and the
+     padding puts it back inside, so the first chip still lines up with the
+     heading above it. */
+  .proj-filters{
+    /* The row's width is stated rather than stretched. The toolbar is a column
+       flex here, and a `nowrap` flex row inside it resolves its own width from
+       its contents — seven chips, 768px of them — which stretch does not
+       override and `min-width:0` does not reach. Left like that the rail is
+       not a scroller at all: it is a very wide element that widens the whole
+       document, and the page scrolls sideways instead of the chips.
+       100% is the toolbar's content width; the two gutters are what the
+       negative margins below give back. */
+    width:calc(100% + var(--pad-l) + var(--pad-r));
+    align-self:stretch;
+    min-width:0;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    scroll-snap-type:x proximity;
+    /* Snapping measures from the scrollport's edge, not from the padding
+       inside it — so on load the browser slid the rail by exactly one gutter
+       to bring "All" flush to the screen edge, and the alignment the padding
+       was there to create was gone before anyone touched it. This tells it
+       where the content actually starts. */
+    scroll-padding-inline:var(--pad-l) var(--pad-r);
+    -webkit-overflow-scrolling:touch;
+    /* the rail's own scrollbar is noise on a control this size; the fade at
+       each end is the affordance instead */
+    scrollbar-width:none;
+    /* --pad-l/--pad-r are .wrap's resolved gutters (base.css). Cancelling and
+       restoring exactly those is what keeps the first chip on the same
+       vertical as the heading above it while the row itself runs to the
+       screen edges. */
+    margin-inline:calc(-1 * var(--pad-l)) calc(-1 * var(--pad-r));
+    padding-inline:var(--pad-l) var(--pad-r);
+    /* room for the chips' focus rings, which are drawn outside the box and
+       would otherwise be clipped by the scroller */
+    padding-block:4px;
+    /* Fades to nothing at both edges, so a chip leaving the screen dissolves
+       rather than being cut off mid-word — which is the thing that says
+       "there is more this way" without a control saying it. */
+    -webkit-mask-image:linear-gradient(90deg,
+      transparent 0, #000 var(--pad-l), #000 calc(100% - var(--pad-r)), transparent 100%);
+    mask-image:linear-gradient(90deg,
+      transparent 0, #000 var(--pad-l), #000 calc(100% - var(--pad-r)), transparent 100%);
+  }
+  .proj-filters::-webkit-scrollbar{ display:none; }
+  .proj-filter{
+    flex:none;
+    scroll-snap-align:start;
+    /* 44px: hit with a thumb here, not pointed at. The text stays the size it
+       was — this is the target growing, not the label. */
+    min-height:44px;
+    padding:9px 14px;
+  }
+
   /* The player takes the width it can get here — a phone has none to spare —
      and the head above it tightens to match. */
   .video-modal{ width:min(calc(100vw - 24px), calc((100vh - 116px) * 16 / 9)); }
@@ -597,6 +676,5 @@
   .video-frame{ border-radius:10px; }
   /* Taller pills, because here they are hit with a thumb rather than pointed
      at. The text stays the same size — this is padding, not scale. */
-  .proj-link{ padding:9px 14px; }
-  .proj-filter{ padding:9px 12px; }
+  .proj-link{ padding:11px 14px; }
 }
