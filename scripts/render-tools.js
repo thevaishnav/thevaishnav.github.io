@@ -14,12 +14,57 @@
     return node;
   }
 
+  /* A cover that moves. Authored complete — autoplay, loop, muted, inline —
+     so it is a working clip the moment it is in the document; scripts/loop-video.js
+     then pauses it offscreen and stands it down entirely under reduced motion.
+     See the header of that file for why the downgrade goes in that direction.
+
+     `poster` is not optional in practice: without one the card reserves its
+     space and then shows a black rectangle until the first frame decodes,
+     which on a slow connection is most of the time anyone spends looking at
+     the page. */
+  function renderVideo(spec) {
+    var video = document.createElement('video');
+    video.setAttribute('data-loop', '');
+    video.autoplay = true;
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = 'metadata';
+    if (spec.poster) video.poster = spec.poster;
+    if (spec.width && spec.height) {
+      video.width = spec.width;
+      video.height = spec.height;
+    }
+    // A clip carrying no audio and no controls is a picture, and a picture
+    // needs a description. <video> has no alt, so the label goes on the role.
+    if (spec.alt) {
+      video.setAttribute('role', 'img');
+      video.setAttribute('aria-label', spec.alt);
+    }
+    // WebM first: a browser takes the first type it claims to play, and where
+    // both are understood the VP9 file is the smaller of the two.
+    [['webm', 'video/webm'], ['mp4', 'video/mp4']].forEach(function (pair) {
+      if (!spec[pair[0]]) return;
+      var source = document.createElement('source');
+      source.src = spec[pair[0]];
+      source.type = pair[1];
+      video.appendChild(source);
+    });
+    return video;
+  }
+
   function renderCard(tool, isHighlight) {
     var card = el('article', isHighlight ? 'card card-featured' : 'card');
-    var hasMedia = !!(tool.image && tool.image.src);
+    var hasVideo = !!(tool.video && (tool.video.mp4 || tool.video.webm));
+    var hasMedia = hasVideo || !!(tool.image && tool.image.src);
     if (hasMedia) card.className += ' card-with-media';
 
-    if (hasMedia) {
+    if (hasVideo) {
+      var videoMedia = el('div', 'card-media');
+      videoMedia.appendChild(renderVideo(tool.video));
+      card.appendChild(videoMedia);
+    } else if (hasMedia) {
       var media = el('div', 'card-media');
       var img = el('img');
       img.src = tool.image.src;
@@ -149,4 +194,9 @@
   // Guarded because scroll reveal is optional — it bows out entirely on a
   // reduced-motion setting, and this file must not care either way.
   if (window.reveal) window.reveal.scan();
+  // Same reason, different concern: a card's clip was appended after
+  // loop-video.js had already walked the document, so it has to be handed over
+  // explicitly. Guarded because a page whose cards carry no video never loads
+  // that file.
+  if (window.loopVideo) window.loopVideo.scan();
 })();

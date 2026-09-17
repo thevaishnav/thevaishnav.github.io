@@ -178,6 +178,37 @@ window.CONTRIBUTIONS_DATA = {
       ]
     },
     {
+      title: "Pivot++",
+      kind: "Unity Editor Tool",
+      // "Live" rather than "Open source": it is a paid Asset Store package, and
+      // the badge has to be provable by a link on the same card — the Asset
+      // Store button below is the proof that you can install it right now.
+      status: "live",
+      media: {
+        // cover.png is the same picture at 1.1MB — a PNG carrying a
+        // photographic render, which is the one thing PNG is bad at. This JPEG
+        // is 79KB and indistinguishable at card size.
+        src: "/assets/img/pivot/cover.jpg",
+        width: 1537,
+        height: 796,
+        alt: "Side-by-side comparison of a door rotating around Unity's default centre pivot versus around its hinge using Pivot++."
+      },
+      stat: "On the Unity Asset Store",
+      role: "Solo project",
+      description: "Move, rotate and scale any object around a point you choose — the hinge of a door, the base of a lamp post — without re-exporting the mesh or parenting it to an empty. Editor only, and it never touches your meshes or prefabs.",
+      tags: ["Editor Tool"],
+      platforms: ["Unity 2022.3+"],
+      tech: ["Unity3D", "C#", "Scene View Overlays"],
+      // Two, like every other card here. The overlay splits the cover into one
+      // equal panel per link, so a third turns "Asset Store" into two lines in
+      // an 100px column while its neighbours stay on one. The manual is one
+      // click further in, from the showcase page's own hero.
+      links: [
+        { label: "More info", url: "/tools/pivot/", type: "page" },
+        { label: "Asset Store", url: "https://assetstore.unity.com/packages/tools/utilities/pivot-393670" }
+      ]
+    },
+    {
       title: "Unity CLI Skill",
       kind: "Claude Skill · Unity CLI",
       status: "open-source",

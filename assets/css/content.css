@@ -12,7 +12,14 @@ figure.figure{ margin:0 0 8px; }
   overflow:hidden;
   background:var(--surface-2);
 }
-.figure img.shot{ display:block; width:100%; height:auto; }
+/* A clip is a screenshot that moves, and it sits in the same framed box as one
+   — see scripts/loop-video.js for the behaviour behind `data-loop`. `video` is
+   named beside `img` rather than the pair being collapsed to `.shot`, because
+   a video the reduced-motion path has given controls to is a taller box than
+   the picture it replaced, and `height:auto` on a stated width/height ratio is
+   what keeps that from shifting the paragraph under it. */
+.figure img.shot,
+.figure video.shot{ display:block; width:100%; height:auto; }
 .figure figcaption{
   font-size:var(--t-small);
   color:var(--muted);

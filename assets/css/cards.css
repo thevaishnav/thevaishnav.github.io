@@ -19,7 +19,11 @@
   overflow:hidden;
   background:var(--surface-2);
 }
-.card-media img{ display:block; width:100%; height:auto; margin-inline:auto; }
+/* A card's cover is either a still or a silent looping clip, and the two are
+   the same box: full width of the media column, height from the file's own
+   ratio. render-tools.js builds whichever the entry in tools.js describes. */
+.card-media img,
+.card-media video{ display:block; width:100%; height:auto; margin-inline:auto; }
 
 /* Small UI screenshots (a few hundred px native) look soft when stretched to
    fill the media column, and their near-square shape drags the card taller than

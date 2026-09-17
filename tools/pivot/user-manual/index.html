@@ -60,6 +60,10 @@
      already run, and the cards appeared at full opacity and then faded in a
      second time. -->
 <script src="/scripts/reveal.js"></script>
+<!-- The clip in section 2.2. In the head rather than injected with the other
+     site scripts so it has claimed the <video> before the reader can reach it —
+     see scripts/loop-video.js. -->
+<script src="/scripts/loop-video.js"></script>
 </head>
 <body>
 
@@ -76,6 +80,14 @@
       <p class="eyebrow mono">User Manual</p>
       <h1>Pivot++</h1>
       <p class="lead">Custom pivots for the Unity Editor. This guide covers setup and every feature, so you can start working with custom pivots in a few minutes.</p>
+      <!-- Same row, and the same two destinations, as the showcase page's hero.
+           A manual is read by two people: someone who already owns the asset,
+           and someone deciding whether to. The second one arrived here with no
+           way back out to either the listing or the tour. -->
+      <div class="actions" style="margin-bottom:8px;">
+        <a class="btn btn-primary" href="https://assetstore.unity.com/packages/tools/utilities/pivot-393670" target="_blank" rel="noopener">Get it on the Asset Store ↗</a>
+        <a class="btn btn-secondary" href="/tools/pivot/">See the showcase</a>
+      </div>
     </div>
 
     <aside class="toc" aria-label="Table of contents">
@@ -156,6 +168,27 @@
           <li>Drag the <span class="axis-x">X</span>, <span class="axis-y">Y</span> or <span class="axis-z">Z</span> sliders in the Shared Pivot section. The move / rotate / scale handles jump to the new position immediately.</li>
           <li>Rotate or scale the object: it now pivots around the new handle position.</li>
         </ol>
+
+        <!-- The four steps above, performed. Written as a complete, working
+             <video> — scripts/loop-video.js only ever downgrades it, pausing it
+             offscreen and giving it controls instead of autoplay for a reader
+             who has asked for reduced motion. `width`/`height` are the encode's
+             real pixel size, so the column is reserved before any video
+             arrives and the prose below it never jumps. -->
+        <figure class="figure">
+          <div class="frame">
+            <video class="shot" data-loop
+                   poster="/assets/img/pivot/pivot-rotation-poster.jpg"
+                   width="1280" height="850"
+                   autoplay muted loop playsinline preload="metadata"
+                   role="img"
+                   aria-label="The four steps above performed in Unity: a door panel is selected, the overlay is switched on, the X slider is dragged to -1, and the door then rotates around its hinge instead of around its centre.">
+              <source src="/assets/img/pivot/pivot-rotation.webm" type="video/webm">
+              <source src="/assets/img/pivot/pivot-rotation.mp4" type="video/mp4">
+            </video>
+          </div>
+          <figcaption>Steps 2 to 4 on a door: enable, drag <span class="axis-x">X</span> to <span class="mono">-1</span>, rotate. The handle is now at the hinge.</figcaption>
+        </figure>
 
         <div class="callout note">
           <span class="label">Note</span>

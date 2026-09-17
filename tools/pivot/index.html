@@ -61,6 +61,10 @@
      already run, and the cards appeared at full opacity and then faded in a
      second time. -->
 <script src="/scripts/reveal.js"></script>
+<!-- The hero clip. In the head rather than injected with the other site
+     scripts so it has claimed the <video> before the reader can reach it —
+     see scripts/loop-video.js. -->
+<script src="/scripts/loop-video.js"></script>
 <link rel="stylesheet" href="pivot-showcase.css">
 </head>
 <body>
@@ -69,6 +73,46 @@
 <script src="/scripts/site-header.js"></script>
 
 <main id="top">
+  <!-- ---------- the opening claim, and the proof of it ----------
+       The page used to begin on the overlay tour, which meant it had no h1 and
+       opened on a sentence about a control panel — a reader arriving from the
+       Asset Store listing had to work out what the product was from a tour of
+       its interface. The clip is the whole pitch in eleven seconds: the pivot
+       is switched on, one slider moves, and the door turns on its hinge
+       instead of through its middle. Everything below is the detail behind it.
+
+       Silent, looping, and shown at its own ratio. `width`/`height` are the
+       encode's real pixel size, so the box is reserved before a byte of video
+       arrives; the poster fills it until the first frame decodes.
+       scripts/loop-video.js pauses it offscreen and stands it down entirely
+       for a reader who has asked for reduced motion. -->
+  <section class="wrap wrap-wide page-hero product-hero">
+    <div>
+      <p class="eyebrow mono">Editor tool · Unity 2022.3+</p>
+      <h1>Pivot++</h1>
+      <p class="lead">Rotate a door from its hinge. Scale a lamp post from its base. Move any object's pivot right in the Scene view — no re-exported meshes, no empty parents, nothing added to your scene.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://assetstore.unity.com/packages/tools/utilities/pivot-393670" target="_blank" rel="noopener">Get it on the Asset Store ↗</a>
+        <a class="btn btn-secondary" href="/tools/pivot/user-manual/">Read the manual</a>
+      </div>
+    </div>
+
+    <figure class="figure">
+      <div class="frame">
+        <video class="shot" data-loop
+               poster="/assets/img/pivot/pivot-rotation-poster.jpg"
+               width="1280" height="850"
+               autoplay muted loop playsinline preload="metadata"
+               role="img"
+               aria-label="A door in Unity's Scene view. The Pivot++ overlay is switched on and its X slider dragged to -1, and the door then swings open around its hinge instead of around its centre.">
+          <source src="/assets/img/pivot/pivot-rotation.webm" type="video/webm">
+          <source src="/assets/img/pivot/pivot-rotation.mp4" type="video/mp4">
+        </video>
+      </div>
+      <figcaption>Enable the overlay, drag <span class="axis-x">X</span> to <span class="mono">-1</span>, and the door turns on its hinge.</figcaption>
+    </figure>
+  </section>
+
 <!-- ---------- interactive overlay tour ---------- -->
   <section class="wrap wrap-wide pv-showcase">
     <div class="pv-intro">
@@ -230,7 +274,7 @@
       <h2>Start pivoting around the right point.</h2>
       <p>Grab Pivot++ on the Unity Asset Store, or read the full manual first.</p>
       <div class="actions">
-        <a class="btn btn-primary" href="https://assetstore.unity.com/packages/packages/393670" target="_blank" rel="noopener">Get it on the Asset Store ↗</a>
+        <a class="btn btn-primary" href="https://assetstore.unity.com/packages/tools/utilities/pivot-393670" target="_blank" rel="noopener">Get it on the Asset Store ↗</a>
         <a class="btn btn-secondary" href="/tools/pivot/user-manual/">Read the manual</a>
       </div>
     </div>
