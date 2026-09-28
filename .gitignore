@@ -15,8 +15,9 @@ desktop.ini
 # image editors leave these beside the file they overwrote
 *~
 
-# Recording masters. The site ships the re-encoded pair beside each of these —
-# pivot-rotation.{webm,mp4} is 222KB + 327KB against this file's 7.8MB — and a
-# repo served by GitHub Pages carries its history forever. Keep the master
-# locally, re-encode from it, and let the small files be the committed ones.
-assets/img/pivot/pivot-rotation.gif
+# Recording masters. The site ships a re-encoded webm/mp4 pair beside each of
+# these — door-hinge is 250KB + 323KB against a 1.4MB master — and a repo
+# served by GitHub Pages carries its history forever. Keep the masters with the
+# release they belong to, re-encode from them, and commit only the small files.
+tools/pivot/media/*.gif
+tools/pivot/media/*-master.mp4

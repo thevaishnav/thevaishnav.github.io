@@ -35,20 +35,19 @@ window.TOOLS_DATA = {
     {
       id: "pivot",
       video: {
-        // Recorded as a 7.8MB 1920x1080 GIF and re-encoded: 327KB of H.264 and
-        // 222KB of VP9, cropped to the Scene view and the overlay so the
-        // Inspector column — a third of the frame and none of the point — is
-        // not what a reader is asked to squint past on a phone. The GIF master
-        // is kept out of the repo; assets/img/pivot/pivot-rotation.gif is the
-        // source if it ever needs re-encoding.
-        webm: "/assets/img/pivot/pivot-rotation.webm",
-        mp4: "/assets/img/pivot/pivot-rotation.mp4",
-        poster: "/assets/img/pivot/pivot-rotation-poster.jpg",
+        // Recorded full-screen at 1920x1032 and re-encoded to 323KB of H.264
+        // and 250KB of VP9, cropped to the Scene view and its toolbar: the
+        // window chrome and the status bar carry nothing a reader needs, and
+        // at card size they cost the overlay the pixels that make it readable.
+        // The recording masters live in the Pivot++ release folder, not here.
+        webm: "/tools/pivot/media/door-hinge.webm",
+        mp4: "/tools/pivot/media/door-hinge.mp4",
+        poster: "/tools/pivot/media/door-hinge-poster.jpg",
         width: 1280,
-        height: 850,
-        alt: "A door in Unity's Scene view. The Pivot++ overlay is switched on and its X slider dragged to -1, and the door then swings open around its hinge instead of around its centre."
+        height: 578,
+        alt: "A door in Unity's Scene view. The Pivot++ panel is switched on and the pivot dragged out to the hinge edge, and the door then swings open around that hinge instead of around its centre."
       },
-      tag: "Editor tool · Unity 2022.3+",
+      tag: "Editor tool · Unity 2021.2+",
       title: "Pivot++",
       desc: "Want to rotate a door from its hinge? Scale a lamp post from its base? Normally you can't. At least not without re-exporting the mesh or adding an empty parent.\n\nPivot++ is a simple solution.\nSelect an object, drag a slider, and the pivot moves in real time.",
       actions: [
@@ -60,8 +59,8 @@ window.TOOLS_DATA = {
     {
       id: "unity-cli",
       image: {
-        src: "/assets/img/unity-cli-cover.jpg",
-        small: "/assets/img/unity-cli-cover-800.jpg",
+        src: "/tools/unity-cli/media/unity-cli-cover.jpg",
+        small: "/tools/unity-cli/media/unity-cli-cover-800.jpg",
         width: 1509,
         height: 704,
         alt: "Diagram: Claude plus a shared Command Library feed the Unity CLI, which drives the Unity Editor — and a return arrow labelled \"gets better with use\" loops back into the library."
@@ -77,8 +76,8 @@ window.TOOLS_DATA = {
     {
       id: "quick-access",
       image: {
-        src: "/assets/img/QuickAccessBanner.jpg",
-        small: "/assets/img/QuickAccessBanner-800.jpg",
+        src: "/tools/quick-access/media/QuickAccessBanner.jpg",
+        small: "/tools/quick-access/media/QuickAccessBanner-800.jpg",
         width: 1737,
         height: 905,
         alt: "The Quick Access Editor window, annotated: ping an asset, open an asset or scene, unpin, play from a scene, and the Scene Objects list."

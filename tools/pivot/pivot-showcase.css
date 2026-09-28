@@ -9,6 +9,7 @@
   --ui-blue:   #2f6fee;   /* Unity selected/accent blue   */
   --ui-blue-2: #4b83f2;
   --ui-green:  #3fb84e;   /* Enabled toggle green         */
+  --ui-amber:  var(--axis-w); /* Edit Pivots mode, Quick Align origin */
   --pv-panel:  #14171c;
   --pv-inset:  #0e1116;   /* recessed field background    */
   --pv-box:    #191d23;   /* section box background       */
@@ -163,29 +164,54 @@
   transition:box-shadow .35s ease;
 }
 
-/* section labels */
+/* section labels.
+   The label carries the pivot-counter badge on its right in the Object Pivots
+   section, so it is a flex row rather than a plain block. */
 .pv-slabel{
+  display:flex; align-items:center; gap:10px;
   font-size:var(--t-micro); letter-spacing:.10em; font-weight:600;
   color:var(--pv-mut); margin:0 0 10px;
 }
 .pv-sub{ font-size:var(--t-mini); color:var(--pv-mut); margin:-4px 0 10px; }
 
-/* Enabled toggle.
-   The label is the site's accent ink rather than white. White on this green
-   measures 2.6:1 — the panel is a recreation of Unity's overlay, but "Enabled"
-   is still a word a reader reads, and fidelity to a screenshot is not a reason
-   to ship text below the floor. #0B0D10 on the same green is 7.6:1, and it is
-   the value .btn-primary already uses for type on a saturated accent fill, so
-   the page is not inventing a colour to solve this.
-   The LED beside it stays white: it is a lit indicator, not a label. */
-.pv-enabled{
-  width:100%; border:0; cursor:default;
-  display:flex; align-items:center; gap:10px;
-  padding:10px 14px; border-radius:6px;
-  background:var(--ui-green); color:#0B0D10;
-  font-size:var(--t-base); font-weight:600; font-family:inherit;
+/* the "2 PIVOTS" counter, which only appears once an object carries one */
+.pv-badge{
+  margin-left:auto; padding:3px 8px; border-radius:20px;
+  background:rgba(47,111,238,.22); color:#8fb4ff;
+  font-size:var(--t-micro); letter-spacing:.06em; font-weight:600;
 }
-.pv-led{ width:11px; height:11px; border-radius:50%; background:#fff; box-shadow:0 0 6px rgba(255,255,255,.7); }
+
+/* ---------- master toggle row ---------- */
+/* 1.1 replaced the solid green "Enabled" bar with a dark row carrying a green
+   pill switch, and put the overlay/window button beside it. That is a straight
+   contrast win: the label is now #d7dade on #22262d rather than white on
+   saturated green, which was the 2.6:1 the old rule had to work around. */
+.pv-toprow{ display:flex; align-items:center; gap:8px; }
+.pv-enabled{
+  flex:1; display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:7px;
+  background:#22262d; color:#e7e9ec;
+  font-size:var(--t-base); font-weight:600;
+}
+/* the pill: track plus a knob pushed to the "on" end */
+.pv-switch{
+  position:relative; flex:none;
+  width:30px; height:17px; border-radius:20px; background:var(--ui-green);
+}
+.pv-switch::after{
+  content:""; position:absolute; top:2px; right:2px;
+  width:13px; height:13px; border-radius:50%; background:#fff;
+}
+/* overlay <-> window. The glyph is a small framed pane, drawn rather than
+   iconographic so it needs no font or sprite. */
+.pv-winbtn{
+  flex:none; width:30px; height:30px; border-radius:6px;
+  background:#22262d; position:relative;
+}
+.pv-winbtn::after{
+  content:""; position:absolute; inset:9px 8px;
+  border:1.5px solid var(--pv-txt); border-top-width:4px; border-radius:2px;
+}
 
 /* segmented control */
 .pv-seg{
@@ -202,21 +228,47 @@
 .pv-panel[data-mode="unbounded"] .pv-seg-btn.is-unbounded{
   background:var(--ui-blue); color:#fff;
 }
-/* object-pivots segment reflects the panel's current data-objseg */
-.pv-panel[data-objseg="default"] .pv-seg.two .is-default,
-.pv-panel[data-objseg="edit"]    .pv-seg.two .is-edit{
+/* object-pivots segment reflects the panel's current data-objseg.
+   Edit Pivots is amber rather than blue, as it is in the tool: it is a mode
+   that changes what the Scene view handles grab, so it does not look like the
+   other selected-tab states. */
+.pv-panel[data-objseg="default"] .pv-seg.two .is-default{
   background:var(--ui-blue); color:#fff;
 }
+.pv-panel[data-objseg="edit"] .pv-seg.two .is-edit{
+  background:var(--ui-amber); color:#1a1205;
+}
+
+/* ---------- Canvas Bounds ---------- */
+.pv-canvas{
+  display:flex; align-items:center; gap:10px; margin-top:10px;
+  font-size:var(--t-small); color:var(--pv-mut);
+}
+.pv-canvas-label{ flex:none; }
+.pv-select{
+  flex:1; display:flex; align-items:center; justify-content:space-between;
+  height:26px; padding:0 8px; border-radius:5px;
+  background:var(--pv-box); border:1px solid var(--pv-line);
+  color:var(--pv-txt);
+}
+.pv-caretdn{ color:var(--pv-mut); font-size:var(--t-micro); }
 
 /* value rows */
 .pv-vals{ margin:12px 0 4px; }
-.pv-row{ display:flex; align-items:center; gap:12px; height:30px; }
+.pv-row{ display:flex; align-items:center; gap:8px; height:30px; }
 .pv-row + .pv-row{ margin-top:8px; }
-/* 600, not 700: this resolves to Inter, and Inter 700 is not one of the
+/* 1.1 draws the axis letters as tinted chips rather than bare letters.
+   600, not 700: this resolves to Inter, and Inter 700 is not one of the
    weights the pages load — the browser was synthesising it by smearing the
    600. 600 is the site's emphasis weight and it is a real file. */
-.pv-ax{ width:12px; font-size:var(--t-small); font-weight:600; text-align:center; flex:none; }
-.pv-ax.x{ color:var(--axis-x); } .pv-ax.y{ color:var(--axis-y); } .pv-ax.z{ color:var(--axis-z); }
+.pv-ax{
+  flex:none; width:18px; height:18px; border-radius:4px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:var(--t-mini); font-weight:600;
+}
+.pv-ax.x{ color:var(--axis-x); background:rgba(229,72,77,.18); }
+.pv-ax.y{ color:var(--axis-y); background:rgba(70,167,88,.18); }
+.pv-ax.z{ color:var(--axis-z); background:rgba(90,169,255,.18); }
 
 /* bounded: slider + readout */
 .pv-slider{
@@ -234,12 +286,42 @@
   box-shadow:0 1px 3px rgba(0,0,0,.6);
 }
 .pv-num{
-  flex:none; width:58px; height:26px; border-radius:5px;
+  flex:none; width:52px; height:26px; border-radius:5px;
   background:var(--pv-inset); border:1px solid var(--pv-line);
-  display:flex; align-items:center; padding:0 9px;
-  font-size:var(--t-small); color:var(--pv-txt);
+  display:flex; align-items:center; padding:0 7px;
+  font-size:var(--t-mini); color:var(--pv-txt);
   font-family:var(--font-mono);
 }
+
+/* ---------- Quick Align ---------- */
+/* Four destinations per axis: the object's own origin, then the minimum,
+   centre and maximum of its bounds. The last three are drawn as a dot on a
+   short track, which is exactly the glyph the tool uses. */
+.pv-qa{ flex:none; display:flex; gap:3px; }
+.pv-qab{
+  width:19px; height:22px; border-radius:4px;
+  background:var(--pv-box); border:1px solid var(--pv-line);
+  position:relative;
+}
+.pv-qab.is-origin::after{
+  content:""; position:absolute; top:50%; left:50%;
+  width:7px; height:7px; border-radius:50%; background:var(--ui-amber);
+  transform:translate(-50%,-50%);
+}
+/* track */
+.pv-qab.is-min::before, .pv-qab.is-mid::before, .pv-qab.is-max::before{
+  content:""; position:absolute; top:50%; left:4px; right:4px; height:1.5px;
+  background:var(--pv-mut); transform:translateY(-50%);
+}
+/* the dot's position on it is what distinguishes the three */
+.pv-qab.is-min::after, .pv-qab.is-mid::after, .pv-qab.is-max::after{
+  content:""; position:absolute; top:50%;
+  width:5px; height:5px; border-radius:50%; background:var(--pv-txt);
+  transform:translate(-50%,-50%);
+}
+.pv-qab.is-min::after{ left:5px; }
+.pv-qab.is-mid::after{ left:50%; }
+.pv-qab.is-max::after{ left:14px; }
 
 /* unbounded: full-width field */
 .pv-field{
@@ -257,47 +339,98 @@
 
 /* Use Object Scale */
 .pv-scale{
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:center; gap:9px;
   margin-top:12px; padding:2px; font-size:var(--t-small); color:var(--pv-mut);
 }
 .pv-check{
-  width:16px; height:16px; border-radius:4px;
+  flex:none; width:16px; height:16px; border-radius:4px;
   background:var(--pv-inset); border:1px solid #444a53;
 }
 
+/* Create Parent at Pivot — a secondary action, so grey rather than blue */
+.pv-create{
+  display:block; width:100%; margin-top:12px;
+  padding:9px; border-radius:6px; text-align:center;
+  background:#2b3038; color:var(--pv-txt);
+  font-size:var(--t-control); font-weight:600;
+}
+
+/* ---------- Offsetted Transform ---------- */
+.pv-xrow{ display:flex; align-items:center; gap:6px; }
+.pv-xrow + .pv-xrow{ margin-top:7px; }
+.pv-xlabel{ flex:none; width:56px; font-size:var(--t-mini); color:var(--pv-mut); }
+.pv-xf{
+  flex:1; min-width:0; display:flex; align-items:center; gap:5px;
+  height:24px; padding:0 5px; border-radius:5px;
+  background:var(--pv-inset); border:1px solid var(--pv-line);
+  font-size:var(--t-mini); color:var(--pv-txt); font-family:var(--font-mono);
+  overflow:hidden;
+}
+.pv-xf .pv-ax{ width:15px; height:15px; font-family:var(--font-sans); }
+
 /* Add New Pivot */
 .pv-add{
-  width:100%; margin-top:10px; border:0; cursor:default;
-  padding:10px; border-radius:6px;
+  display:block; width:100%; margin-top:10px;
+  padding:10px; border-radius:6px; text-align:center;
   background:var(--ui-blue); color:#fff;
-  font-size:var(--t-control); font-weight:600; font-family:inherit;
+  font-size:var(--t-control); font-weight:600;
 }
 
 /* ============================================================
    Responsive
    ============================================================ */
-/* The overlay is drawn at Unity's native 380px. On a large monitor that leaves
-   the stage mostly empty — and because the panel is CSS rather than a
-   screenshot, scaling it up stays sharp instead of going soft. */
-@media (min-width:1500px){
-  .pv-panel{ transform:scale(1.25); }
+/* Height, not just width, decides the scale here. The v1.1 panel is 735px
+   tall — Canvas Bounds, the Quick Align rows, Create Parent at Pivot and the
+   whole Offsetted Transform section arrived after the 1.0 panel this stage was
+   first measured against, and the stage is only `100vh - nav-h`. Left at a
+   fixed scale the panel ran off the bottom of any laptop screen, so each band
+   below is the largest scale whose 735px still fits the shortest viewport in
+   that band. The panel is CSS rather than a screenshot, so scaling it stays
+   sharp in both directions. */
+@media (min-width:861px) and (max-height:829px){
+  .pv-panel{ transform:scale(.78); }   /* 573px — fits a 649px viewport */
+}
+@media (min-width:861px) and (max-height:659px){
+  .pv-panel{ transform:scale(.62); }   /* 456px — fits a 532px viewport */
+}
+@media (min-width:1500px) and (min-height:1000px){
+  .pv-panel{ transform:scale(1.2); }   /* 882px — fits a 958px viewport */
   .pv-card{ max-width:600px; }
 }
 
 @media (max-width:860px){
   .pv-scrolly{ grid-template-columns:1fr; gap:0; }
-  /* pin the overlay to the top ~56% of the screen; cards flow through
-     the visible zone underneath it */
+  /* pin the overlay to the top of the screen; cards flow through the visible
+     zone underneath it */
   .pv-stage{
-    position:sticky; top:var(--nav-h); height:56vh;
+    position:sticky; top:var(--nav-h); height:46vh;
     padding:0; z-index:2;
     background:linear-gradient(180deg, var(--bg) 84%, transparent);
   }
   .pv-stage::before{ display:none; }
-  .pv-panel{ width:320px; transform:scale(.8); transform-origin:center; }
+  .pv-panel{ width:320px; transform:scale(.92); transform-origin:center; }
   .pv-steps{ padding:0 0 22vh; }
   .pv-step{ min-height:62vh; justify-content:flex-end; }
   .pv-card{ max-width:none; }
+
+  /* One section at a time. Shrinking the whole 735px panel into half a phone
+     screen puts its labels under 7px, which is not a tour of an interface —
+     it is a picture of one. The step being read is the only section that has
+     to be on screen, so on a phone it is the only one drawn; the dimming that
+     does this job on desktop becomes a swap here. Gated on .focusing so the
+     panel is never blank in the moment before the first step activates. */
+  .pv-panel.focusing .pv-box:not(.active-box){ display:none; }
+  .pv-panel.focusing .pv-box.active-box{ opacity:1; }
+}
+
+/* Shorter phones. The Shared Pivot section is the tall one — three axis rows,
+   Canvas Bounds and Create Parent at Pivot — and at 341px it is what these two
+   bands are measured against, not the panel's other sections. */
+@media (max-width:860px) and (max-height:760px){
+  .pv-panel{ transform:scale(.76); }   /* 282px — fits a 613px viewport */
+}
+@media (max-width:860px) and (max-height:620px){
+  .pv-panel{ transform:scale(.66); }   /* 245px — fits a 533px viewport */
 }
 
 @media (max-width:420px){

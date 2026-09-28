@@ -160,8 +160,8 @@ window.CONTRIBUTIONS_DATA = {
       kind: "Unity Editor Tool",
       status: "open-source",
       media: {
-        src: "/assets/img/QuickAccessBanner.jpg",
-        small: "/assets/img/QuickAccessBanner-800.jpg",
+        src: "/tools/quick-access/media/QuickAccessBanner.jpg",
+        small: "/tools/quick-access/media/QuickAccessBanner-800.jpg",
         width: 1737,
         height: 905,
         alt: "The Quick Access editor window, annotated: ping an asset, open a scene, unpin, and the Scene Objects list."
@@ -185,10 +185,10 @@ window.CONTRIBUTIONS_DATA = {
       // Store button below is the proof that you can install it right now.
       status: "live",
       media: {
-        // cover.png is the same picture at 1.1MB — a PNG carrying a
-        // photographic render, which is the one thing PNG is bad at. This JPEG
-        // is 79KB and indistinguishable at card size.
-        src: "/assets/img/pivot/cover.jpg",
+        // A JPEG at 79KB. The picture is a photographic render, which is the
+        // one thing PNG is bad at: the 1.1MB PNG it was exported from is
+        // indistinguishable at card size and is no longer kept in the repo.
+        src: "/tools/pivot/media/cover.jpg",
         width: 1537,
         height: 796,
         alt: "Side-by-side comparison of a door rotating around Unity's default centre pivot versus around its hinge using Pivot++."
@@ -197,7 +197,7 @@ window.CONTRIBUTIONS_DATA = {
       role: "Solo project",
       description: "Move, rotate and scale any object around a point you choose — the hinge of a door, the base of a lamp post — without re-exporting the mesh or parenting it to an empty. Editor only, and it never touches your meshes or prefabs.",
       tags: ["Editor Tool"],
-      platforms: ["Unity 2022.3+"],
+      platforms: ["Unity 2021.2+"],
       tech: ["Unity3D", "C#", "Scene View Overlays"],
       // Two, like every other card here. The overlay splits the cover into one
       // equal panel per link, so a third turns "Asset Store" into two lines in
@@ -213,8 +213,8 @@ window.CONTRIBUTIONS_DATA = {
       kind: "Claude Skill · Unity CLI",
       status: "open-source",
       media: {
-        src: "/assets/img/unity-cli-cover.jpg",
-        small: "/assets/img/unity-cli-cover-800.jpg",
+        src: "/tools/unity-cli/media/unity-cli-cover.jpg",
+        small: "/tools/unity-cli/media/unity-cli-cover-800.jpg",
         width: 1509,
         height: 704,
         alt: "Diagram: Claude and a shared command library feed the Unity CLI, which drives the Unity Editor, with a return arrow labelled \"gets better with use\"."

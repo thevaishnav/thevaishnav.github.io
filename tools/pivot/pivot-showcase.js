@@ -20,7 +20,7 @@
     var mode = step.dataset.mode || "bounded";     // bounded | unbounded
     var objseg = step.dataset.objseg || "default"; // default | edit
     var box = step.dataset.box;                    // box element id to keep bright
-    var target = step.dataset.target;              // control id to ring
+    var target = step.dataset.target;              // CSS selector for the control(s) to ring
 
     // panel mode (swaps sliders <-> fields, shows/hides Use Object Scale)
     panel.dataset.mode = mode;
@@ -37,8 +37,13 @@
     panel.querySelectorAll(".pv-lit").forEach(function (el) {
       el.classList.remove("pv-lit");
     });
-    var t = target && document.getElementById(target);
-    if (t) t.classList.add("pv-lit");
+    // A selector rather than an id: some controls repeat, and the step that
+    // explains the Quick Align buttons has to ring all three axis rows at once.
+    if (target) {
+      panel.querySelectorAll(target).forEach(function (el) {
+        el.classList.add("pv-lit");
+      });
+    }
 
     // active step styling
     steps.forEach(function (s) {

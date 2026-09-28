@@ -11,7 +11,7 @@
 <!-- The page is drawn dark and only dark; without this the browser draws its
      own half of the interface — scrollbar, caret, form controls — light. -->
 <meta name="color-scheme" content="dark">
-<link rel="icon" type="image/png" href="/assets/img/pivot/icon.png">
+<link rel="icon" type="image/png" href="/assets/img/favicon.png">
 <link rel="canonical" href="https://thevaishnav.github.io/tools/pivot/">
 
 <!-- A tool page is linked to directly far more often than it is arrived at by
@@ -22,7 +22,7 @@
 <meta property="og:title" content="Pivot++ · Pivot editor for Unity">
 <meta property="og:description" content="Rotate a door from its hinge, scale a lamp post from its base. Move any Unity object's pivot in the Scene view — editor only, non-destructive, meshes never touched.">
 <meta property="og:url" content="https://thevaishnav.github.io/tools/pivot/">
-<meta property="og:image" content="https://thevaishnav.github.io/assets/img/pivot/cover.jpg">
+<meta property="og:image" content="https://thevaishnav.github.io/tools/pivot/media/cover.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -77,9 +77,13 @@
        The page used to begin on the overlay tour, which meant it had no h1 and
        opened on a sentence about a control panel — a reader arriving from the
        Asset Store listing had to work out what the product was from a tour of
-       its interface. The clip is the whole pitch in eleven seconds: the pivot
-       is switched on, one slider moves, and the door turns on its hinge
-       instead of through its middle. Everything below is the detail behind it.
+       its interface. The clip is the whole pitch: the pivot is switched on,
+       moved to the base of the lamp, and the lamp then scales from the table
+       instead of sinking through it. Everything below is the detail behind it.
+
+       The door — the other half of the same pitch — carries the landing page's
+       tool card and the manual's first-steps section, so the two pages do not
+       open on the same footage.
 
        Silent, looping, and shown at its own ratio. `width`/`height` are the
        encode's real pixel size, so the box is reserved before a byte of video
@@ -88,7 +92,7 @@
        for a reader who has asked for reduced motion. -->
   <section class="wrap wrap-wide page-hero product-hero">
     <div>
-      <p class="eyebrow mono">Editor tool · Unity 2022.3+</p>
+      <p class="eyebrow mono">Editor tool · Unity 2021.2+ · v1.1</p>
       <h1>Pivot++</h1>
       <p class="lead">Rotate a door from its hinge. Scale a lamp post from its base. Move any object's pivot right in the Scene view — no re-exported meshes, no empty parents, nothing added to your scene.</p>
       <div class="actions">
@@ -100,16 +104,16 @@
     <figure class="figure">
       <div class="frame">
         <video class="shot" data-loop
-               poster="/assets/img/pivot/pivot-rotation-poster.jpg"
-               width="1280" height="850"
+               poster="/tools/pivot/media/lamp-base-poster.jpg"
+               width="1280" height="578"
                autoplay muted loop playsinline preload="metadata"
                role="img"
-               aria-label="A door in Unity's Scene view. The Pivot++ overlay is switched on and its X slider dragged to -1, and the door then swings open around its hinge instead of around its centre.">
-          <source src="/assets/img/pivot/pivot-rotation.webm" type="video/webm">
-          <source src="/assets/img/pivot/pivot-rotation.mp4" type="video/mp4">
+               aria-label="A table lamp in Unity's Scene view. The Pivot++ panel is switched on and the pivot moved to the base of the lamp, and the lamp then scales down from its base instead of shrinking towards its centre.">
+          <source src="/tools/pivot/media/lamp-base.webm" type="video/webm">
+          <source src="/tools/pivot/media/lamp-base.mp4" type="video/mp4">
         </video>
       </div>
-      <figcaption>Enable the overlay, drag <span class="axis-x">X</span> to <span class="mono">-1</span>, and the door turns on its hinge.</figcaption>
+      <figcaption>Move the pivot to the base of the lamp, and it scales from the table instead of through it.</figcaption>
     </figure>
   </section>
 
@@ -123,7 +127,12 @@
     </div>
 
     <div class="pv-scrolly">
-      <!-- sticky graphic: the recreated overlay -->
+      <!-- sticky graphic: the recreated panel.
+           Hand-built in HTML/CSS rather than screenshotted so it stays sharp at
+           any zoom and can be driven by the scroll position. It mirrors the
+           v1.1 panel: the window/overlay button, Canvas Bounds, the per-axis
+           Quick Align buttons, Create Parent at Pivot and the Offsetted
+           Transform section all arrived in that release. -->
       <div class="pv-stage" aria-hidden="true">
         <div class="pv-panel" id="pvPanel" data-mode="bounded" data-box="box-enabled" data-objseg="default">
           <div class="pv-head">
@@ -133,9 +142,12 @@
           </div>
 
           <div class="pv-box" id="box-enabled">
-            <button class="pv-enabled" id="tgt-enabled" type="button" tabindex="-1">
-              <span class="pv-led"></span> Enabled
-            </button>
+            <div class="pv-toprow">
+              <span class="pv-enabled" id="tgt-enabled">
+                <span class="pv-switch"></span> Enabled
+              </span>
+              <span class="pv-winbtn" id="tgt-window"></span>
+            </div>
           </div>
 
           <div class="pv-box" id="box-shared">
@@ -146,11 +158,31 @@
               <span class="pv-seg-btn is-unbounded">Unbounded</span>
             </div>
 
+            <div class="pv-canvas" id="tgt-canvas">
+              <span class="pv-canvas-label">Canvas Bounds</span>
+              <span class="pv-select">Rect Transform <span class="pv-caretdn">&#9662;</span></span>
+            </div>
+
             <div class="pv-vals">
               <div class="pv-vals-bounded" id="tgt-bounded">
-                <div class="pv-row"><span class="pv-ax x">X</span><span class="pv-slider" style="--p:92%"><span class="pv-knob"></span></span><span class="pv-num">0.84</span></div>
-                <div class="pv-row"><span class="pv-ax y">Y</span><span class="pv-slider" style="--p:100%"><span class="pv-knob"></span></span><span class="pv-num">1</span></div>
-                <div class="pv-row"><span class="pv-ax z">Z</span><span class="pv-slider" style="--p:0%"><span class="pv-knob"></span></span><span class="pv-num">-1</span></div>
+                <div class="pv-row">
+                  <span class="pv-ax x">X</span>
+                  <span class="pv-slider" style="--p:95%"><span class="pv-knob"></span></span>
+                  <span class="pv-num">0.9</span>
+                  <span class="pv-qa"><span class="pv-qab is-origin"></span><span class="pv-qab is-min"></span><span class="pv-qab is-mid"></span><span class="pv-qab is-max"></span></span>
+                </div>
+                <div class="pv-row">
+                  <span class="pv-ax y">Y</span>
+                  <span class="pv-slider" style="--p:12%"><span class="pv-knob"></span></span>
+                  <span class="pv-num">-0.76</span>
+                  <span class="pv-qa"><span class="pv-qab is-origin"></span><span class="pv-qab is-min"></span><span class="pv-qab is-mid"></span><span class="pv-qab is-max"></span></span>
+                </div>
+                <div class="pv-row">
+                  <span class="pv-ax z">Z</span>
+                  <span class="pv-slider" style="--p:14%"><span class="pv-knob"></span></span>
+                  <span class="pv-num">-0.71</span>
+                  <span class="pv-qa"><span class="pv-qab is-origin"></span><span class="pv-qab is-min"></span><span class="pv-qab is-mid"></span><span class="pv-qab is-max"></span></span>
+                </div>
               </div>
               <div class="pv-vals-unbounded" id="tgt-unbounded">
                 <div class="pv-row"><span class="pv-ax x">X</span><span class="pv-field">0</span></div>
@@ -160,82 +192,145 @@
             </div>
 
             <div class="pv-scale" id="tgt-scale">
-              <span>Use Object Scale</span>
               <span class="pv-check"></span>
+              <span>Use Object Scale</span>
+            </div>
+
+            <span class="pv-create" id="tgt-create">Create Parent at Pivot</span>
+          </div>
+
+          <div class="pv-box" id="box-offset">
+            <p class="pv-slabel">OFFSETTED TRANSFORM</p>
+            <div class="pv-xform" id="tgt-xform">
+              <div class="pv-xrow">
+                <span class="pv-xlabel">Position</span>
+                <span class="pv-xf"><span class="pv-ax x">X</span>0.692</span>
+                <span class="pv-xf"><span class="pv-ax y">Y</span>1.225</span>
+                <span class="pv-xf"><span class="pv-ax z">Z</span>111.5</span>
+              </div>
+              <div class="pv-xrow">
+                <span class="pv-xlabel">Rotation</span>
+                <span class="pv-xf"><span class="pv-ax x">X</span>0</span>
+                <span class="pv-xf"><span class="pv-ax y">Y</span>0</span>
+                <span class="pv-xf"><span class="pv-ax z">Z</span>0</span>
+              </div>
+              <div class="pv-xrow">
+                <span class="pv-xlabel">Scale</span>
+                <span class="pv-xf"><span class="pv-ax x">X</span>1</span>
+                <span class="pv-xf"><span class="pv-ax y">Y</span>1</span>
+                <span class="pv-xf"><span class="pv-ax z">Z</span>1.245</span>
+              </div>
             </div>
           </div>
 
           <div class="pv-box" id="box-objects">
-            <p class="pv-slabel">OBJECT PIVOTS</p>
-            <p class="pv-sub">3 pivots added</p>
+            <p class="pv-slabel">OBJECT PIVOTS <span class="pv-badge" id="tgt-badge">2 PIVOTS</span></p>
             <div class="pv-seg two" id="tgt-objseg">
               <span class="pv-seg-btn is-default">Default</span>
               <span class="pv-seg-btn is-edit">Edit Pivots</span>
             </div>
-            <button class="pv-add" id="tgt-add" type="button" tabindex="-1">Add New Pivot</button>
+            <span class="pv-add" id="tgt-add">+ Add New Pivot</span>
           </div>
         </div>
       </div>
 
-      <!-- flowing steps -->
+      <!-- flowing steps.
+           `data-target` is a CSS selector, not a bare id, so a step can ring
+           every instance of a repeated control — the Quick Align cluster exists
+           once per axis row. -->
       <div class="pv-steps">
-        <div class="pv-step is-active" data-mode="bounded" data-box="box-enabled" data-target="tgt-enabled">
+        <div class="pv-step is-active" data-mode="bounded" data-box="box-enabled" data-target="#tgt-enabled">
           <div class="pv-card">
             <h3>The master switch</h3>
             <p>Green means Pivot++ is driving Unity's transform handles. Click it to fall back to the default pivot at any time — your offsets and saved pivots stay exactly where you left them.</p>
           </div>
         </div>
 
-        <div class="pv-step" data-mode="bounded" data-box="box-shared" data-target="box-shared">
+        <div class="pv-step" data-mode="bounded" data-box="box-enabled" data-target="#tgt-window">
+          <div class="pv-card">
+            <h3>Overlay, or a window of its own</h3>
+            <p><strong>New in 1.1.</strong> The button beside the toggle moves the whole panel between the Scene view and an ordinary dockable editor window. The glyph shows where a click would send it. Dock it next to the Inspector when you are working with exact numbers; leave it floating for quick nudges.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-shared" data-target="#box-shared">
           <div class="pv-card">
             <h3>One quick offset for the whole selection</h3>
             <p>The <strong>Shared Pivot</strong> is a fast, selection-wide offset. It applies to whatever you have selected right now and is shared across every object in that selection.</p>
           </div>
         </div>
 
-        <div class="pv-step" data-mode="bounded" data-box="box-shared" data-target="tgt-bounded">
+        <div class="pv-step" data-mode="bounded" data-box="box-shared" data-target="#tgt-bounded">
           <div class="pv-card">
             <h3>Bounded thinks in proportions</h3>
             <p>In <strong>Bounded</strong> mode the offset is expressed relative to the object's bounds. Each slider places the pivot inside them: <span class="mono">-1</span> is one face, <span class="mono">0</span> is dead centre, and <span class="mono">1</span> is the opposite face. Set it once and it lands correctly on a pebble or a skyscraper.</p>
           </div>
         </div>
 
-        <div class="pv-step" data-mode="unbounded" data-box="box-shared" data-target="tgt-unbounded">
+        <div class="pv-step" data-mode="bounded" data-box="box-shared" data-target=".pv-qa">
+          <div class="pv-card">
+            <h3>Four places you actually go</h3>
+            <p><strong>New in 1.1.</strong> Every bounded axis row ends in four one-click destinations: the object's own origin — the yellow dot Pivot++ now draws in the Scene view — then the minimum, centre and maximum of the bounds. Each button moves only its own axis, so “bottom of the object” is one click rather than a drag.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="unbounded" data-box="box-shared" data-target="#tgt-unbounded">
           <div class="pv-card">
             <h3>Unbounded thinks in units</h3>
             <p>Switch to <strong>Unbounded</strong> to work in fixed distances in the object's local space. Type the precise offset of the pivot from the object's centre in scene units — no slider, no rounding, just the number you want. Perfect for placing a pivot outside the mesh entirely, or matching a measurement from another tool.</p>
           </div>
         </div>
 
-        <div class="pv-step" data-mode="unbounded" data-box="box-shared" data-target="tgt-scale">
+        <div class="pv-step" data-mode="unbounded" data-box="box-shared" data-target="#tgt-scale">
           <div class="pv-card">
             <h3>Scale-aware offsets</h3>
             <p><strong>Unbounded only.</strong> Ticked, the offset is multiplied by the object's scale. Unticked, it stays an absolute world-distance offset regardless of how the object is scaled.</p>
           </div>
         </div>
 
-        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="box-objects">
+        <div class="pv-step" data-mode="bounded" data-box="box-shared" data-target="#tgt-canvas">
           <div class="pv-card">
-            <h3>Save pivots that stay put</h3>
-            <p><strong>Object Pivots</strong> are per-object and permanent. Create as many custom pivots as an object needs — a lid, a handle, a base — and they're still there the next time you open the scene.</p>
+            <h3>UI has more than one size</h3>
+            <p><strong>New in 1.1.</strong> A UI element can be measured by its RectTransform's own rect, by its layout element's preferred size, or by its minimum size. <strong>Canvas Bounds</strong> picks which one counts as the object's bounds. For meshes, sprites and colliders it changes nothing.</p>
           </div>
         </div>
 
-        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="tgt-objseg">
+        <div class="pv-step" data-mode="bounded" data-box="box-shared" data-target="#tgt-create">
+          <div class="pv-card">
+            <h3>When the offset needs to be real</h3>
+            <p><strong>New in 1.1.</strong> An offset pivot is editor-only — perfect while blocking out a level, useless to an animation. <strong>Create Parent at Pivot</strong> drops an empty GameObject at that exact position and rotation and moves your selection inside it, so the pivot exists at runtime too. One undo step, and prefab instances are asked about rather than quietly modified.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-offset" data-target="#tgt-xform">
+          <div class="pv-card">
+            <h3>A Transform for the pivot itself</h3>
+            <p><strong>New in 1.1.</strong> The <strong>Offsetted Transform</strong> is an inspector for the point you are working around rather than the object's own origin. Read the pivot's world position straight off it, or type into it and the selection moves, rotates and scales around that point. Drag the coloured labels to scrub a value.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="#box-objects">
+          <div class="pv-card">
+            <h3>Save pivots that stay put</h3>
+            <p><strong>Object Pivots</strong> are per-object and permanent. Create as many custom pivots as an object needs — a lid, a handle, a base — and they're still there the next time you open the scene. The badge counts what the object is carrying.</p>
+          </div>
+        </div>
+
+        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="#tgt-objseg">
           <div class="pv-card">
             <h3>Default moves the object</h3>
             <p>With <strong>Default</strong> selected, the handles behave normally — grab the object and manipulate it around its active pivot.</p>
           </div>
         </div>
 
-        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="tgt-objseg" data-objseg="edit">
+        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="#tgt-objseg" data-objseg="edit">
           <div class="pv-card">
             <h3>Edit moves the pivots</h3>
-            <p>Switch to <strong>Edit Pivots</strong> and the handles move and rotate the saved pivots themselves. This is also where you delete the ones you no longer need. <span class="mono">Ctrl + Z</span> undoes the whole way.</p>
+            <p>Switch to <strong>Edit Pivots</strong> and the handles move and rotate the saved pivots themselves. This is where you delete the ones you no longer need, and — new in 1.1 — where a blue <span class="mono">+</span> turns any saved pivot into a real parent. <span class="mono">Ctrl + Z</span> undoes the whole way.</p>
           </div>
         </div>
 
-        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="tgt-add">
+        <div class="pv-step" data-mode="bounded" data-box="box-objects" data-target="#tgt-add">
           <div class="pv-card">
             <h3>Bank the current pivot</h3>
             <p><strong>Add New Pivot</strong> saves the current Shared Pivot position as a new permanent pivot on the selected object. Line it up once, save it, and reuse it forever.</p>
@@ -251,7 +346,7 @@
     <div class="meta-grid">
       <div class="meta-cell">
         <p class="k">Unity</p>
-        <p class="v">2022.3 or newer<br><span class="mono" style="color:var(--muted);font-size:13px;">(Scene view Overlays)</span></p>
+        <p class="v">2021.2 or newer<br><span class="mono" style="color:var(--muted);font-size:13px;">(Scene view Overlays)</span></p>
       </div>
       <div class="meta-cell">
         <p class="k">Footprint</p>

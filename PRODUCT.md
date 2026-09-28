@@ -100,7 +100,7 @@ one deliberately fixes exactly one problem ("One Tool == One Job").
 - **Name:** Vaishnav Chincholkar. The handle `itsdevlogger` appears in GitHub
   org paths and the owner's email; the site itself is under the personal name.
 - **Existing marks:** `assets/img/logo-256.png` (also the share-card image),
-  `assets/img/logo-64.png`, and `assets/img/pivot/icon.png` (favicon).
+  `assets/img/logo-64.png`, and `assets/img/favicon.png` (favicon).
 - **Voice, as written today:** plain, specific, unhyped. States what was built
   rather than what it was. Explicitly disclaims proximity — "every claim on this
   page is something I built or led rather than sat near."
@@ -118,8 +118,9 @@ Real and linkable:
   `itsdevlogger/unity-cli-skill`.
 - **Unity Asset Store publisher page:** publisher 105229.
 - **A LinkedIn write-up** on the 81,521-props problem.
-- **Screenshots and cover art** under `assets/img/`, including annotated Quick
-  Access captures and Pivot++ overlay comparisons.
+- **Screenshots and cover art** beside the tool they belong to, under
+  `tools/<tool>/media/`, including annotated Quick Access captures and Pivot++
+  overlay comparisons. Site-wide marks stay in `assets/img/`.
 - **Contact channels:** email, LinkedIn, Asset Store, phone.
 
 Deliberately absent — **do not fabricate these**: testimonials, client quotes,
