@@ -215,23 +215,30 @@
              pixel size, so the column is reserved before any video arrives and
              the prose below it never jumps.
 
-             Recorded full-screen at 1920x1032 and cropped to the Scene view and
-             its toolbar: the window chrome above and the status bar below carry
-             nothing a reader needs, and at the ~800px this figure is drawn they
-             cost the overlay the pixels that make its labels readable. -->
+             Cropped to the door and the panel, not to the Scene view: a
+             full-width crop left the panel about 120px wide on screen, which is
+             a picture of an interface rather than a readable one. This one is
+             1090px of the 1920 recorded, so the panel lands near 210px at the
+             ~800px this figure is drawn, and it survives a phone.
+
+             Trimmed to the part that is the pitch. The recording opens with
+             half a minute of the door swinging around its default centre pivot
+             to establish the problem; the clip now starts on the slider drag,
+             where the handle walks out to the hinge in real time, and ends on
+             the door turning around it. -->
         <figure class="figure">
           <div class="frame">
             <video class="shot" data-loop
                    poster="/tools/pivot/media/door-hinge-poster.jpg"
-                   width="1280" height="578"
+                   width="1090" height="820"
                    autoplay muted loop playsinline preload="metadata"
                    role="img"
-                   aria-label="The steps above performed in Unity: a red door is selected, Pivot++ is switched on, the sliders are dragged until the pivot sits on the hinge edge, and the door then swings open around that hinge instead of around its centre.">
+                   aria-label="Steps 3 and 4 performed in Unity: the Shared Pivot sliders are dragged and the rotate handle travels across the red door in real time until it sits on the hinge edge, and the door then swings open around that hinge instead of around its centre.">
               <source src="/tools/pivot/media/door-hinge.webm" type="video/webm">
               <source src="/tools/pivot/media/door-hinge.mp4" type="video/mp4">
             </video>
           </div>
-          <figcaption>Enable, drag the pivot out to the hinge edge, rotate. The handle is now on the hinge.</figcaption>
+          <figcaption>Drag the sliders and the handle moves as you drag. Once it is on the hinge, the door turns on it.</figcaption>
         </figure>
 
         <div class="callout note">

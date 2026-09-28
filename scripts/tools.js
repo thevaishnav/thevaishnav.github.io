@@ -35,17 +35,18 @@ window.TOOLS_DATA = {
     {
       id: "pivot",
       video: {
-        // Recorded full-screen at 1920x1032 and re-encoded to 323KB of H.264
-        // and 250KB of VP9, cropped to the Scene view and its toolbar: the
-        // window chrome and the status bar carry nothing a reader needs, and
-        // at card size they cost the overlay the pixels that make it readable.
+        // 1090x820 of a 1920x1032 recording: cropped to the door and the
+        // panel, because a full-width crop left the panel near 120px on screen
+        // and unreadable at card size. Trimmed to the slider drag and the
+        // rotation that follows — the recording's first half demonstrates the
+        // default centre pivot, which is the problem rather than the pitch.
         // The recording masters live in the Pivot++ release folder, not here.
         webm: "/tools/pivot/media/door-hinge.webm",
         mp4: "/tools/pivot/media/door-hinge.mp4",
         poster: "/tools/pivot/media/door-hinge-poster.jpg",
-        width: 1280,
-        height: 578,
-        alt: "A door in Unity's Scene view. The Pivot++ panel is switched on and the pivot dragged out to the hinge edge, and the door then swings open around that hinge instead of around its centre."
+        width: 1090,
+        height: 820,
+        alt: "A door in Unity's Scene view. The Pivot++ sliders are dragged and the rotate handle travels across the door in real time to its hinge edge, and the door then swings open around that hinge instead of around its centre."
       },
       tag: "Editor tool · Unity 2021.2+",
       title: "Pivot++",
