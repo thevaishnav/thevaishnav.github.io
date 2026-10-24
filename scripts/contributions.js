@@ -57,12 +57,48 @@ window.CONTRIBUTIONS_DATA = {
     "PC Game",
     "Mobile Game",
     "Editor Tool",
+    "Client Project",
+    "XR",
     "Multiplayer",
     "Physics",
     "Open Source"
   ],
 
   projects: [
+    /* The three ForeExcel client projects. They are under NDA, so they carry
+       no client or product name, no cover, no links and no badge: a badge has
+       to be provable by a link on the same card, and these have none to give.
+       The figures are the ones the timeline at /experience/ states. */
+    {
+      title: "Multiplayer Team-Planning Simulation",
+      kind: "Client Project · PC + VR",
+      stat: "25+ VR headsets in one session",
+      role: "Lead developer · ForeExcel",
+      description: "Teams plan together on a shared 3D terrain, joining a PC-hosted session over local Wi-Fi. Architecture, multiplayer and matchmaking built from the ground up — an authoritative PC server, UDP-broadcast session discovery and role-based permissions.",
+      tags: ["Client Project", "XR", "Multiplayer"],
+      platforms: ["PC", "VR"],
+      tech: ["Unity3D", "Netcode for GameObjects", "UDP discovery"]
+    },
+    {
+      title: "No-Code Interactive Training Builder",
+      kind: "Client Project · PC, Mobile, VR",
+      stat: "9 events · 8 criteria · 20 actions",
+      role: "Lead developer · ForeExcel",
+      description: "Creators build interactive training modules without writing code; trainees play them on PC, mobile and VR. Built the data-driven Event-Criteria-Action system behind every module, and runtime loading of models, video, audio, PDFs and 360° backgrounds.",
+      tags: ["Client Project", "XR"],
+      platforms: ["PC", "Mobile", "VR"],
+      tech: ["Unity3D", "Data-driven design", "Runtime asset loading"]
+    },
+    {
+      title: "Mixed-Reality Maintenance Guide",
+      kind: "Client Project · Pico 4 Ultra",
+      stat: "Virtual-to-real alignment within 1 cm",
+      role: "Sole Unity developer · ForeExcel",
+      description: "Repair steps, 3D models and arrows placed directly on a real machine. The whole Unity app — alignment from three printed ArUco markers, guides loaded from a web dashboard, and in-headset editing of the models on the machine.",
+      tags: ["Client Project", "XR"],
+      platforms: ["Pico 4 Ultra"],
+      tech: ["Unity3D", "Mixed reality", "ArUco markers"]
+    },
     {
       title: "Battle Royale & E-Sports",
       kind: "Multiplayer PC Game · Sinverse",
@@ -76,7 +112,7 @@ window.CONTRIBUTIONS_DATA = {
       description: "A full Battle Royale mode built end to end — matchmaking, team formation, KDA tracking and disconnect recovery.",
       tags: ["PC Game", "Multiplayer"],
       platforms: ["PC"],
-      tech: ["Unity3D", "Netcode", "Matchmaking"]
+      tech: ["Unity3D", "Photon PUN2", "Matchmaking"]
       // No links: the cover is the video, and it plays where it sits.
     },
     {
@@ -197,7 +233,7 @@ window.CONTRIBUTIONS_DATA = {
       role: "Solo project",
       description: "Move, rotate and scale any object around a point you choose — the hinge of a door, the base of a lamp post — without re-exporting the mesh or parenting it to an empty. Editor only, and it never touches your meshes or prefabs.",
       tags: ["Editor Tool"],
-      platforms: ["Unity 2021.2+"],
+      platforms: ["Unity 2022.3+"],
       tech: ["Unity3D", "C#", "Scene View Overlays"],
       // Two, like every other card here. The overlay splits the cover into one
       // equal panel per link, so a third turns "Asset Store" into two lines in

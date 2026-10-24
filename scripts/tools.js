@@ -48,7 +48,7 @@ window.TOOLS_DATA = {
         height: 820,
         alt: "A door in Unity's Scene view. The Pivot++ sliders are dragged and the rotate handle travels across the door in real time to its hinge edge, and the door then swings open around that hinge instead of around its centre."
       },
-      tag: "Editor tool · Unity 2021.2+",
+      tag: "Editor tool · Unity 2022.3+",
       title: "Pivot++",
       desc: "Want to rotate a door from its hinge? Scale a lamp post from its base? Normally you can't. At least not without re-exporting the mesh or adding an empty parent.\n\nPivot++ is a simple solution.\nSelect an object, drag a slider, and the pivot moves in real time.",
       actions: [
