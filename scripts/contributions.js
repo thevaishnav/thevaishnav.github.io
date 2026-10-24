@@ -112,7 +112,7 @@ window.CONTRIBUTIONS_DATA = {
       description: "A full Battle Royale mode built end to end — matchmaking, team formation, KDA tracking and disconnect recovery.",
       tags: ["PC Game", "Multiplayer"],
       platforms: ["PC"],
-      tech: ["Unity3D", "Netcode", "Matchmaking"]
+      tech: ["Unity3D", "Photon PUN2", "Matchmaking"]
       // No links: the cover is the video, and it plays where it sits.
     },
     {

@@ -49,7 +49,9 @@ not "Unity developer with 4 years" — it is that specific, verifiable, hard
 things were built and shipped: a 20-player Battle Royale end to end including
 matchmaking and disconnect recovery; 81,521 physics props held in one
 multiplayer scene; rope physics written from scratch for a store-listed title;
-a 6-person team led across 4 client projects.
+a 6-person team led across 3 client projects, including a 25-headset
+multiplayer VR session and a mixed-reality guide aligned to a real machine
+within 1 cm.
 
 The editor tools are a second, different kind of proof: they show taste and
 judgment about developer workflow, not just the ability to execute a spec. Each
@@ -74,10 +76,9 @@ one deliberately fixes exactly one problem ("One Tool == One Job").
   logic, no databases, no server-rendered routes. Paths are written from the
   repo root (`/assets/…`, `/tools/…`) because the site is served at a domain
   root.
-- **Canonical domain: `thevaishnav.github.io`.** The `og:url` and
-  `<link rel="canonical">` on `/experience/` currently declare
-  `itsdevlogger.github.io` — that is stale and wrong, and should be corrected
-  wherever it appears.
+- **Canonical domain: `thevaishnav.github.io`.** Every `og:url` and
+  `<link rel="canonical">` uses it; `itsdevlogger.github.io` is stale and must
+  not reappear.
 - **Surfaces that exist:** landing page (intro + tools), `/experience/`
   (dated timeline), `/contributions/` (filterable project list), per-tool pages
   under `/tools/`, and a user manual for Pivot++. A contact popup is available
@@ -88,9 +89,13 @@ one deliberately fixes exactly one problem ("One Tool == One Job").
 - **Constraint explicitly released by the owner:** the long explanatory code
   comments throughout the HTML and JS are *not* a commitment and may be removed
   or trimmed.
-- **Pivot++ is currently disabled** — its entry in `scripts/tools.js` is
-  commented out, though its pages, assets, and manual remain in the repo. Its
-  status is undecided; do not treat it as shipped or as removed.
+- **Pivot++ is released** on the Unity Asset Store (Sep 2026) and holds the
+  landing page's highlight band. It supports Unity 2022.3+ with Built-in, URP
+  and HDRP.
+- **ForeExcel client work is under NDA.** The three client projects appear on
+  `/contributions/` and `/experience/` without client or product names, and
+  their cards carry no badge, cover or links. Do not add names, screenshots or
+  details beyond what the timeline already states.
 - **Not established:** whether the site must remain usable with JavaScript
   disabled. The current code writes fallback values into the HTML and degrades
   gracefully, but this was not confirmed as a requirement.
@@ -105,13 +110,13 @@ one deliberately fixes exactly one problem ("One Tool == One Job").
   rather than what it was. Explicitly disclaims proximity — "every claim on this
   page is something I built or led rather than sat near."
 - **Tone rule the copy already keeps:** figures are floors, not totals ("More
-  than 4 years", "More than 7 contributions").
+  than 4 years", "More than 11 contributions").
 
 ## Evidence on Hand
 
 Real and linkable:
 
-- **Video demonstrations** (YouTube) of the Battle Royale mode, virtual estate
+- **Video demonstrations** (YouTube) of the Battle Royale mode (Photon PUN2), virtual estate
   system, and character customization.
 - **Live store listings:** Free the Girl and Balls to Cup on the App Store.
 - **Open-source repositories:** `itsdevlogger/quick-access-window`,
@@ -132,7 +137,8 @@ name not already in the timeline.
 
 1. **Every claim is checkable on the same page.** A number, badge, or status
    only appears when a link beside it proves it. This is already enforced in the
-   contributions data model and must not erode.
+   contributions data model and must not erode. The one exception is NDA client
+   work, which is stated without a badge rather than with an unprovable one.
 2. **Answer before the scroll.** The audience decides in seconds under
    comparison pressure. State the conclusion first; the long form supports it.
    Never require a reader to assemble the headline themselves.
